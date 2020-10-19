@@ -15,17 +15,27 @@
     	"default_title" : "Manajemen SIPD"
     },
 	"background": {
-      	"scripts": [ "background.js" ]
+		"persistent": true,
+      	"scripts": [ 
+      		"config.js", 
+      		"js/background/promise.js", 
+		    "js/background/bg-functions.js", 
+      		"js/background/background.js" 
+      	]
    	},
 	"content_scripts": [
 	 {
 		"matches": ["https://*.sipd.kemendagri.go.id/*"],
-		"js": ["content_scripts.js"],
+		"js": ["js/content/content_scripts.js"],
 		"run_at": "document_start"
 	 }
 	],
-	"web_accessible_resources" : ["/js/app.js"],
+	"web_accessible_resources" : ["/js/content/app.js"],
 	"permissions": [
-		"webRequest", "ws://*/*", "wss://*/*"
+		"webRequest",
+		"https://*.kemendagri.go.id/*",
+		"activeTab",
+	    "storage",
+	    "tabs"
 	]  
 }
