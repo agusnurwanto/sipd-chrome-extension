@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		var actions = request.message.content.key;
 		var proses = [];
 		if(actions == 'get_ssh'){
-			
+
 			var url_ssh = config.sipd_url+"daerah/main/budget/komponen/2021/1/list/90/0";
 			chrome.tabs.create({ url: url_ssh });
 
@@ -39,6 +39,14 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 				debug: true
 			});
 		});
+	}else if(type == 'get-actions'){
+		getDB({
+			debug: true
+		})
+		.then(function(ret){
+			console.log(type, ret);
+			sendMessageTabActive(ret);
+		});
 	}
-	return "THANKS from background!";
+	return sendResponse("THANKS from background!");
 });

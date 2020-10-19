@@ -36,9 +36,12 @@ function setDB(options){
 function getDB(options){
     return new Promise(function(resolve, reject){
         db.transaction(function (tx) {
-            var where = 'key="'+options.key+'"';
+            var where = '';
+            if(options.key){
+                where = ' where key="'+options.key+'"';
+            }
             var data = false;
-            tx.executeSql('SELECT data FROM sipd where '+where, [], function (tx, results) {
+            tx.executeSql('SELECT data FROM sipd'+where, [], function (tx, results) {
                 try{
                     data = decodeURIComponent(results.rows.item(0).data);
                     try{

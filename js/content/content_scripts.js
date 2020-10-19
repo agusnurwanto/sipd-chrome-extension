@@ -8,4 +8,5 @@ function injectScript(file, node) {
     // th.appendChild(s);
     th.insertBefore(s, th.firstChild);
 }
-injectScript( chrome.extension.getURL('/js/app.js'), 'html');
+injectScript( chrome.extension.getURL('/config.js'), 'html');
+injectScript( chrome.extension.getURL('/js/content/app.js'), 'html');

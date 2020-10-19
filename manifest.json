@@ -30,7 +30,10 @@
 		"run_at": "document_start"
 	 }
 	],
-	"web_accessible_resources" : ["/js/content/app.js"],
+	"web_accessible_resources" : [
+		"/config.js",
+		"/js/content/app.js"
+	],
 	"permissions": [
 		"webRequest",
 		"https://*.kemendagri.go.id/*",
