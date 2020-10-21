@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		var proses = [];
 		if(actions == 'get_ssh'){
 
-			var url_ssh = config.sipd_url+"daerah/main/budget/komponen/"+config.tahun_anggaran+"/1/list/90/0";
+			var url_ssh = config.sipd_url+"daerah/main/budget/dashboard-komponen/"+config.tahun_anggaran+"/unit/90/0";
 			chrome.tabs.create({ url: url_ssh });
 
 			proses = [
