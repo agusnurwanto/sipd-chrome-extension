@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		var proses = [];
 		if(actions == 'get_ssh'){
 
-			var url_ssh = config.sipd_url+"daerah/main/budget/komponen/2021/1/list/90/0";
+			var url_ssh = config.sipd_url+"daerah/main/budget/komponen/"+config.tahun_anggaran+"/1/list/90/0";
 			chrome.tabs.create({ url: url_ssh });
 
 			proses = [
@@ -34,18 +34,33 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			}
 		})
 		.then(function(){
-			getDB({
-				key: actions,
-				debug: true
-			});
+			// getDB({
+			// 	key: actions,
+			// 	debug: true
+			// });
 		});
 	}else if(type == 'get-actions'){
 		getDB({
-			debug: true
+			// debug: true
 		})
 		.then(function(ret){
 			console.log(type, ret);
 			sendMessageTabActive(ret);
+		});
+	}else if(type == 'run-actions'){
+		var actions = request.message.content.key;
+		var data = request.message.content.data;
+		var options = {
+			key: actions,
+			data: data
+		};
+		console.log('run-actions', options)
+		setDB(options)
+		.then(function(){
+			// getDB({
+			// 	key: actions,
+			// 	debug: true
+			// });
 		});
 	}
 	return sendResponse("THANKS from background!");

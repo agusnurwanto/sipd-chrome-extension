@@ -41,13 +41,17 @@ function getDB(options){
                 where = ' where key="'+options.key+'"';
             }
             var data = false;
-            tx.executeSql('SELECT data FROM sipd'+where, [], function (tx, results) {
+            tx.executeSql('SELECT * FROM sipd'+where, [], function (tx, results) {
                 try{
-                    data = decodeURIComponent(results.rows.item(0).data);
-                    try{
-                        data = JSON.parse(data);
-                    }catch(e){
-                        console.log(e);
+                    if(options.key){
+                        data = decodeURIComponent(results.rows.item(0).data);
+                        try{
+                            data = JSON.parse(data);
+                        }catch(e){
+                            console.log(e);
+                        }
+                    }else{
+                        data = results.rows;
                     }
                 }catch(e){
                     console.log(e);

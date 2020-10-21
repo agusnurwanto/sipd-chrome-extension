@@ -1,4 +1,5 @@
 var config = {
+	tahun_anggaran : "2021", // Tahun anggaran
 	extension_id : "xxxxxxxxxxxxxxxxxxx", // ID chrome extension
 	sipd_url : "https://xxx.sipd.kemendagri.go.id/", // alamat sipd sesuai kabupaten kota masing-masing
 	user_sekda : "xxx", // user sekda

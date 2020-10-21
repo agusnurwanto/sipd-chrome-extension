@@ -1,0 +1,1 @@
+document.querySelector('.pilih_ta input[value="'+config.tahun_anggaran+'"]').click();
