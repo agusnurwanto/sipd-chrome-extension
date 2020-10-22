@@ -45,7 +45,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		})
 		.then(function(ret){
 			console.log(type, ret);
-			sendMessageTabActive(ret);
+			var options = {
+				type: 'response-actions',
+				data: ret
+			};
+			sendMessageTabActive(options);
 		});
 	}else if(type == 'run-actions'){
 		var actions = request.message.content.key;
@@ -61,6 +65,24 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			// 	key: actions,
 			// 	debug: true
 			// });
+		});
+	}else if(type == 'get-url'){
+		jQuery.ajax({
+		    url: request.message.content.url,
+		    type: request.message.content.type,
+		    data: request.message.content.data,
+		    dataType: 'json',
+		    success:function(ret){
+		     	var options = {
+		     		type: 'response-fecth-url',
+		     		data: ret
+		     	}
+		     	sendMessageTabActive(options);
+		        console.log(ret);
+		    },
+		    error:function(){
+		        alert("Error");
+		    }      
 		});
 	}
 	return sendResponse("THANKS from background!");
