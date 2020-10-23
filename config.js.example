@@ -10,6 +10,6 @@ var config = {
 	pass_kepala_skpd : "xxx", // password kepala OPD atau camat
 	user_operator_sub_kegiatan : "xxx", // username operator sub kegiatan
 	pass_operator_sub_kegiatan : "xxx", // password operator sub kegaitan
-	url_server_lokal : "xxx", // url server lokal
-	api_key : "xxxxxxxxxxxxxxxxxxx", // api key server lokal
+	url_server_lokal : "https://xxxxxxxxxx.com/wp-admin/admin-ajax.php", // url server lokal
+	api_key : "xxxxxxxxxxxxxxxxxxx", // api key server lokal disesuaikan dengan api dari WP plugin
 };
