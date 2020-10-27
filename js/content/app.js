@@ -67,75 +67,102 @@ jQuery(document).ready(function(){
 							ssh : {}
 						};
 
+						var i = -1;
+						var last = data.data.length-1;
 						data.data.reduce(function(sequence, nextData){
-	                        return sequence.then(function(setBackEnd){
+	                        return sequence.then(function(current_data){
 	                            return new Promise(function(resolve, reject){
+	                            	/*if(i >= 5){
+	                            		console.log(i, last);
+										i++;
+										if(i == last){
+	                            			console.log('sip');
+											return resolve(data.data);
+										}else{
+											return resolve(nextData);
+										}
+	                            	}*/
 	                            	jQuery.ajax({
-										url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen/90/0',
+										url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen-akun/90/0/'+current_data.id_standar_harga,
 										contentType: 'application/json',
-										success: function(data){
-											return Promise.resolve(setBackEnd);
+										success: function(ret){
+											if(i==-1){
+												data.data[last].rek_belanja = ret.data;
+											}else{
+												data.data[i].rek_belanja = ret.data;
+											}
+											console.log(i);
+											i++;
+											if(i == last){
+												return resolve(data.data);
+											}else{
+												return resolve(nextData);
+											}
 										},
 										error: function(argument) {
 											console.log(e);
-											return Promise.resolve(setBackEnd);
+											return resolve(nextData);
 										}
 									});
 	                            })
 	                            .catch(function(e){
-	                                console.log(e);
-	                                return Promise.resolve(setBackEnd);
+	                                console.log(e, i);
+	                                return Promise.resolve(nextData);
 	                            });
 	                        })
 	                        .catch(function(e){
 	                            console.log(e);
-	                            return Promise.resolve(setBackEnd);
+	                            return Promise.resolve(nextData);
 	                        });
-	                    }, Promise.resolve(setBackEnd))
-	                    .then(function(setBackEnd){
-	                        return resolve3(setBackEnd);
+	                    }, Promise.resolve(data.data[last]))
+	                    .then(function(data_last){
+							data_last.map(function(b, i){
+								// if(i<5){
+									data_ssh.ssh[i] = {};
+									data_ssh.ssh[i].kode_kel_standar_harga	= b.kode_kel_standar_harga;
+									data_ssh.ssh[i].nama_kel_standar_harga	= b.nama_kel_standar_harga;
+									data_ssh.ssh[i].id_standar_harga	= b.id_standar_harga;
+									data_ssh.ssh[i].kode_standar_harga	= b.kode_standar_harga;
+									data_ssh.ssh[i].nama_standar_harga	= b.nama_standar_harga;
+									data_ssh.ssh[i].spek	= b.spek;
+									data_ssh.ssh[i].satuan	= b.satuan;
+									data_ssh.ssh[i].harga	= b.harga;
+									data_ssh.ssh[i].harga_2	= b.harga_2;
+									data_ssh.ssh[i].harga_3	= b.harga_3;
+									data_ssh.ssh[i].is_locked	= b.is_locked;
+									data_ssh.ssh[i].is_deleted	= b.is_deleted;
+									data_ssh.ssh[i].created_user	= b.created_user;
+									data_ssh.ssh[i].created_at	= b.created_at;
+									data_ssh.ssh[i].updated_user	= b.updated_user;
+									data_ssh.ssh[i].updated_at	= b.updated_at;
+									data_ssh.ssh[i].kelompok	= b.kelompok;
+									data_ssh.ssh[i].ket_teks	= b.ket_teks;
+									data_ssh.ssh[i].kd_belanja	= {};
+									b.rek_belanja.map(function(d, c){
+										data_ssh.ssh[i].kd_belanja[c]	= {};
+										data_ssh.ssh[i].kd_belanja[c].id_akun	= d.id_akun;
+										data_ssh.ssh[i].kd_belanja[c].kode_akun	= d.kode_akun;
+										data_ssh.ssh[i].kd_belanja[c].nama_akun	= d.nama_akun;
+									});
+								// }
+							});
+							var data = {
+							    message:{
+							        type: "get-url",
+							        content: {
+									    url: config.url_server_lokal,
+									    type: 'post',
+									    data: data_ssh
+									}
+							    }
+							};
+							chrome.runtime.sendMessage(data, function(response) {
+							    console.log('responeMessage', response);
+							});
 	                    })
 	                    .catch(function(e){
 	                        console.log(e);
-	                        return resolve3(setBackEnd);
 	                    });
-
-						data.data.map(function(b, i){
-							// if(i<5){
-								data_ssh.ssh[i] = {};
-								data_ssh.ssh[i].kode_kel_standar_harga	= b.kode_kel_standar_harga;
-								data_ssh.ssh[i].nama_kel_standar_harga	= b.nama_kel_standar_harga;
-								data_ssh.ssh[i].id_standar_harga	= b.id_standar_harga;
-								data_ssh.ssh[i].kode_standar_harga	= b.kode_standar_harga;
-								data_ssh.ssh[i].nama_standar_harga	= b.nama_standar_harga;
-								data_ssh.ssh[i].spek	= b.spek;
-								data_ssh.ssh[i].satuan	= b.satuan;
-								data_ssh.ssh[i].harga	= b.harga;
-								data_ssh.ssh[i].harga_2	= b.harga_2;
-								data_ssh.ssh[i].harga_3	= b.harga_3;
-								data_ssh.ssh[i].is_locked	= b.is_locked;
-								data_ssh.ssh[i].is_deleted	= b.is_deleted;
-								data_ssh.ssh[i].created_user	= b.created_user;
-								data_ssh.ssh[i].created_at	= b.created_at;
-								data_ssh.ssh[i].updated_user	= b.updated_user;
-								data_ssh.ssh[i].updated_at	= b.updated_at;
-								data_ssh.ssh[i].kelompok	= b.kelompok;
-								data_ssh.ssh[i].ket_teks	= b.ket_teks;
-							// }
-						});
-						var data = {
-						    message:{
-						        type: "get-url",
-						        content: {
-								    url: config.url_server_lokal,
-								    type: 'post',
-								    data: data_ssh
-								}
-						    }
-						};
-						chrome.runtime.sendMessage(data, function(response) {
-						    console.log('responeMessage', response);
-						});
 					}
 				});
 			}
