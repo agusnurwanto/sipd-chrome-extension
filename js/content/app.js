@@ -66,6 +66,40 @@ jQuery(document).ready(function(){
 							api_key: config.api_key,
 							ssh : {}
 						};
+
+						data.data.reduce(function(sequence, nextData){
+	                        return sequence.then(function(setBackEnd){
+	                            return new Promise(function(resolve, reject){
+	                            	jQuery.ajax({
+										url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen/90/0',
+										contentType: 'application/json',
+										success: function(data){
+											return Promise.resolve(setBackEnd);
+										},
+										error: function(argument) {
+											console.log(e);
+											return Promise.resolve(setBackEnd);
+										}
+									});
+	                            })
+	                            .catch(function(e){
+	                                console.log(e);
+	                                return Promise.resolve(setBackEnd);
+	                            });
+	                        })
+	                        .catch(function(e){
+	                            console.log(e);
+	                            return Promise.resolve(setBackEnd);
+	                        });
+	                    }, Promise.resolve(setBackEnd))
+	                    .then(function(setBackEnd){
+	                        return resolve3(setBackEnd);
+	                    })
+	                    .catch(function(e){
+	                        console.log(e);
+	                        return resolve3(setBackEnd);
+	                    });
+
 						data.data.map(function(b, i){
 							// if(i<5){
 								data_ssh.ssh[i] = {};
