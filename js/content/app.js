@@ -1,3 +1,29 @@
+function tableHtmlToExcel(tableID, filename = ''){
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(tableID);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20').replace(/#/g, '%23');
+   
+    filename = filename?filename+'.xls':'excel_data.xls';
+   
+    downloadLink = document.createElement("a");
+    
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+   
+        downloadLink.download = filename;
+       
+        downloadLink.click();
+    }
+}
+
 // http://swwwitch.com/dl/Font-Awesome-Cheetsheet-4.5.0.pdf
 jQuery(document).ready(function(){
 	var loading = ''
@@ -6,7 +32,8 @@ jQuery(document).ready(function(){
 	    +'</div>';
 	jQuery('body').prepend(loading);
 
-	if(document.getElementById('table_komponen')){ 
+	 // halaman SSH
+	if(document.getElementById('table_komponen')){
 		var singkron_ssh = ''
 			+'<button class="fcbtn btn btn-warning btn-outline btn-1b" id="singkron_ssh_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron SSH ke DB lokal</span>'
@@ -85,5 +112,87 @@ jQuery(document).ready(function(){
 				
 			}
 		}
+	}else if(window.location.href.indexOf('rka-bl-rinci/cetak') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'html');
+		var download_excel = ''
+			+'<div id="action-sipd" class="hide-print">'
+				+'<a id="excel" onclick="return false;" href="#">DOWNLOAD EXCEL</a>'
+			+'</div>';
+		jQuery('body').prepend(download_excel);
+		jQuery('.cetak > table').attr('id', 'rka');
+		// jQuery('html').attr('id', 'rka');
+
+		var style = '';
+
+		style = jQuery('.cetak').attr('style');
+		if (typeof style == 'undefined'){ style = ''; };
+		jQuery('.cetak').attr('style', style+" font-family:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; padding:0; margin:0; font-size:13px;");
+		
+		jQuery('.bawah').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" border-bottom:1px solid #000;");
+		});
+		
+		jQuery('.kiri').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" border-left:1px solid #000;");
+		});
+
+		jQuery('.kanan').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" border-right:1px solid #000;");
+		});
+
+		jQuery('.atas').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" border-top:1px solid #000;");
+		});
+
+		jQuery('.text_tengah').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" text-align: center;");
+		});
+
+		jQuery('.text_kiri').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" text-align: left;");
+		});
+
+		jQuery('.text_kanan').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" text-align: right;");
+		});
+
+		jQuery('.text_block').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" font-weight: bold;");
+		});
+
+		jQuery('.text_15').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" font-size: 15px;");
+		});
+
+		jQuery('.text_20').map(function(i, b){
+			style = jQuery(b).attr('style');
+			if (typeof style == 'undefined'){ style = ''; };
+			jQuery(b).attr('style', style+" font-size: 20px;");
+		});
+
+		jQuery('#rka > tbody > tr > td > table').attr('style', 'min-width: 1000px;');
+
+		jQuery('#excel').on('click', function(){
+			var name = document.querySelectorAll('.cetak > table table')[1].querySelectorAll('tbody > tr')[7].querySelectorAll('td')[2].innerText;
+			tableHtmlToExcel('rka', name);
+		});
 	}
 });

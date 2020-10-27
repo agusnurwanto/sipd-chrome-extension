@@ -39,7 +39,7 @@
 	],
 	"web_accessible_resources" : [
 		"/config.js",
-		"/js/content/*"
+		"/js/*"
 	],
 	"permissions": [
 		"webRequest",

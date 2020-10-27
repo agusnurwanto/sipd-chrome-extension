@@ -39,3 +39,22 @@
     transform: rotate(1800deg);
   }
 }
+
+@media  print {
+    .hide-print {
+        display: none;
+    }
+}
+
+#action-sipd {
+    text-align: center;
+    padding: 15px;
+}
+#excel {
+    padding: 10px 15px;
+    background: #db4844;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
