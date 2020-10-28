@@ -440,7 +440,7 @@ jQuery(document).ready(function(){
               	+'<input class="form-control" type="text" placeholder="ID Standar Harga" id="komponen-id-sipd">'
             +'</div>'
             +'<div class="col-xs-1">'
-              	+'<button class="fcbtn btn btn-danger btn-1b pull-right" id="cari-ssh-sipd" type="button" style="display: block;" data-toggle="modal" data-target="#mod-komponen-akun"><i class="fa fa-search"></i></button>'
+              	+'<button class="fcbtn btn btn-danger btn-1b pull-right" id="cari-ssh-sipd" type="button" style="display: block;"><i class="fa fa-search"></i></button>'
             +'</div>';
         jQuery('.group-nama-komponen').append(komponen);
         jQuery('#cari-ssh-sipd').on('click', function(){
@@ -450,6 +450,7 @@ jQuery(document).ready(function(){
         		if(!jenis_ssh){
         			alert('Jenis standar harga tidak boleh kosong!!');
         		}else{
+	        		jQuery('#mod-komponen-akun').modal('show');
 	        		jQuery('#wrap-loading').show();
 	        		tampilAkun(id_ssh);
         		}
