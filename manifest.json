@@ -25,17 +25,22 @@
       	]
    	},
 	"content_scripts": [
-	 {
-		"matches": ["https://*.sipd.kemendagri.go.id/*"],
-		"css": ["css/content.css"],
-		"js": [
-			"js/jquery.min.js",
-			"config.js",
-			"js/content/content_scripts.js",
-			"js/content/app.js"
-		],
-		"run_at": "document_end"
-	 }
+		{
+			"matches": ["https://*.sipd.kemendagri.go.id/*"],
+			"css": ["css/content.css"],
+			"js": [
+				"js/jquery.min.js",
+				"config.js",
+				"js/content/content_scripts.js",
+				"js/content/app.js"
+			],
+			"run_at": "document_end"
+		},
+	    {
+			"matches": ["https://*.sipd.kemendagri.go.id/*"],
+	      	"js": ["js/content/document_start.js"],
+	      	"run_at": "document_start"
+	    }
 	],
 	"web_accessible_resources" : [
 		"/config.js",

@@ -42,12 +42,33 @@ jQuery(document).ready(function(){
 				+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Singkron SSH dari DB lokal</span>'
 			+'</button>';
 		jQuery('button.arsip-komponen').parent().prepend(singkron_ssh);
+		var _show_id_ssh = ''
+			+'<button onclick="return false;" class="fcbtn btn btn-warning btn-outline btn-1b" id="show_id_ssh">'
+				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan ID Standar Harga</span>'
+			+'</button>';
+		jQuery('#table_komponen').closest('form').prepend(_show_id_ssh);
+		jQuery('#show_id_ssh').on('click', function(){
+			jQuery('#wrap-loading').show();
+			show_id_ssh();
+		});
 		jQuery('#singkron_ssh_ke_lokal').on('click', function(){
 			singkron_ssh_ke_lokal();
 		});
 		jQuery('#singkron_ssh_dari_lokal').on('click', function(){
 			singkron_ssh_dari_lokal();
 		});
+
+		function show_id_ssh(){
+			jQuery('#table_komponen tbody tr').map(function(i, b){
+			 	var id = jQuery(b).find('td').eq(6).find('a').attr('onclick')
+			 	if(id){
+				 	id = id.split("'")[1];
+				 	var nama = jQuery(b).find('td').eq(1);
+				 	nama.html('( '+id+' ) '+nama.html());
+				 }
+			});
+			jQuery('#wrap-loading').hide();
+		}
 
 		function singkron_ssh_ke_lokal(){
 			var data = {
@@ -255,5 +276,10 @@ jQuery(document).ready(function(){
 			var name = document.querySelectorAll('.cetak > table table')[1].querySelectorAll('tbody > tr')[7].querySelectorAll('td')[2].innerText;
 			tableHtmlToExcel('rka', name);
 		});
+	}else if(window.location.href.indexOf('rka-bl-rinci/cetak') != -1){
+		// fitur mempercepat pencarian SSH di sipd
+		// tampilkan ID ssh pada tabel referensi SSH
+		// buat tombol search SSH by ID
+		// koneksikan item ssh hasil search dengan form input SSH
 	}
 });
