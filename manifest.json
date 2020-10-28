@@ -30,8 +30,6 @@
 			"css": ["css/content.css"],
 			"js": [
 				"js/jquery.min.js",
-				"js/jquery.dataTables.min.js",
-				"js/bootstrap.bundle.min.js",
 				"config.js",
 				"js/content/content_scripts.js",
 				"js/content/app.js"
