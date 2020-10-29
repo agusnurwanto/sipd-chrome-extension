@@ -50,9 +50,31 @@ var modal = ''
         +'</div>'
     +'</div>';
 jQuery('body').append(modal);
+jQuery('#set-ssh-sipd').on('click', function(){
+	var id_akun = jQuery('select[name="akun"]').val();
+	var nama_akun = jQuery('select[name="akun"] option:selected').text();
+	var cek = false;
+	var cek_rek = false;
+	jQuery('#table_komponen_akun').DataTable().rows().data().map(function(b, i){
+		if(b.id_akun+'||' == id_akun){
+			cek = true;
+		}
+	});
+	if(!cek){
+		return alert('Item SSH '+data_ssh['nama_standar_harga']+' tidak terlink dengan rekening belanja '+nama_akun);
+	}
+	jQuery('#mod-komponen-akun').modal('hide');
+	jQuery('#wrap-loading').hide();
+
+	jQuery("input[name=idkomponen]").val(data_ssh['id_standar_harga']);
+	jQuery("input[name=komponen]").val(data_ssh['nama_standar_harga']);
+	jQuery("input[name=spek]").val(data_ssh['spek']);
+	jQuery("input[name=satuan]").val(data_ssh['satuan']);
+	jQuery("input[name=hargasatuan]").val(data_ssh['harga']);
+});
 
 // 4069518 contoh id ssh
-function tampilAkun(id){
+function tampilAkun(id, jenis_ssh){
 	var id_unit = window.location.href.split('?')[0].split('90/')[1];
 	jQuery('#idkomp').html('');
 	jQuery('#hargakomp').html('');
@@ -64,11 +86,12 @@ function tampilAkun(id){
   	jQuery('#table_komponen_akun').DataTable().destroy();
 
   	jQuery.ajax({
-        url: config.sipd_url+"daerah/main/budget/komponen/"+config.tahun_anggaran+"/1/detil-komp/90/"+id_unit,
+        url: config.sipd_url+"daerah/main/budget/komponen/"+config.tahun_anggaran+"/"+jenis_ssh+"/detil-komp/90/"+id_unit,
         type: "post",
         data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idkomponen='+id,
         success: function(data){
         	console.log('data', data);
+        	window.data_ssh = data;
         	if(!data){
         		jQuery('#mod-komponen-akun').modal('hide');
         		jQuery('#wrap-loading').hide();
@@ -84,7 +107,7 @@ function tampilAkun(id){
 			        dom:'tip',
 			        displayLength:20,
 			        ajax: {
-			            url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen-akun/90/'+id_unit+"/" + id +'?app=budget',
+			            url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/'+jenis_ssh+'/tampil-komponen-akun/90/'+id_unit+"/" + id +'?app=budget',
 			            "dataSrc": function ( json ) {
 			                jQuery('#wrap-loading').hide();
 			                return json.data;
@@ -95,28 +118,6 @@ function tampilAkun(id){
 			          {data: 'nama_akun', name: 'nama_akun'},
 			          {data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-right'},
 			        ],
-		      	});
-		      	jQuery('#set-ssh-sipd').on('click', function(){
-		      		var id_akun = jQuery('select[name="akun"]').val();
-		      		var nama_akun = jQuery('select[name="akun"] option:selected').text();
-		      		var cek = false;
-		      		var cek_rek = false;
-		      		jQuery('#table_komponen_akun').DataTable().rows().data().map(function(b, i){
-		      			if(b.id_akun+'||' == id_akun){
-		      				cek = true;
-		      			}
-		      		});
-		      		if(!cek){
-		      			return alert('Item SSH '+data['nama_standar_harga']+' tidak terlink dengan rekening belanja '+nama_akun);
-		      		}
-		      		jQuery('#mod-komponen-akun').modal('hide');
-	        		jQuery('#wrap-loading').hide();
-
-		            jQuery("input[name=idkomponen]").val(data['id_standar_harga']);
-		            jQuery("input[name=komponen]").val(data['nama_standar_harga']);
-		            jQuery("input[name=spek]").val(data['spek']);
-		            jQuery("input[name=satuan]").val(data['satuan']);
-		            jQuery("input[name=hargasatuan]").val(data['harga']);
 		      	});
 		      	jQuery('#table_komponen_akun tbody').on('click', 'tr', function () {
 		            var id_akun = jQuery(this).find('td').eq(0).text();
@@ -171,7 +172,17 @@ jQuery('#cari-ssh-sipd').on('click', function(){
 		}else{
     		jQuery('#mod-komponen-akun').modal('show');
     		jQuery('#wrap-loading').show();
-    		tampilAkun(id_ssh);
+    		var jenis_ssh_id = 1;
+    		if(jenis_ssh == 'SSH'){
+    			jenis_ssh_id = 1;
+    		}else if(jenis_ssh == 'SBU'){
+    			jenis_ssh_id = 4;
+    		}else if(jenis_ssh == 'HSPK'){
+    			jenis_ssh_id = 2;
+    		}else if(jenis_ssh == 'ASB'){
+    			jenis_ssh_id = 3;
+    		}
+    		tampilAkun(id_ssh, jenis_ssh_id);
 		}
 	}else{
 		alert('ID Standar Harga tidak boleh kosong!');
