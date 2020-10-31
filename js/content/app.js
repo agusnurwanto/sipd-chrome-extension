@@ -82,6 +82,58 @@ jQuery(document).ready(function(){
 			jQuery('#wrap-loading').hide();
 		}
 
+		function send_to_lokal(val){
+			var data_ssh = { 
+				action: 'singkron_ssh',
+				api_key: config.api_key,
+				ssh : {}
+			};
+			val.map(function(b, i){
+				// if(i<5){
+					data_ssh.ssh[i] = {};
+					data_ssh.ssh[i].kode_kel_standar_harga	= b.kode_kel_standar_harga;
+					data_ssh.ssh[i].nama_kel_standar_harga	= b.nama_kel_standar_harga;
+					data_ssh.ssh[i].id_standar_harga	= b.id_standar_harga;
+					data_ssh.ssh[i].kode_standar_harga	= b.kode_standar_harga;
+					data_ssh.ssh[i].nama_standar_harga	= b.nama_standar_harga;
+					data_ssh.ssh[i].spek	= b.spek;
+					data_ssh.ssh[i].satuan	= b.satuan;
+					data_ssh.ssh[i].harga	= b.harga;
+					data_ssh.ssh[i].harga_2	= b.harga_2;
+					data_ssh.ssh[i].harga_3	= b.harga_3;
+					data_ssh.ssh[i].is_locked	= b.is_locked;
+					data_ssh.ssh[i].is_deleted	= b.is_deleted;
+					data_ssh.ssh[i].created_user	= b.created_user;
+					data_ssh.ssh[i].created_at	= b.created_at;
+					data_ssh.ssh[i].updated_user	= b.updated_user;
+					data_ssh.ssh[i].updated_at	= b.updated_at;
+					data_ssh.ssh[i].kelompok	= b.kelompok;
+					data_ssh.ssh[i].ket_teks	= b.ket_teks;
+					data_ssh.ssh[i].kd_belanja	= {};
+					b.rek_belanja.map(function(d, c){
+						data_ssh.ssh[i].kd_belanja[c]	= {};
+						data_ssh.ssh[i].kd_belanja[c].id_akun	= d.id_akun;
+						data_ssh.ssh[i].kd_belanja[c].kode_akun	= d.kode_akun;
+						data_ssh.ssh[i].kd_belanja[c].nama_akun	= d.nama_akun;
+					});
+				// }
+			});
+			var data = {
+			    message:{
+			        type: "get-url",
+			        content: {
+					    url: config.url_server_lokal,
+					    type: 'post',
+					    data: data_ssh,
+					    return: false
+					}
+			    }
+			};
+			chrome.runtime.sendMessage(data, function(response) {
+			    console.log('responeMessage', response);
+			});
+		}
+
 		function singkron_ssh_ke_lokal(){
 			var data = {
 			    message:{
@@ -94,52 +146,59 @@ jQuery(document).ready(function(){
 					url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen/90/0',
 					contentType: 'application/json',
 					success: function(data){
-						var data_ssh = { 
-							action: 'singkron_ssh',
-							api_key: config.api_key,
-							ssh : {}
-						};
 
-						var i = -1;
-						var last = data.data.length-1;
-						data.data.reduce(function(sequence, nextData){
+						var data_all = [];
+						var data_sementara = [];
+						data.data.map(function(b, i){
+							data_sementara.push(b);
+							var n = i+1;
+							if(n%50 == 0){
+								data_all.push(data_sementara);
+								data_sementara = [];
+							}
+						});
+
+						var i = 0;
+						var last = data_all.length-1;
+						data_all.reduce(function(sequence, nextData){
 	                        return sequence.then(function(current_data){
-	                            return new Promise(function(resolve, reject){
-	                            	/*if(i >= 5){
-	                            		console.log(i, last);
-										i++;
-										if(i == last){
-	                            			console.log('sip');
-											return resolve(data.data);
-										}else{
-											return resolve(nextData);
-										}
-	                            	}*/
-	                            	jQuery.ajax({
-										url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen-akun/90/0/'+current_data.id_standar_harga,
-										contentType: 'application/json',
-										success: function(ret){
-											if(i==-1){
-												data.data[last].rek_belanja = ret.data;
-											}else{
-												data.data[i].rek_belanja = ret.data;
-											}
-											console.log(i);
-											i++;
-											if(i == last){
-												return resolve(data.data);
-											}else{
-												return resolve(nextData);
-											}
-										},
-										error: function(argument) {
-											console.log(e);
-											return resolve(nextData);
-										}
-									});
-	                            })
+                        		return new Promise(function(resolve_redurce, reject_redurce){
+		                        	var sendData = current_data.map(function(val, n){
+			                            return new Promise(function(resolve, reject){
+			                            	jQuery.ajax({
+												url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen-akun/90/0/'+val.id_standar_harga,
+												contentType: 'application/json',
+												success: function(ret){
+													val.rek_belanja = ret.data;
+													return resolve(val);
+												},
+												error: function(argument) {
+													console.log(e);
+													return resolve(val);
+												}
+											});
+			                            })
+			                            .catch(function(e){
+			                                console.log(e);
+			                                return Promise.resolve(val);
+			                            });
+		                        	});
+
+		                            Promise.all(sendData)
+	                            	.then(function(val_all){
+	                            		// i++;
+	                            		// if(i==1){
+	                            			send_to_lokal(val_all);
+	                            		// }
+	                            		return resolve_redurce(nextData);
+				                    })
+				                    .catch(function(err){
+				                        console.log('err', err);
+	                            		return resolve_redurce(nextData);
+				                    });
+				                })
 	                            .catch(function(e){
-	                                console.log(e, i);
+	                                console.log(e);
 	                                return Promise.resolve(nextData);
 	                            });
 	                        })
@@ -147,51 +206,11 @@ jQuery(document).ready(function(){
 	                            console.log(e);
 	                            return Promise.resolve(nextData);
 	                        });
-	                    }, Promise.resolve(data.data[last]))
+	                    }, Promise.resolve(data_all[last]))
 	                    .then(function(data_last){
-							data_last.map(function(b, i){
-								// if(i<5){
-									data_ssh.ssh[i] = {};
-									data_ssh.ssh[i].kode_kel_standar_harga	= b.kode_kel_standar_harga;
-									data_ssh.ssh[i].nama_kel_standar_harga	= b.nama_kel_standar_harga;
-									data_ssh.ssh[i].id_standar_harga	= b.id_standar_harga;
-									data_ssh.ssh[i].kode_standar_harga	= b.kode_standar_harga;
-									data_ssh.ssh[i].nama_standar_harga	= b.nama_standar_harga;
-									data_ssh.ssh[i].spek	= b.spek;
-									data_ssh.ssh[i].satuan	= b.satuan;
-									data_ssh.ssh[i].harga	= b.harga;
-									data_ssh.ssh[i].harga_2	= b.harga_2;
-									data_ssh.ssh[i].harga_3	= b.harga_3;
-									data_ssh.ssh[i].is_locked	= b.is_locked;
-									data_ssh.ssh[i].is_deleted	= b.is_deleted;
-									data_ssh.ssh[i].created_user	= b.created_user;
-									data_ssh.ssh[i].created_at	= b.created_at;
-									data_ssh.ssh[i].updated_user	= b.updated_user;
-									data_ssh.ssh[i].updated_at	= b.updated_at;
-									data_ssh.ssh[i].kelompok	= b.kelompok;
-									data_ssh.ssh[i].ket_teks	= b.ket_teks;
-									data_ssh.ssh[i].kd_belanja	= {};
-									b.rek_belanja.map(function(d, c){
-										data_ssh.ssh[i].kd_belanja[c]	= {};
-										data_ssh.ssh[i].kd_belanja[c].id_akun	= d.id_akun;
-										data_ssh.ssh[i].kd_belanja[c].kode_akun	= d.kode_akun;
-										data_ssh.ssh[i].kd_belanja[c].nama_akun	= d.nama_akun;
-									});
-								// }
-							});
-							var data = {
-							    message:{
-							        type: "get-url",
-							        content: {
-									    url: config.url_server_lokal,
-									    type: 'post',
-									    data: data_ssh
-									}
-							    }
-							};
-							chrome.runtime.sendMessage(data, function(response) {
-							    console.log('responeMessage', response);
-							});
+							// console.log(data_last);
+							jQuery('#wrap-loading').hide();
+							alert('Data berhasil disimpan di database lokal!');
 	                    })
 	                    .catch(function(e){
 	                        console.log(e);

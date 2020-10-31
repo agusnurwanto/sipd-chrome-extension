@@ -77,11 +77,13 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		    data: request.message.content.data,
 		    dataType: 'json',
 		    success:function(ret){
-		     	var options = {
-		     		type: 'response-fecth-url',
-		     		data: ret
-		     	}
-		     	sendMessageTabActive(options);
+		    	if(request.message.content.return){
+			     	var options = {
+			     		type: 'response-fecth-url',
+			     		data: ret
+			     	}
+			     	sendMessageTabActive(options);
+			    }
 		        console.log(ret);
 		    },
 		    error:function(){
