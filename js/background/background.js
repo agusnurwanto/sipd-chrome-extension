@@ -84,6 +84,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			     	}
 			     	sendMessageTabActive(options);
 			    }
+		        // console.log(ret, request.message.content);
 		        console.log(ret);
 		    },
 		    error:function(){
