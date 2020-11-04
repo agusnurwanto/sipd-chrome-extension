@@ -75,7 +75,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 					if(runjob.job == 'login'){
 						var home_publik = config.sipd_url+'daerah';
 						var home_admin = home_publik+'/main';
-						var ssh_url = home_admin+'/budget/komponen/'+config.tahun_anggaran+'/1/list/90/0';
+						var ssh_url = home_admin+'/budget/komponen/'+config.tahun_anggaran+'/1/list/'+config.id_daerah+'/0';
 						var current_url = window.location.href;
 
 						// home publik

@@ -139,7 +139,7 @@ jQuery(document).ready(function(){
 			if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 				jQuery('#wrap-loading').show();
 				jQuery.ajax({
-					url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen/90/0',
+					url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen/'+config.id_daerah+'/0',
 					contentType: 'application/json',
 					success: function(data){
 
@@ -162,7 +162,7 @@ jQuery(document).ready(function(){
 		                        	var sendData = current_data.map(function(val, n){
 			                            return new Promise(function(resolve, reject){
 			                            	jQuery.ajax({
-												url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen-akun/90/0/'+val.id_standar_harga,
+												url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen-akun/'+config.id_daerah+'/0/'+val.id_standar_harga,
 												contentType: 'application/json',
 												success: function(ret){
 													val.rek_belanja = ret.data;
@@ -232,7 +232,7 @@ jQuery(document).ready(function(){
 			if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 				jQuery('#wrap-loading').show();
 				jQuery.ajax({
-					url: config.sipd_url+'daerah/main/budget/akun/'+config.tahun_anggaran+'/tampil-akun/90/0',
+					url: config.sipd_url+'daerah/main/budget/akun/'+config.tahun_anggaran+'/tampil-akun/'+config.id_daerah+'/0',
 					contentType: 'application/json',
 					success: function(data){
 						var data_akun = { 
@@ -371,7 +371,7 @@ jQuery(document).ready(function(){
 			var name = document.querySelectorAll('.cetak > table table')[1].querySelectorAll('tbody > tr')[7].querySelectorAll('td')[2].innerText;
 			tableHtmlToExcel('rka', name);
 		});
-	}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/list/90') != -1){
+	}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/list/'+config.id_daerah+'') != -1){
 		// harus di inject agar bekerja
 		injectScript( chrome.extension.getURL('/js/content/rka.js'), 'html');
 
@@ -387,7 +387,7 @@ jQuery(document).ready(function(){
 		function singkron_rka_ke_lokal() {
 			if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 				jQuery('#wrap-loading').show();
-				var id_unit = window.location.href.split('?')[0].split('90/')[1];
+				var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 				var idbl = false;
 				var idsubbl = false;
 				jQuery('script').map(function(i, b){
@@ -402,13 +402,13 @@ jQuery(document).ready(function(){
 				});
 				if(idbl && idsubbl){
 					jQuery.ajax({
-						url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/detil-giat/90/'+id_unit,
+						url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/detil-giat/'+config.id_daerah+'/'+id_unit,
 						type: 'post',
 						data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idsubbl='+idsubbl,
 						success: function(subkeg){
 							// subkeg = JSON.parse(subkeg);
 							jQuery.ajax({
-								url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/90/'+id_unit+'?idbl='+idbl+'&idsubbl='+idsubbl,
+								url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?idbl='+idbl+'&idsubbl='+idsubbl,
 								contentType: 'application/json',
 								success: function(data){
 									var data_rka = { 

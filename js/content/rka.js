@@ -75,7 +75,7 @@ jQuery('#set-ssh-sipd').on('click', function(){
 
 // 4069518 contoh id ssh
 function tampilAkun(id, jenis_ssh){
-	var id_unit = window.location.href.split('?')[0].split('90/')[1];
+	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 	jQuery('#idkomp').html('');
 	jQuery('#hargakomp').html('');
 	jQuery('#namakomp').html('');
@@ -86,7 +86,7 @@ function tampilAkun(id, jenis_ssh){
   	jQuery('#table_komponen_akun').DataTable().destroy();
 
   	jQuery.ajax({
-        url: config.sipd_url+"daerah/main/budget/komponen/"+config.tahun_anggaran+"/"+jenis_ssh+"/detil-komp/90/"+id_unit,
+        url: config.sipd_url+"daerah/main/budget/komponen/"+config.tahun_anggaran+"/"+jenis_ssh+"/detil-komp/"+config.id_daerah+"/"+id_unit,
         type: "post",
         data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idkomponen='+id,
         success: function(data){
@@ -107,7 +107,7 @@ function tampilAkun(id, jenis_ssh){
 			        dom:'tip',
 			        displayLength:20,
 			        ajax: {
-			            url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/'+jenis_ssh+'/tampil-komponen-akun/90/'+id_unit+"/" + id +'?app=budget',
+			            url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/'+jenis_ssh+'/tampil-komponen-akun/'+config.id_daerah+'/'+id_unit+"/" + id +'?app=budget',
 			            "dataSrc": function ( json ) {
 			                jQuery('#wrap-loading').hide();
 			                return json.data;
@@ -153,9 +153,9 @@ function tampilAkun(id, jenis_ssh){
   	});
 }
 
-var id_unit = window.location.href.split('?')[0].split('90/')[1];
+var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 var komponen = ''
-	+'<label class="col-xs-12 font-bold" style="margin-top: 20px;">Cari Komponen dengan <a href="'+config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/list/90/'+id_unit+'" target="_blank">ID Standar Harga</a></label>'
+	+'<label class="col-xs-12 font-bold" style="margin-top: 20px;">Cari Komponen dengan <a href="'+config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/list/'+config.id_daerah+'/'+id_unit+'" target="_blank">ID Standar Harga</a></label>'
     +'<div class="col-xs-11">'
       	+'<input class="form-control" type="text" placeholder="ID Standar Harga" id="komponen-id-sipd">'
     +'</div>'

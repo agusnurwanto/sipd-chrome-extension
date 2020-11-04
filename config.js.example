@@ -1,6 +1,6 @@
 var config = {
 	tahun_anggaran : "2021", // Tahun anggaran
-	extension_id : "xxxxxxxxxxxxxxxxxxx", // ID chrome extension
+	id_daerah : "xx", // ID daerah didapat dari https://[nama daerah].sipd.kemendagri.go.id/daerah/main/budget/belanja/2021/giat/unit/[id_daerah]/[id_unit]
 	sipd_url : "https://xxx.sipd.kemendagri.go.id/", // alamat sipd sesuai kabupaten kota masing-masing
 	user_sekda : "xxx", // user sekda
 	pass_sekda : "xxx", // password sekda
