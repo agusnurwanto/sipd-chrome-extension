@@ -292,6 +292,13 @@ jQuery(document).ready(function(){
 	}else if(current_url.indexOf('rka-bl-rinci/cetak') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'html');
 		var download_excel = ''
+			  +'<style>'
+			      +'table { page-break-inside:auto }'
+			      +'div   { page-break-inside:avoid; } /* This is the key */'
+			      +'tr    { page-break-inside:avoid; page-break-after:auto }'
+			      +'thead { display:table-header-group }'
+			      +'tfoot { display:table-footer-group }'
+			  +'</style>'
 			+'<div id="action-sipd" class="hide-print">'
 				+'<a id="excel" onclick="return false;" href="#">DOWNLOAD EXCEL</a>'
 			+'</div>';
