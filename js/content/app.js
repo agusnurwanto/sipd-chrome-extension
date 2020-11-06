@@ -378,7 +378,7 @@ jQuery(document).ready(function(){
 			var name = document.querySelectorAll('.cetak > table table')[1].querySelectorAll('tbody > tr')[7].querySelectorAll('td')[2].innerText;
 			tableHtmlToExcel('rka', name);
 		});
-	}else if(current_url.indexOf('dokumen/'+config.tahun_anggaran+'/rka-bl-rinci/list/'+config.id_daerah+'') != -1){
+	}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/giat/unit/'+config.id_daerah+'/') != -1){
 		console.log('halaman sub kegiatan');
 		var singkron_rka = ''
 			+'<div class="col-xs-12 col-md-6">'
@@ -415,28 +415,109 @@ function singkron_rka_ke_lokal_all() {
 			url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-giat/'+config.id_daerah+'/'+id_unit,
 			type: 'get',
 			success: function(subkeg){
-				
+				// subkeg.data.map(function(b, i){
+				// 	if(b.nama_sub_giat.mst_lock != 3){
+				// 		singkron_rka_ke_lokal({
+				// 			idbl: b.id_bl,
+				// 			idsubbl: b.id_sub_bl,
+				// 			kode_skpd: b.kode_skpd,
+				// 			nama_skpd: b.nama_skpd,
+				// 			kode_sub_skpd: b.kode_sub_skpd
+				// 		});
+				// 	}
+				// });
+				var last = subkeg.data.length-1;
+				subkeg.data.reduce(function(sequence, nextData){
+                    return sequence.then(function(current_data){
+                		return new Promise(function(resolve_reduce, reject_reduce){
+                        	if(current_data.nama_sub_giat.mst_lock != 3){
+                        		var nama_skpd = current_data.nama_skpd.split(' ');
+                        		nama_skpd.shift();
+                        		nama_skpd = nama_skpd.join(' ');
+								singkron_rka_ke_lokal({
+									idbl: current_data.id_bl,
+									idsubbl: current_data.id_sub_bl,
+									kode_skpd: current_data.kode_skpd,
+									nama_skpd: nama_skpd,
+									kode_sub_skpd: current_data.kode_sub_skpd,
+									pagu: current_data.pagu,
+									no_return: true
+								}, function(){
+									console.log('next reduce', nextData);
+									resolve_reduce(nextData);
+								});
+							}else{
+								resolve_reduce(nextData);
+							}
+		                })
+                        .catch(function(e){
+                            console.log(e);
+                            return Promise.resolve(nextData);
+                        });
+                    })
+                    .catch(function(e){
+                        console.log(e);
+                        return Promise.resolve(nextData);
+                    });
+                }, Promise.resolve(subkeg.data[last]))
+                .then(function(data_last){
+                	var opsi = { 
+						action: 'get_cat_url',
+						api_key: config.api_key,
+						category : data_last.kode_sub_skpd+' '+data_last.nama_sub_skpd
+					};
+					var data = {
+					    message:{
+					        type: "get-url",
+					        content: {
+							    url: config.url_server_lokal,
+							    type: 'post',
+							    data: opsi,
+				    			return: true
+							}
+					    }
+					};
+					chrome.runtime.sendMessage(data, function(response) {
+					    console.log('responeMessage', response);
+					});
+                })
+                .catch(function(e){
+                    console.log(e);
+                });
 			}
 		});
 	}
 }
 
-function singkron_rka_ke_lokal() {
-	if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+function singkron_rka_ke_lokal(opsi, callback) {
+	if((opsi && opsi.idbl) || confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 		jQuery('#wrap-loading').show();
 		var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 		var idbl = false;
 		var idsubbl = false;
-		jQuery('script').map(function(i, b){
-			var script = jQuery(b).html();
-			script = script.split('?idbl=');
-			if(script.length > 1){
-				script = script[1].split("'");
-				script = script[0].split("&idsubbl=");
-				idbl = script[0];
-				idsubbl = script[1];
-			}
-		});
+		var kode_skpd = false;
+		var nama_skpd = false;
+		var kode_sub_skpd = false;
+		var pagu = 0;
+		if(!opsi.idbl){
+			jQuery('script').map(function(i, b){
+				var script = jQuery(b).html();
+				script = script.split('?idbl=');
+				if(script.length > 1){
+					script = script[1].split("'");
+					script = script[0].split("&idsubbl=");
+					idbl = script[0];
+					idsubbl = script[1];
+				}
+			});
+		}else{
+			idbl = opsi.idbl;
+			idsubbl = opsi.idsubbl;
+			kode_skpd = opsi.kode_skpd;
+			nama_skpd = opsi.nama_skpd;
+			kode_sub_skpd = opsi.kode_sub_skpd;
+			pagu = opsi.pagu;
+		}
 		if(idbl && idsubbl){
 			jQuery.ajax({
 				url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/detil-giat/'+config.id_daerah+'/'+id_unit,
@@ -453,6 +534,10 @@ function singkron_rka_ke_lokal() {
 								tahun_anggaran: config.tahun_anggaran,
 								api_key: config.api_key,
 								rka : {},
+								kode_skpd: kode_skpd,
+								nama_skpd: nama_skpd,
+								kode_sub_skpd: kode_sub_skpd,
+								pagu: pagu,
 								idbl: idbl,
 								idsubbl: idsubbl,
 								dataBl: {},
@@ -609,8 +694,14 @@ function singkron_rka_ke_lokal() {
 									}
 							    }
 							};
+							if(opsi.no_return){
+								data.message.content.return = false;
+							}
 							chrome.runtime.sendMessage(data, function(response) {
 							    console.log('responeMessage', response);
+							    if(callback){
+							    	callback();
+							    }
 							});
 						}
 					});
