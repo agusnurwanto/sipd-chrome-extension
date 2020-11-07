@@ -12,4 +12,18 @@ var config = {
 	pass_operator_sub_kegiatan : "xxx", // password operator sub kegaitan
 	url_server_lokal : "https://xxxxxxxxxx.com/wp-admin/admin-ajax.php", // url server lokal
 	api_key : "xxxxxxxxxxxxxxxxxxx", // api key server lokal disesuaikan dengan api dari WP plugin
+	tapd : [{
+		nama: "nama tim tapd 1",
+		nip: "12343464575656",
+		jabatan: "Sekda",
+	},{
+		nama: "nama tim tapd 2",
+		nip: "12343464575652",
+		jabatan: "Kepala Bappeda",
+	},{
+		nama: "nama tim tapd 3",
+		nip: "12343464575653",
+		jabatan: "Kepala BPPKAD",
+	}], // nama tim TAPD dalam bentuk array dan object maksimal 8 orang sesuai format SIPD
+	tgl_rka : "auto" // pilihan nilai default "auto"=auto generate, false=fitur dimatikan, "isi tanggal sendiri"=tanggal ini akan muncul sebagai nilai default dan bisa diedit
 };

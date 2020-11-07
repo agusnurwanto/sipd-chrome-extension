@@ -291,6 +291,28 @@ jQuery(document).ready(function(){
 		}
 	}else if(current_url.indexOf('rka-bl-rinci/cetak') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'html');
+		if(config.tgl_rka){
+			var _default = "";
+			if(config.tgl_rka == 'auto'){
+				var tgl = new Date();
+				var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+				_default = tgl.getDate()+' '+bulan[tgl.getMonth()-1]+' '+tgl.getFullYear();
+			}else{
+				_default = config.tgl_rka;
+			}
+			var tgl = prompt("Input tanggal tandatangan RKA", _default);
+			var tgl_rka = jQuery(jQuery('td.text_tengah[colspan="3"]')[0]);
+			tgl_rka.text(tgl_rka.text()+' '+tgl);
+		}
+		if(config.tapd){
+			var tr_tapd = jQuery('table[cellpadding="5"][cellspacing="0"] tr.text_tengah').parent().find('tr');
+			config.tapd.map(function(b, i){
+				var td = jQuery(tr_tapd[i+2]).find('td');
+				td.eq(1).text(b.nama);
+				td.eq(2).text(b.nip);
+				td.eq(3).text(b.jabatan);
+			});
+		}
 		var download_excel = ''
 			  +'<style>'
 			      +'table { page-break-inside:auto }'
@@ -372,7 +394,7 @@ jQuery(document).ready(function(){
 			jQuery(b).attr('style', style+" font-size: 20px;");
 		});
 
-		jQuery('#rka > tbody > tr > td > table').attr('style', 'min-width: 1000px;');
+		// jQuery('#rka > tbody > tr > td > table').attr('style', 'min-width: 1000px;');
 
 		jQuery('#excel').on('click', function(){
 			var name = document.querySelectorAll('.cetak > table table')[1].querySelectorAll('tbody > tr')[7].querySelectorAll('td')[2].innerText;
