@@ -510,6 +510,26 @@ jQuery(document).ready(function(){
 
 		// jQuery('#rka > tbody > tr > td > table').attr('style', 'min-width: 1000px;');
 
+		if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1){
+			jQuery('table[cellpadding="5"] tr').map(function(i,b){
+			    var kode = jQuery(b).find('td').eq(0).text().split('.');
+			    if(kode.length == 5){
+			        jQuery(b).addClass('kegiatan');
+			    }else if(kode.length == 6){
+			        jQuery(b).addClass('sub_kegiatan');
+			    }
+			});
+			var opsiprint = ''
+				+'<label><input type="radio" id="hide_kegiatan"> Sembunyikan Kegiatan dan Sub kegiatan</label><br>'
+			jQuery('#action-sipd').append(opsiprint);
+			jQuery('#hide_kegiatan').on('click', function(){
+				if(jQuery(this).prop('checked')){
+					jQuery('.kegiatan').remove();
+					jQuery('.sub_kegiatan').remove();
+				}
+			});
+		}
+
 		jQuery('#excel').on('click', function(){
 			var name = "Laporan";
 			if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1){
