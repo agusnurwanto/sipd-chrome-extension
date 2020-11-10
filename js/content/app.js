@@ -398,7 +398,11 @@ jQuery(document).ready(function(){
 				});
 			}
 		}
-	}else if(current_url.indexOf('rka-bl-rinci/cetak') != -1){
+	}else if(
+		current_url.indexOf('rka-bl-rinci/cetak') != -1
+		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1
+		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/42/'+config.id_daerah+'/setunit') != -1
+	){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'html');
 		if(config.tgl_rka){
 			var _default = "";
@@ -507,7 +511,22 @@ jQuery(document).ready(function(){
 		// jQuery('#rka > tbody > tr > td > table').attr('style', 'min-width: 1000px;');
 
 		jQuery('#excel').on('click', function(){
-			var name = document.querySelectorAll('.cetak > table table')[1].querySelectorAll('tbody > tr')[7].querySelectorAll('td')[2].innerText;
+			var name = "Laporan";
+			if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1){
+				name = 'KUA dan PPAS Lampiran 4.1 '+document.querySelectorAll('td[colspan="10"]')[0].innerText;
+				jQuery('td.kanan.bawah.text_kanan').map(function(i, b){
+					var style = jQuery(b).attr('style');
+					jQuery(b).attr('style', style+' mso-number-format:\\@;');
+				});
+			}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/42/'+config.id_daerah+'/setunit') != -1){
+				name = 'KUA dan PPAS Lampiran 4.2 '+document.querySelectorAll('td[colspan="10"]')[0].innerText;
+				jQuery('td.kanan.bawah.text_kanan').map(function(i, b){
+					var style = jQuery(b).attr('style');
+					jQuery(b).attr('style', style+' mso-number-format:\\@;');
+				});
+			}else if(current_url.indexOf('rka-bl-rinci/cetak') != -1){
+				name = document.querySelectorAll('.cetak > table table')[1].querySelectorAll('tbody > tr')[7].querySelectorAll('td')[2].innerText;
+			}
 			tableHtmlToExcel('rka', name);
 		});
 	}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/giat/unit/'+config.id_daerah+'/') != -1){
