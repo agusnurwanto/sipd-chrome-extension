@@ -563,6 +563,15 @@ jQuery(document).ready(function(){
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			singkron_rka_ke_lokal_all();
 		});
+	}else if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
+		var singkron_skpd = ''
+			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_skpd_ke_lokal">'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron SKPD ke DB lokal</span>'
+			+'</button>';
+		jQuery('.button-box.pull-right.p-t-0').parent().prepend(singkron_skpd);
+		jQuery('#singkron_skpd_ke_lokal').on('click', function(){
+			singkron_skpd_ke_lokal();
+		});
 	}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/list/'+config.id_daerah+'') != -1){
 		// harus di inject agar bekerja
 		injectScript( chrome.extension.getURL('/js/content/rka.js'), 'html');
@@ -577,6 +586,97 @@ jQuery(document).ready(function(){
 		});
 	}
 });
+
+function singkron_skpd_ke_lokal(){
+	if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+		jQuery('#wrap-loading').show();
+		var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+		jQuery.ajax({
+			url: config.sipd_url+'daerah/main/budget/skpd/'+config.tahun_anggaran+'/tampil-skpd/'+config.id_daerah+'/'+id_unit,
+			type: 'get',
+			success: function(unit){
+				var sendData = unit.data.map(function(b, i){
+					return new Promise(function(resolve, reject){
+	                	jQuery.ajax({
+				          	url: config.sipd_url+"daerah/main/budget/skpd/"+config.tahun_anggaran+"/detil-skpd/"+config.id_daerah+"/0",
+				          	type: "post",
+				          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idskpd='+b.id_skpd,
+				          	success: function(data){
+				          		var data_unit = {
+				          			id_setup_unit : b.id_setup_unit,
+									id_skpd : b.id_skpd,
+									id_unit : b.id_unit,
+									is_skpd : b.is_skpd,
+									kode_skpd : b.kode_skpd,
+									kunci_skpd : b.kunci_skpd,
+									nama_skpd : b.nama_skpd,
+									posisi : b.posisi,
+									status : b.status,
+									bidur_1 : data.bidur_1,
+									bidur_2 : data.bidur_2,
+									bidur_3 : data.bidur_3,
+									idinduk : data.idinduk,
+									ispendapatan : data.ispendapatan,
+									isskpd : data.isskpd,
+									kode_skpd_1 : data.kode_skpd_1,
+									kode_skpd_2 : data.kode_skpd_2,
+									kodeunit : data.kodeunit,
+									komisi : data.komisi,
+									namabendahara : data.namabendahara,
+									namakepala : data.namakepala,
+									namaunit : data.namaunit,
+									nipbendahara : data.nipbendahara,
+									nipkepala : data.nipkepala,
+									pangkatkepala : data.pangkatkepala,
+									setupunit : data.setupunit,
+									statuskepala : data.statuskepala,
+				          		};
+								return resolve(data_unit);
+							},
+							error: function(argument) {
+								console.log(e);
+								return resolve({});
+							}
+				        });
+	                })
+	                .catch(function(e){
+	                    console.log(e);
+	                    return Promise.resolve({});
+	                });
+				});
+
+	            Promise.all(sendData)
+	        	.then(function(all_unit){
+	        		var opsi = { 
+						action: 'singkron_unit',
+						api_key: config.api_key,
+						data_unit : all_unit,
+						tahun_anggaran : config.tahun_anggaran
+					};
+					var data = {
+					    message:{
+					        type: "get-url",
+					        content: {
+							    url: config.url_server_lokal,
+							    type: 'post',
+							    data: opsi,
+				    			return: true
+							}
+					    }
+					};
+					chrome.runtime.sendMessage(data, function(response) {
+					    console.log('responeMessage', response);
+					});
+	            })
+	            .catch(function(err){
+	                console.log('err', err);
+	        		alert('Ada kesalahan sistem!');
+	        		jQuery('#wrap-loading').hide();
+	            });
+			}
+		});
+	}
+}
 
 function singkron_rka_ke_lokal_all() {
 	if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
