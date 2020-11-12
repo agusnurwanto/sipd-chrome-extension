@@ -13,9 +13,9 @@ Semoga bermanfaat
 	- Download excel RKA
 	- Download excel KUA PPAS lampiran 4.1
 	- Download excel KUA PPAS lampiran 4.2
+	- Export SKPD ke database lokal
 
 ### Pengembangan berikutnya:
 	- Export program kegiatan ke database lokal
-	- Export SKPD ke database lokal
 	- Melengkapi dokumentasi penggunaan di halaman wiki
 	- Melengkapi video tutorial di youtube
