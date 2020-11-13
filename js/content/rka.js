@@ -219,7 +219,7 @@ var modal = ''
                       	+'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
 	                        +'<label class="col-xs-12 font-bold">Jenis Belanja</label>'
 	                        +'<div class="col-xs-12">'
-	                          +'<select class="form-control" id="jenis-bel-excel"></select>'
+	                          	+'<select class="form-control" id="jenis-bel-excel"></select>'
 	                        +'</div>'
 	                    +'</div>'
 	                    +'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
@@ -234,6 +234,12 @@ var modal = ''
 	                            +'<select class="form-control" id="paket-excel"></select>'
 	                        +'</div>'
 	                    +'</div>'
+	                    +'<div class="form-group group-dana-desa excel-opsional">'
+	                        +'<label class="col-xs-12 font-bold">Keterangan</label>'
+	                        +'<div class="col-xs-12">'
+			                	+'<select class="form-control" id="keterangan-excel"></select>'
+			            	+'</div>'
+			            +'</div>'
                   	+'</form>'
                 +'</div>'
                 +'<div class="modal-footer">'
@@ -261,8 +267,38 @@ jQuery('#simpan-excel').on('click', function(){
 jQuery('#jenis_data').on('change', function(){
 	var jenis = jQuery(this).val();
 	jQuery('.excel-opsional').hide();
+	jQuery('.excel-opsional select').html('');
 	if(jenis == 'dana-desa'){
+		jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
+		// jQuery('#rek-excel').html();
+		jQuery('#paket-excel').html(jQuery('select[name="subtitle"]').html());
+		jQuery('#keterangan-excel').html(jQuery('select[name="keterangan"]').html());
 		jQuery('#group-dana-desa').show();
+	}
+});
+jQuery('#jenis-bel-excel').on('change', function(){
+	jQuery('#wrap-loading').show();
+	jQuery('#rek-excel').html('');
+	var jenisbl = jQuery(this).val();
+	if(jenisbl != ''){
+		jQuery.ajax({
+		    url: "../../cari-rekening/"+config.id_daerah+"/"+id_unit,
+		    type: "post",
+		    data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idbl=0&idsubbl=0'+'&komponenkel='+jenisbl,
+		    success: function(data){
+		      	jQuery("#rek-excel").html(data);
+				jQuery('#wrap-loading').hide();
+		    },
+		    error: function(jqXHR, textStatus, error){
+				jQuery('#wrap-loading').hide();
+		      	swal({
+			        title: "Error",
+			        text: "Kesalahan sistem, Silahkan melapor ke Pusdatin Sekretariat Jenderal Kementerian dalam Negeri dengan menyertakan foto atau video saat melakukan proses ini",
+			        confirmButtonColor: "#EF5350",
+			        type: "error"
+		      	});
+		    }
+		});
 	}
 });
 
@@ -286,10 +322,10 @@ function insertRKA(){
 	excel = JSON.parse(excel);
 	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 	var id_kel = jQuery('select[name="kelurahan"] option').filter(function () { return jQuery(this).html() == "Poncol"; }).val();
-	var jenis_belanja = '';
-	var id_rek_akun = '';
-	var id_pengelompokan = '';
-	var id_keterangan = '';
+	var jenis_belanja = jQuery('#jenis-bel-excel').val();
+	var id_rek_akun = jQuery('#rek-excel').val();
+	var id_pengelompokan = jQuery('#paket-excel').val();
+	var id_keterangan = jQuery('#keterangan-excel').val();
 	jQuery.ajax({
       	url: '../../tampil-provinsi/'+config.id_daerah+'/'+id_unit,
       	type: "post",
