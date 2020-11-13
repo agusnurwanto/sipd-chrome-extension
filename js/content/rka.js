@@ -188,3 +188,276 @@ jQuery('#cari-ssh-sipd').on('click', function(){
 		alert('ID Standar Harga tidak boleh kosong!');
 	}
 });
+
+
+var modal = ''
+	+'<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>'
+	+'<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>'
+	+'<div class="modal fade" id="mod-import-excel" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
+        +'<div class="modal-dialog modal-lg" role="document">'
+            +'<div class="modal-content">'
+                +'<div class="modal-header bgpanel-theme">'
+                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
+                    +'<h4 class="modal-title text-white" id="">Upload Data Excel</h4>'
+                +'</div>'
+                +'<div class="modal-body">'
+                  	+'<form>'
+                      	+'<div class="form-group">'
+                      		+'<label class="control-label">Jenis Data Excel</label>'
+                          	+'<select class="form-control" name="jenis_data" id="jenis_data">'
+                                +'<option value="">Pilih Format Data Excel</option>'
+                                +'<option value="dana-desa">Dana Desa</option>'
+                            +'</select>'
+                      	+'</div>'
+                      	+'<div class="form-group">'
+                      		+'<input type="file" id="file_input" />'
+                      	+'</div>'
+                      	+'<div class="form-group">'
+                      		+'<label class="control-label">Data JSON</label>'
+							+'<textarea class="form-control" id="file_output" style="height: 150px;"></textarea>'
+                      	+'</div>'
+                      	+'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
+	                        +'<label class="col-xs-12 font-bold">Jenis Belanja</label>'
+	                        +'<div class="col-xs-12">'
+	                          +'<select class="form-control" id="jenis-bel-excel"></select>'
+	                        +'</div>'
+	                    +'</div>'
+	                    +'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
+	                        +'<label class="col-xs-12 font-bold">Rekening / Akun</label>'
+	                        +'<div class="col-xs-12">'
+	                          	+'<select class="form-control" id="rek-excel"></select>'
+	                        +'</div>'
+	                    +'</div>'
+	                    +'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
+	                        +'<label class="col-xs-12 font-bold">Pengelompokan Belanja / Paket Pekerjaan</label>'
+	                        +'<div class="col-xs-10">'
+	                            +'<select class="form-control" id="paket-excel"></select>'
+	                        +'</div>'
+	                    +'</div>'
+                  	+'</form>'
+                +'</div>'
+                +'<div class="modal-footer">'
+                    +'<button type="button" class="btn btn-success" id="simpan-excel">Simpan</button>'
+                    +'<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>'
+                +'</div>'
+            +'</div>'
+        +'</div>'
+    +'</div>';
+jQuery('body').append(modal);
+var import_excel = ''
+	+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="import_excel">'
+		+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Import Excel</span>'
+	+'</button>';
+jQuery('.icon-basket').closest('.m-t-10').find('.pull-right.p-t-20').prepend(import_excel);
+jQuery('#import_excel').on('click', function(){
+	jQuery('#mod-import-excel').modal('show');
+});
+jQuery('#simpan-excel').on('click', function(){
+	jQuery('#wrap-loading').show();
+	if(confirm('Apakah anda yakin untuk menyimpan data!')){
+		insertRKA();
+	}
+});
+jQuery('#jenis_data').on('change', function(){
+	var jenis = jQuery(this).val();
+	jQuery('.excel-opsional').hide();
+	if(jenis == 'dana-desa'){
+		jQuery('#group-dana-desa').show();
+	}
+});
+
+var oFileIn;
+jQuery(function() {
+    oFileIn = document.getElementById('file_input');
+    if(oFileIn.addEventListener) {
+        oFileIn.addEventListener('change', filePicked, false);
+    }
+});
+
+function insertRKA(){
+	var type_data = jQuery('#jenis_data').val();
+    if(type_data == ''){
+    	return alert('Jenis Data Excel tidak boleh kosong!');
+    }
+	var excel = jQuery('#file_output').val();
+	if(excel ==''){
+    	return alert('Data Excel tidak boleh kosong!');
+	}
+	excel = JSON.parse(excel);
+	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+	var id_kel = jQuery('select[name="kelurahan"] option').filter(function () { return jQuery(this).html() == "Poncol"; }).val();
+	var jenis_belanja = '';
+	var id_rek_akun = '';
+	var id_pengelompokan = '';
+	var id_keterangan = '';
+	jQuery.ajax({
+      	url: '../../tampil-provinsi/'+config.id_daerah+'/'+id_unit,
+      	type: "post",
+      	data: "_token="+$('meta[name=_token]').attr('content')+'&id_unit='+id_unit,
+      	success: function(data_prov){
+			var sendData = excel.map(function(b, i){
+				return new Promise(function(resolve, reject){
+		      		var id_prov = jQuery('<select>'+data_prov+'</select>').find('option').filter(function(){
+		      			return jQuery(this).html().toLocaleLowerCase() == b[5].toLocaleLowerCase();
+		      		}).val();
+		      		if(id_prov == ''){
+		      			b[6] = 'Provinsi tidak ditemukan';
+		      			Promise.resolve(b);
+		      		}else{
+			      		jQuery.ajax({
+				        	url: "../../tampil-kab-kota/"+config.id_daerah+"/"+id_unit,
+				        	type: "post",
+				        	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idprop='+id_prov,
+				            success: function(data_kab){
+					      		var id_kab = jQuery('<select>'+data_kab+'</select>').find('option').filter(function(){
+					      			return jQuery(this).html().toLocaleLowerCase() == b[4].replace(/Kabupaten/g, 'Kab.').toLocaleLowerCase();
+					      		}).val();
+					      		if(id_kab == ''){
+					      			b[6] = 'Kabupaten / Kota tidak ditemukan';
+					      			Promise.resolve(b);
+					      		}else{
+						      		jQuery.ajax({
+							          	url: "../../tampil-camat/"+config.id_daerah+"/"+id_unit,
+							          	type: "post",
+							          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idprop='+id_prov+'&idkokab='+id_kab,
+							          	success: function(data_kec){
+							            	var id_kec = jQuery('<select>'+data_kec+'</select>').find('option').filter(function(){
+								      			return jQuery(this).html().toLocaleLowerCase() == b[3].replace(/Kecamatan /g, '').toLocaleLowerCase();
+								      		}).val();
+								      		if(id_kec == ''){
+								      			b[6] = 'Kecamatan tidak ditemukan';
+								      			Promise.resolve(b);
+								      		}else{
+									      		jQuery.ajax({
+										          	url: "../../tampil-lurah/"+config.id_daerah+"/"+id_unit,
+										          	type: "post",
+										          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idprop='+id_prov+'&idkokab='+id_kab+'&idcamat='+id_kec,
+										          	success: function(data_kel){
+										            	var id_kel = jQuery('<select>'+data_kel+'</select>').find('option').filter(function(){
+											      			return jQuery(this).html().toLocaleLowerCase() == b[1].toLocaleLowerCase();
+											      		}).val();
+											      		if(id_kel == ''){
+											      			b[6] = 'Desa / Kelurahan tidak ditemukan';
+											      			Promise.resolve(b);
+											      		}else{
+											      			var id_lokasi = {
+											      				id_prov: id_prov,
+											      				id_kab: id_kab,
+											      				id_kec: id_kec,
+											      				id_kel: id_kel
+											      			};
+											      			b[6] = id_lokasi;
+											      			Promise.resolve(b);
+											      		}
+										          	},
+										          	error: function(jqXHR, textStatus, error){
+										      			b[6] = 'Error ajax kelurahan';
+										      			Promise.resolve(b);
+										          	}
+										        });
+									      	}
+							          	},
+							          	error: function(jqXHR, textStatus, error){
+							      			b[6] = 'Error ajax kecamatan';
+							      			Promise.resolve(b);
+							          	}
+							        });
+						      	}
+				            },
+				            error: function(jqXHR, textStatus, error){
+				      			b[6] = 'Error ajax kabupaten';
+				      			Promise.resolve(b);
+				            }
+				        });
+			      	}
+				})
+			    .catch(function(e){
+			        console.log(e);
+			        return Promise.resolve({});
+			    });
+			});
+			Promise.all(sendData)
+			.then(function(all_status){
+				console.log(all_status);
+				jQuery('#wrap-loading').hide();
+			})
+		    .catch(function(err){
+		        console.log('err', err);
+				alert('Ada kesalahan sistem!');
+				jQuery('#wrap-loading').hide();
+		    });
+      	},
+      	error: function(jqXHR, textStatus, error) {
+	        alert('Error ajax get data provinsi');
+	  	}
+    });
+}
+
+function filePicked(oEvent) {
+    // Get The File From The Input
+    var oFile = oEvent.target.files[0];
+    var sFilename = oFile.name;
+    // Create A File Reader HTML5
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+      	var data = e.target.result;
+      	var workbook = XLSX.read(data, {
+        	type: 'binary'
+      	});
+
+      	workbook.SheetNames.forEach(function(sheetName) {
+	        // Here is your object
+	        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+	        var type_data = jQuery('#jenis_data').val();
+	        if(type_data == ''){
+	        	return alert('Jenis Data Excel tidak boleh kosong!');
+	        }else if(type_data == 'dana-desa'){
+	        	var data = [];
+	        	var kec = '';
+	        	var kab = '';
+	        	var prov = '';
+	        	XL_row_object.map(function(b, i){
+	        		var isnan = [];
+	        		var data_pasti = [];
+	        		for(var n in b){
+	        			var val = +b[n].trim().replace(/,/g,'');
+	        			if(isNaN(val)){ 
+	        				isnan.push(b[n]);
+	        				data_pasti.push(b[n]);
+	        			}else{
+	        				data_pasti.push(val);
+	        			}
+	        		}
+	        		if(data_pasti.length < 3){
+	        			return;
+	        		}
+	        		if(isnan.length >= 2 && kec != data_pasti[1] && data_pasti[1].indexOf('Kecamatan') != -1){
+	        			kec = data_pasti[1];
+	        		}
+	        		if(isnan.length >= 2 && kab != data_pasti[1] && (data_pasti[1].indexOf('Kabupaten') != -1 || data_pasti[1].indexOf('Kota') != -1)){
+	        			kab = data_pasti[1];
+	        		}
+	        		if(isnan.length >= 2 && prov != data_pasti[1] && data_pasti[1].indexOf('Provinsi') != -1){
+	        			prov = data_pasti[1];
+	        		}
+	        		data_pasti.push(kec);
+	        		data_pasti.push(kab);
+	        		data_pasti.push(prov);
+	        		if(isnan.length <= 1){
+	        			data.push(data_pasti);
+	        		}
+	        	});
+		        var json_object = JSON.stringify(data);
+		        console.log(data);
+		        jQuery("#file_output").html(json_object);
+	        }
+      	});
+	};
+
+    reader.onerror = function(ex) {
+      console.log(ex);
+    };
+
+    reader.readAsBinaryString(oFile);
+}

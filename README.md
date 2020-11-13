@@ -19,3 +19,5 @@ Semoga bermanfaat
 	- Export program kegiatan ke database lokal
 	- Melengkapi dokumentasi penggunaan di halaman wiki
 	- Melengkapi video tutorial di youtube
+	- Import Dana Desa ke Rincian Sub kegiatan
+	- Import data provinsi, kabupaten, kecamatan, desa
