@@ -193,7 +193,7 @@ jQuery('#cari-ssh-sipd').on('click', function(){
 var modal = ''
 	+'<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>'
 	+'<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>'
-	+'<div class="modal fade" id="mod-import-excel" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
+	+'<div class="modal fade" id="mod-import-excel" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 9999">'
         +'<div class="modal-dialog modal-lg" role="document">'
             +'<div class="modal-content">'
                 +'<div class="modal-header bgpanel-theme">'
@@ -210,6 +210,7 @@ var modal = ''
                             +'</select>'
                       	+'</div>'
                       	+'<div class="form-group">'
+                      		+'<label class="control-label">Contoh format excel <a id="label-excel" href="" target="_blank"></a></label>'
                       		+'<input type="file" id="file_input" />'
                       	+'</div>'
                       	+'<div class="form-group">'
@@ -217,27 +218,32 @@ var modal = ''
 							+'<textarea class="form-control" id="file_output" style="height: 150px;"></textarea>'
                       	+'</div>'
                       	+'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
-	                        +'<label class="col-xs-12 font-bold">Jenis Belanja</label>'
-	                        +'<div class="col-xs-12">'
-	                          	+'<select class="form-control" id="jenis-bel-excel"></select>'
-	                        +'</div>'
+	                        +'<label class="control-label">Jenis Belanja</label>'
+	                        +'<select class="form-control" id="jenis-bel-excel"></select>'
 	                    +'</div>'
 	                    +'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
-	                        +'<label class="col-xs-12 font-bold">Rekening / Akun</label>'
-	                        +'<div class="col-xs-12">'
-	                          	+'<select class="form-control" id="rek-excel"></select>'
-	                        +'</div>'
+	                        +'<label class="control-label">Rekening / Akun</label>'
+	                        +'<select class="form-control" id="rek-excel"></select>'
 	                    +'</div>'
 	                    +'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
-	                        +'<label class="col-xs-12 font-bold">Pengelompokan Belanja / Paket Pekerjaan</label>'
-	                        +'<div class="col-xs-10">'
-	                            +'<select class="form-control" id="paket-excel"></select>'
-	                        +'</div>'
+	                        +'<label class="control-label">Pengelompokan Belanja / Paket Pekerjaan</label>'
+	                        +'<select class="form-control" id="paket-excel"></select>'
 	                    +'</div>'
-	                    +'<div class="form-group group-dana-desa excel-opsional">'
-	                        +'<label class="col-xs-12 font-bold">Keterangan</label>'
+	                    +'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
+	                        +'<label class="control-label">Keterangan</label>'
+			               	+'<select class="form-control" id="keterangan-excel"></select>'
+			            +'</div>'
+	                    +'<div class="form-group group-dana-desa excel-opsional" style="display:none;">'
+	                        +'<label class="control-label">Koefisien (Perkalian)</label>'
 	                        +'<div class="col-xs-12">'
-			                	+'<select class="form-control" id="keterangan-excel"></select>'
+	                        	+'<div class="row">'
+	                        		+'<div class="col-xs-6">'
+			               				+'<input class="form-control" type="number" placeholder="Volume" id="volum-excel">'
+			            			+'</div>'
+	                        		+'<div class="col-xs-6">'
+			               				+'<select class="form-control" id="satuan-excel"></select>'
+			            			+'</div>'
+			            		+'</div>'
 			            	+'</div>'
 			            +'</div>'
                   	+'</form>'
@@ -268,12 +274,22 @@ jQuery('#jenis_data').on('change', function(){
 	var jenis = jQuery(this).val();
 	jQuery('.excel-opsional').hide();
 	jQuery('.excel-opsional select').html('');
+	jQuery('#label-excel').attr('href', '#');
+	jQuery('#label-excel').text('');
+	if(jenis != ''){
+		jQuery('#label-excel').text('DOWNLOAD DI SINI');
+	}
 	if(jenis == 'dana-desa'){
+		jQuery('#label-excel').attr('href', ext_url+'excel/ADD-2021.xlsx');
 		jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
+		jQuery('#jenis-bel-excel').val('BANKEU').trigger('change');
+		jQuery('#jenis-bel-excel').attr('disabled', true);
 		// jQuery('#rek-excel').html();
 		jQuery('#paket-excel').html(jQuery('select[name="subtitle"]').html());
 		jQuery('#keterangan-excel').html(jQuery('select[name="keterangan"]').html());
-		jQuery('#group-dana-desa').show();
+		jQuery('#satuan-excel').html(jQuery('select[name="satuan1"]').html());
+		jQuery('#satuan-excel').select2();
+		jQuery('.group-dana-desa').show();
 	}
 });
 jQuery('#jenis-bel-excel').on('change', function(){
@@ -326,6 +342,10 @@ function insertRKA(){
 	var id_rek_akun = jQuery('#rek-excel').val();
 	var id_pengelompokan = jQuery('#paket-excel').val();
 	var id_keterangan = jQuery('#keterangan-excel').val();
+	var vol = jQuery('#volum-excel').val();
+	var satuantext = jQuery('#satuan-excel option:selected').text();
+	var satuan = jQuery('#satuan-excel').val();
+	jQuery('.tambah-detil').click();
 	jQuery.ajax({
       	url: '../../tampil-provinsi/'+config.id_daerah+'/'+id_unit,
       	type: "post",
@@ -338,7 +358,7 @@ function insertRKA(){
 		      		}).val();
 		      		if(id_prov == ''){
 		      			b[6] = 'Provinsi tidak ditemukan';
-		      			Promise.resolve(b);
+		      			resolve(b);
 		      		}else{
 			      		jQuery.ajax({
 				        	url: "../../tampil-kab-kota/"+config.id_daerah+"/"+id_unit,
@@ -350,7 +370,7 @@ function insertRKA(){
 					      		}).val();
 					      		if(id_kab == ''){
 					      			b[6] = 'Kabupaten / Kota tidak ditemukan';
-					      			Promise.resolve(b);
+					      			resolve(b);
 					      		}else{
 						      		jQuery.ajax({
 							          	url: "../../tampil-camat/"+config.id_daerah+"/"+id_unit,
@@ -362,7 +382,7 @@ function insertRKA(){
 								      		}).val();
 								      		if(id_kec == ''){
 								      			b[6] = 'Kecamatan tidak ditemukan';
-								      			Promise.resolve(b);
+								      			resolve(b);
 								      		}else{
 									      		jQuery.ajax({
 										          	url: "../../tampil-lurah/"+config.id_daerah+"/"+id_unit,
@@ -374,7 +394,7 @@ function insertRKA(){
 											      		}).val();
 											      		if(id_kel == ''){
 											      			b[6] = 'Desa / Kelurahan tidak ditemukan';
-											      			Promise.resolve(b);
+											      			resolve(b);
 											      		}else{
 											      			var id_lokasi = {
 											      				id_prov: id_prov,
@@ -383,26 +403,72 @@ function insertRKA(){
 											      				id_kel: id_kel
 											      			};
 											      			b[6] = id_lokasi;
-											      			Promise.resolve(b);
+											      			b[7] = {
+											      				jenis_belanja: jenis_belanja,
+											      				id_rek_akun: id_rek_akun,
+											      				id_pengelompokan: id_pengelompokan,
+											      				id_keterangan: id_keterangan
+											      			};
+											      			var skrim = ''
+											      				+'kodesbl='+jQuery('input[name="kodesbl"]').val()
+											      				+'&idbelanjarinci='
+											      				+'&idakunrinci='
+											      				+'&jenisbl='+jenis_belanja
+												      			+'&akun='+encodeURIComponent(id_rek_akun)
+												      			+'&subtitle='+id_pengelompokan
+												      			+'&uraian_penerima='
+												      			+'&id_penerima='
+												      			+'&prop='+id_prov
+												      			+'&kab_kota='+id_kab
+												      			+'&kecamatan='+id_kec
+												      			+'&kelurahan='+id_kel
+												      			+'&komponenkel='
+												      			+'&komponen='
+												      			+'&idkomponen='
+												      			+'&spek='
+												      			+'&satuan='+encodeURIComponent(satuantext)
+												      			+'&hargasatuan='+b[2]
+												      			+'&keterangan='+id_keterangan
+												      			+'&volum1='+vol
+												      			+'&satuan1='+satuan
+												      			+'&volum2='
+												      			+'&satuan2='
+												      			+'&volum3='
+												      			+'&satuan3='
+												      			+'&volum4='
+												      			+'&satuan4=';
+													        b[8] = skrim;
+											      			jQuery.ajax({
+													          	url: config.sipd_url+"daerah/main/budget/belanja/"+config.tahun_anggaran+"/rinci/simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
+													          	type: "post",
+													          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&skrim='+CR64(skrim),
+													          	success: function(data_kel){
+											      					resolve(b);
+													          	},
+													          	error: function(jqXHR, textStatus, error){
+													      			b[9] = 'Error ajax simpan rincian';
+													      			resolve(b);
+													          	}
+													       	});
 											      		}
 										          	},
 										          	error: function(jqXHR, textStatus, error){
 										      			b[6] = 'Error ajax kelurahan';
-										      			Promise.resolve(b);
+										      			resolve(b);
 										          	}
 										        });
 									      	}
 							          	},
 							          	error: function(jqXHR, textStatus, error){
 							      			b[6] = 'Error ajax kecamatan';
-							      			Promise.resolve(b);
+							      			resolve(b);
 							          	}
 							        });
 						      	}
 				            },
 				            error: function(jqXHR, textStatus, error){
 				      			b[6] = 'Error ajax kabupaten';
-				      			Promise.resolve(b);
+				      			resolve(b);
 				            }
 				        });
 			      	}
@@ -415,7 +481,28 @@ function insertRKA(){
 			Promise.all(sendData)
 			.then(function(all_status){
 				console.log(all_status);
-				jQuery('#wrap-loading').hide();
+				jQuery('.close-form').click();
+				jQuery.ajax({
+	                url: "../../refresh-belanja/"+config.id_daerah+"/"+id_unit,
+	                type: "post",
+	                data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl":jQuery('input[name="kodesbl"]').val()},
+	                success: function(hasil){
+	                  	var res=hasil.split("||");
+	                 	var pagu, rinci;
+	                  	if(res[0]==0){ pagu=0; } else if(res[0]!=0){ pagu = jQuery.number(res[0],0,',','.'); }
+	                  	if(res[1]==0){ rinci=0; } else if(res[1]!=0){ rinci = jQuery.number(res[1],0,',','.'); }
+	                  	jQuery(".statustotalpagu").html(pagu);
+	                  	jQuery(".statustotalrincian").html(rinci);
+						jQuery('#wrap-loading').hide();
+						alert('Berhasil simpan data!');
+	                }
+              	});
+
+              	if(thpStatus=="murni"){
+	                jQuery('#table_rinci').DataTable().ajax.reload();
+              	}else if(thpStatus=="perubahan" || thpStatus=="pergeseran"){
+	                jQuery('#table_rinci_perubahan').DataTable().ajax.reload();
+              	}
 			})
 		    .catch(function(err){
 		        console.log('err', err);

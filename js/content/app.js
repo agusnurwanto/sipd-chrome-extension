@@ -574,6 +574,7 @@ jQuery(document).ready(function(){
 		});
 	}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/list/'+config.id_daerah+'') != -1){
 		// harus di inject agar bekerja
+		run_script('window.ext_url = "'+chrome.extension.getURL('')+'"');
 		injectScript( chrome.extension.getURL('/js/content/rka.js'), 'html');
 
 		var singkron_rka = ''
