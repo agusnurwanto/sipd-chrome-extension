@@ -584,8 +584,74 @@ jQuery(document).ready(function(){
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			singkron_rka_ke_lokal();
 		});
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/0') != -1){
+		console.log('halaman perda lampiran 3');
+		var download_excel = ''
+			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="semua-halaman" style="float: right">'
+				+'<i class="fa fa-print m-r-5"></i> <span>Print Semua Halaman</span>'
+			+'</button>';
+		jQuery('.col-md-10 h4').append(download_excel);
+		jQuery('#semua-halaman').on('click', function(){
+			jQuery('#wrap-loading').show();
+			tampil_semua_halaman();
+		})
 	}
 });
+
+function tampil_semua_halaman(){
+	jQuery.ajax({
+		url: config.sipd_url+'daerah/main/budget/lampiran/'+config.tahun_anggaran+'/apbd/tampil-unit/'+config.id_daerah+'/0',
+		type: 'get',
+		success: function(unit){
+			var sendData = unit.data.map(function(b, i){
+				return new Promise(function(resolve, reject){
+                	jQuery.ajax({
+			          	url: config.sipd_url+"daerah/main/budget/jadwal/"+config.tahun_anggaran+"/hist-jadwal/"+config.id_daerah+"/0",
+			          	type: "post",
+			          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&app=budget&cetak=apbd&model=perda&jenis=3'+'&idskpd='+b.id_skpd+'&idbl=0&idsubbl=0',
+			          	success: function(jadwal){
+			          		var url = jQuery(jadwal.data.filter(function(j, n){
+			          			return j.setstatus == "Aktif";
+			          		})[0].action).attr('href');
+			          		b.url = url;
+					        // return resolve(b);
+			          		jQuery.ajax({
+					          	url: url,
+					          	type: "get",
+					          	success: function(web){
+					          		b.web = jQuery('<div>'+web+'</div>').find('.cetak').html();
+					          		return resolve(b);
+					          	}
+					        });
+			          	}
+			        });
+			    })
+                .catch(function(e){
+                    console.log(e);
+                    return Promise.resolve({});
+                });
+            });
+            Promise.all(sendData)
+        	.then(function(all_unit){
+        		// console.log('all_unit', all_unit);
+        		var all_data = [];
+        		all_unit.map(function(b, i){
+        			all_data.push(b.web);
+        		});
+        		jQuery('head').html('<title>Sistem Informasi Pemerintahan Daerah - Lampiran 3 APBD</title>');
+        		jQuery('body').html('<div class="cetak">'+all_data.join('<div style="page-break-after:always;"></div>')+'</div>');
+        		jQuery('#wrap-loading').hide();
+        		window.history.pushState({"html":'',"pageTitle":'good'},"", '/sipd-chrome-extension');
+        		window.print();
+            })
+            .catch(function(err){
+                console.log('err', err);
+        		alert('Ada kesalahan sistem!');
+        		jQuery('#wrap-loading').hide();
+            });
+		}
+	});
+}
 
 function singkron_skpd_ke_lokal(){
 	if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){

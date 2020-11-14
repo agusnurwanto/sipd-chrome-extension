@@ -59,3 +59,63 @@
     border-radius: 5px;
     font-weight: bold;
 }
+
+
+table { page-break-inside:auto }
+div   { page-break-inside:avoid; }
+tr    { page-break-inside:avoid; page-break-after:auto }
+thead { display:table-header-group }
+tfoot { display:table-footer-group }
+.cetak{
+    font-family:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    padding:0;
+    margin:0;
+    font-size:13px;
+}
+.m-t-20{
+    margin-top:20px;
+}
+.bawah{
+    border-bottom:1px solid #000;        
+}
+.kiri{
+    border-left:1px solid #000;        
+}
+.kanan{        
+    border-right:1px solid #000;
+}
+.atas{        
+    border-top:1px solid #000;
+}
+.text_tengah{
+    text-align: center;
+}
+.text_kiri{
+    text-align: left;
+}
+.text_kanan{
+    text-align: right;
+}
+.text_blok{
+    font-weight: bold;
+}        
+.text_15{
+    font-size: 15px;
+}
+.text_20{
+    font-size: 20px;
+}
+.logoprinter{
+    position:absolute;
+    top:150px;
+    right:600px;
+}
+thead{
+    display:table-header-group;
+}
+.setbreakafter{
+    page-break-after: always;
+}
+.setbreakbefore{
+    page-break-before: always;
+}
