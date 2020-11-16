@@ -260,7 +260,7 @@ var import_excel = ''
 	+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="import_excel">'
 		+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Import Excel</span>'
 	+'</button>';
-jQuery('.icon-basket').closest('.m-t-10').find('.pull-right.p-t-20').prepend(import_excel);
+jQuery('.tambah-detil').closest('.pull-right.p-t-20').prepend(import_excel);
 jQuery('#import_excel').on('click', function(){
 	jQuery('#mod-import-excel').modal('show');
 });

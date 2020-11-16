@@ -549,7 +549,10 @@ jQuery(document).ready(function(){
 			}
 			tableHtmlToExcel('rka', name);
 		});
-	}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/giat/unit/'+config.id_daerah+'/') != -1){
+	}else if(
+		current_url.indexOf('belanja/'+config.tahun_anggaran+'/giat/unit/'+config.id_daerah+'/') != -1
+		|| current_url.indexOf('belanja/'+config.tahun_anggaran+'/giat/list/'+config.id_daerah+'/') != -1
+	){
 		console.log('halaman sub kegiatan');
 		var singkron_rka = ''
 			+'<div class="col-xs-12 col-md-6">'
@@ -585,6 +588,79 @@ jQuery(document).ready(function(){
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			singkron_rka_ke_lokal();
 		});
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/1/'+config.id_daerah+'/setunit') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		var all_data = {
+			nama: 'Total keseluruhan',
+			total: 0
+		};
+		jQuery('table[cellpadding="3"] tbody tr').map(function(i, b){ 
+			var td = jQuery(b).find('td');
+			var kode = td.eq(0).text().trim().split('.');
+			if(isNaN(kode[0]) || td.eq(0).text().trim() == ''){ return; }
+			var nilai = +(td.eq(2).text().trim().replace(/\./g,''));
+			var nama = td.eq(1).text().trim();
+			if(kode.length == 1 && !all_data[kode[0]]){
+				all_data[kode[0]] = {
+					nama: nama,
+					total: 0
+				};
+			}
+			if(kode.length == 2 && !all_data[kode[0]][kode[1]]){
+				all_data[kode[0]][kode[1]] = {
+					nama: nama,
+					total: 0
+				};
+			}
+			if(kode.length == 3 && !all_data[kode[0]][kode[1]][kode[2]]){
+				all_data[kode[0]][kode[1]][kode[2]] = {
+					nama: nama,
+					total: 0
+				};
+			}
+			if(kode.length == 4 && !all_data[kode[0]][kode[1]][kode[2]][kode[3]]){
+				all_data[kode[0]][kode[1]][kode[2]][kode[3]] = {
+					nama: nama,
+					total: 0
+				};
+			}
+			if(kode.length == 5 && !all_data[kode[0]][kode[1]][kode[2]][kode[3]][kode[4]]){
+				all_data[kode[0]][kode[1]][kode[2]][kode[3]][kode[4]] = {
+					nama: nama,
+					total: nilai
+				};
+				all_data[kode[0]][kode[1]][kode[2]][kode[3]].total += nilai;
+				all_data[kode[0]][kode[1]][kode[2]].total += nilai;
+				all_data[kode[0]][kode[1]].total += nilai;
+				all_data[kode[0]].total += nilai;
+				all_data.total += nilai;
+			}
+		});
+		console.log('all_data', all_data);
+		var jabatan = "";
+		var daerah = window.location.href.split('.')[0].split('//')[1];
+		if(window.location.href.split('.')[0].indexOf('kab')){
+			jabatan = 'Bupati';
+			daerah = daerah.replace('kab', '');
+		}else if(window.location.href.split('.')[0].indexOf('prov')){
+			jabatan = 'Gubernur';
+			daerah = daerah.replace('prov', '');
+		}else{
+			jabatan = 'Walikota';
+		}
+		if(config.tgl_rka){
+			var _default = "";
+			if(config.tgl_rka == 'auto'){
+				var tgl = new Date();
+				var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+				_default = tgl.getDate()+' '+bulan[tgl.getMonth()-1]+' '+tgl.getFullYear();
+			}else{
+				_default = config.tgl_rka;
+			}
+			var tgl = prompt("Input tanggal tandatangan RKA", _default);
+			var ttd = '<br>'+capitalizeFirstLetter(daerah)+', Tanggal '+tgl+'<br>'+jabatan+'<br><br><br><br><br>'+config.kepala_daerah;
+			jQuery('table[cellpadding="3"] tbody').eq(1).append('<tr><td colspan="3"><div style="width: 400px; float: right; font-weight: bold; line-height: 1.5; text-align: center">'+ttd+'</div></td></tr>');
+		}
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/0') != -1){
 		console.log('halaman perda lampiran 3');
 		var download_excel = ''
@@ -598,6 +674,10 @@ jQuery(document).ready(function(){
 		})
 	}
 });
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 function tampil_semua_halaman(){
 	jQuery.ajax({
@@ -773,6 +853,8 @@ function singkron_rka_ke_lokal_all() {
                         		nama_skpd.shift();
                         		nama_skpd = nama_skpd.join(' ');
 								singkron_rka_ke_lokal({
+									kode_bl: current_data.kode_bl,
+									kode_sbl: current_data.kode_sbl,
 									idbl: current_data.id_bl,
 									idsubbl: current_data.id_sub_bl,
 									kode_skpd: current_data.kode_skpd,
@@ -828,27 +910,31 @@ function singkron_rka_ke_lokal_all() {
 }
 
 function singkron_rka_ke_lokal(opsi, callback) {
-	if((opsi && opsi.idbl) || confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+	if((opsi && opsi.kode_bl) || confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 		jQuery('#wrap-loading').show();
 		var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+		var kode_bl = false;
+		var kode_sbl = false;
 		var idbl = false;
 		var idsubbl = false;
 		var kode_skpd = false;
 		var nama_skpd = false;
 		var kode_sub_skpd = false;
 		var pagu = 0;
-		if(!opsi.idbl){
+		if(!opsi || !opsi.kode_bl){
 			jQuery('script').map(function(i, b){
 				var script = jQuery(b).html();
-				script = script.split('?idbl=');
+				script = script.split('?kodesbl=');
 				if(script.length > 1){
 					script = script[1].split("'");
-					script = script[0].split("&idsubbl=");
-					idbl = script[0];
-					idsubbl = script[1];
+					kode_sbl = script[0];
+					// idbl = script[0];
+					// idsubbl = script[1];
 				}
 			});
 		}else{
+			kode_bl = opsi.kode_bl;
+			kode_sbl = opsi.kode_sbl;
 			idbl = opsi.idbl;
 			idsubbl = opsi.idsubbl;
 			kode_skpd = opsi.kode_skpd;
@@ -856,7 +942,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 			kode_sub_skpd = opsi.kode_sub_skpd;
 			pagu = opsi.pagu;
 		}
-		if(idbl && idsubbl){
+		if((idbl && idsubbl) || kode_sbl){
 			jQuery.ajax({
 				url: config.sipd_url+'daerah/main/budget/skpd/'+config.tahun_anggaran+'/detil-skpd/'+config.id_daerah+'/'+id_unit,
 				type: 'post',
@@ -865,11 +951,12 @@ function singkron_rka_ke_lokal(opsi, callback) {
 					jQuery.ajax({
 						url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/detil-giat/'+config.id_daerah+'/'+id_unit,
 						type: 'post',
-						data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idsubbl='+idsubbl,
+						data: "_token="+jQuery('meta[name=_token]').attr('content')+'&kodesbl='+kode_sbl,
 						success: function(subkeg){
 							// subkeg = JSON.parse(subkeg);
 							jQuery.ajax({
-								url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?idbl='+idbl+'&idsubbl='+idsubbl,
+								// url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?idbl='+idbl+'&idsubbl='+idsubbl,
+								url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?kodesbl='+kode_sbl,
 								contentType: 'application/json',
 								success: function(data){
 									var data_rka = { 
@@ -883,6 +970,8 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										pagu: pagu,
 										idbl: idbl,
 										idsubbl: idsubbl,
+										kode_bl: kode_bl,
+										kode_sbl: kode_sbl,
 										data_unit: {},
 										dataBl: {},
 										dataCapaian: {},
@@ -1021,7 +1110,8 @@ function singkron_rka_ke_lokal(opsi, callback) {
 											data_rka.rka[i].satuan = rka.satuan;
 											data_rka.rka[i].spek = rka.spek;
 											data_rka.rka[i].subs_bl_teks = rka.subs_bl_teks;
-											data_rka.rka[i].total_harga = rka.total_harga;
+											data_rka.rka[i].total_harga = rka.rincian;
+											data_rka.rka[i].rincian = rka.rincian;
 											data_rka.rka[i].totalpajak = rka.totalpajak;
 											data_rka.rka[i].updated_user = rka.updated_user;
 											data_rka.rka[i].updateddate = rka.updateddate;
@@ -1041,7 +1131,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 											}
 									    }
 									};
-									if(opsi.no_return){
+									if(opsi && opsi.no_return){
 										data.message.content.return = false;
 									}
 									chrome.runtime.sendMessage(data, function(response) {
@@ -1057,7 +1147,8 @@ function singkron_rka_ke_lokal(opsi, callback) {
 				}
 			});
 		}else{
-			alert('ID Belanja tidak ditemukan!')
+			alert('ID Belanja tidak ditemukan!');
+			jQuery('#wrap-loading').hide();
 		}
 	}
 }
