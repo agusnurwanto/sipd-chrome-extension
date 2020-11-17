@@ -16,9 +16,9 @@ Semoga bermanfaat
 	- Export SKPD ke database lokal
 	- Print APBD lampiran III semua Perangkat Daerah menjadi satu
 	- Export RKA seluruh perangkat daerah
+	- Export program kegiatan ke database lokal
 
 ### Pengembangan berikutnya:
-	- Export program kegiatan ke database lokal
 	- Melengkapi dokumentasi penggunaan di halaman wiki
 	- Melengkapi video tutorial di youtube
 	- Import Dana Desa ke Rincian Sub kegiatan
