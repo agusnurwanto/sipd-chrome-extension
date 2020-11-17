@@ -15,6 +15,7 @@ Semoga bermanfaat
 	- Download excel KUA PPAS lampiran 4.2
 	- Export SKPD ke database lokal
 	- Print APBD lampiran III semua Perangkat Daerah menjadi satu
+	- Export RKA seluruh perangkat daerah
 
 ### Pengembangan berikutnya:
 	- Export program kegiatan ke database lokal

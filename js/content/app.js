@@ -36,6 +36,7 @@ jQuery(document).ready(function(){
 	var loading = ''
 		+'<div id="wrap-loading">'
 	        +'<div class="lds-hourglass"></div>'
+	        +'<div id="persen-loading"></div>'
 	    +'</div>';
 	jQuery('body').prepend(loading);
 	var current_url = window.location.href;
@@ -247,8 +248,11 @@ jQuery(document).ready(function(){
 		function singkron_ssh_ke_lokal(){
 			if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 				jQuery('#wrap-loading').show();
+				jQuery('#persen-loading').attr('persen', 0);
+				jQuery('#persen-loading').html('0%');
+				var id_sh = window.location.href.split(config.tahun_anggaran+'/')[1].split('/')[0];
 				jQuery.ajax({
-					url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen/'+config.id_daerah+'/0',
+					url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/'+id_sh+'/tampil-komponen/'+config.id_daerah+'/0',
 					contentType: 'application/json',
 					success: function(data){
 
@@ -271,7 +275,7 @@ jQuery(document).ready(function(){
 		                        	var sendData = current_data.map(function(val, n){
 			                            return new Promise(function(resolve, reject){
 			                            	jQuery.ajax({
-												url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/tampil-komponen-akun/'+config.id_daerah+'/0/'+val.id_standar_harga,
+												url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/'+id_sh+'/tampil-komponen-akun/'+config.id_daerah+'/0/'+val.id_standar_harga,
 												contentType: 'application/json',
 												success: function(ret){
 													val.rek_belanja = ret.data;
@@ -295,6 +299,10 @@ jQuery(document).ready(function(){
 	                            		// if(i==1){
 	                            			send_to_lokal(val_all);
 	                            		// }
+		                				var c_persen = +jQuery('#persen-loading').attr('persen');
+		                				c_persen++;
+										jQuery('#persen-loading').attr('persen', c_persen);
+										jQuery('#persen-loading').html(((c_persen/data_all.length)*100).toFixed(2)+'%');
 	                            		return resolve_redurce(nextData);
 				                    })
 				                    .catch(function(err){
@@ -315,6 +323,9 @@ jQuery(document).ready(function(){
 	                    .then(function(data_last){
 							// console.log(data_last);
 							jQuery('#wrap-loading').hide();
+							jQuery('#persen-loading').html('');
+							jQuery('#persen-loading').attr('persen', '');
+							jQuery('#persen-loading').attr('total', '');
 							alert('Data berhasil disimpan di database lokal!');
 	                    })
 	                    .catch(function(e){
@@ -555,16 +566,84 @@ jQuery(document).ready(function(){
 	){
 		console.log('halaman sub kegiatan');
 		var singkron_rka = ''
-			+'<div class="col-xs-12 col-md-6">'
-	            +'<div class="button-box pull-right p-t-20">'
-					+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_rka_ke_lokal">'
-						+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RKA ke DB lokal</span>'
-					+'</button>';
-	            +'</div>'
-		    +'</div>';
-		jQuery('.icon-basket').closest('.m-t-0').append(singkron_rka);
+			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_rka_ke_lokal">'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RKA ke DB lokal</span>'
+			+'</button>';
+		// halaman list SKPD oleh admin TAPD
+		if(jQuery('.icon-basket').closest('.m-t-0').length == 0){
+			jQuery('.m-l-10').closest('.p-b-20').find('.col-md-2').append('<div class="button-box pull-right p-t-20">'+singkron_rka+'</div>');
+			jQuery('#singkron_rka_ke_lokal').attr('id_unit', 'all');
+		// halaman list sub kegiatan oleh kepala PD
+		}else if(jQuery('#form_bl .pull-right.p-t-20').length >= 1){
+			jQuery('#form_bl .pull-right.p-t-20').append(singkron_rka);
+		// halaman sub kegiatan
+		}else{
+			jQuery('.icon-basket').closest('.m-t-0').append('<div class="col-xs-12 col-md-6"><div class="button-box pull-right p-t-20">'+singkron_rka+'</div></div>');
+		}
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
-			singkron_rka_ke_lokal_all();
+			var cek_unit = jQuery('#singkron_rka_ke_lokal').attr('id_unit');
+			if(cek_unit == 'all'){
+				if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+					jQuery.ajax({
+						url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-unit/'+config.id_daerah+'/0',
+						type: 'get',
+						success: function(units){
+							jQuery('#persen-loading').attr('persen', 0);
+							jQuery('#persen-loading').html('0%');
+							var last = units.data.length-1;
+							jQuery('#persen-loading').attr('total', units.data.length);
+							units.data.reduce(function(sequence, nextData){
+			                    return sequence.then(function(current_data){
+			                		return new Promise(function(resolve_reduce, reject_reduce){
+		                				var c_persen = +jQuery('#persen-loading').attr('persen');
+		                				c_persen++;
+										jQuery('#persen-loading').attr('persen', c_persen);
+										jQuery('#persen-loading').html(((c_persen/units.data.length)*100).toFixed(2)+'%'+'<br>'+current_data.nama_skpd.nama_skpd);
+			                			singkron_rka_ke_lokal_all(current_data, function(){
+			                				console.log('next reduce', nextData);
+											resolve_reduce(nextData);
+			                			});
+									})
+			                        .catch(function(e){
+			                            console.log(e);
+			                            return Promise.resolve(nextData);
+			                        });
+			                    })
+			                    .catch(function(e){
+			                        console.log(e);
+			                        return Promise.resolve(nextData);
+			                    });
+			                }, Promise.resolve(units.data[last]))
+			                .then(function(data_last){
+			                	var opsi = { 
+									action: 'get_cat_url',
+									api_key: config.api_key,
+									category : 'Semua Perangkat Daerah Tahun Anggaran '+config.tahun_anggaran
+								};
+								var data = {
+								    message:{
+								        type: "get-url",
+								        content: {
+										    url: config.url_server_lokal,
+										    type: 'post',
+										    data: opsi,
+							    			return: true
+										}
+								    }
+								};
+								chrome.runtime.sendMessage(data, function(response) {
+								    console.log('responeMessage', response);
+								});
+			                })
+			                .catch(function(e){
+			                    console.log(e);
+			                });
+						}
+					});
+				}
+			}else{
+				singkron_rka_ke_lokal_all();
+			}
 		});
 	}else if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
 		var singkron_skpd = ''
@@ -825,34 +904,77 @@ function singkron_skpd_ke_lokal(){
 	}
 }
 
-function singkron_rka_ke_lokal_all() {
-	if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+function singkron_rka_ke_lokal_all(opsi_unit, callback) {
+	if((opsi_unit && opsi_unit.id_unit) || confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 		jQuery('#wrap-loading').show();
 		var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+		if(opsi_unit && opsi_unit.id_unit){
+			id_unit = opsi_unit.id_unit;
+			var opsi = { 
+				action: 'set_unit_pagu',
+				api_key: config.api_key,
+				tahun_anggaran: config.tahun_anggaran,
+				data : {
+					batasanpagu : opsi_unit.batasanpagu,
+					id_daerah : opsi_unit.id_daerah,
+					id_level : opsi_unit.id_level,
+					id_skpd : opsi_unit.id_skpd,
+					id_unit : opsi_unit.id_unit,
+					id_user : opsi_unit.id_user,
+					is_anggaran : opsi_unit.is_anggaran,
+					is_deleted : opsi_unit.is_deleted,
+					is_komponen : opsi_unit.is_komponen,
+					is_locked : opsi_unit.is_locked,
+					is_skpd : opsi_unit.is_skpd,
+					kode_skpd : opsi_unit.kode_skpd,
+					kunci_bl : opsi_unit.kunci_bl,
+					kunci_bl_rinci : opsi_unit.kunci_bl_rinci,
+					kuncibl : opsi_unit.kuncibl,
+					kunciblrinci : opsi_unit.kunciblrinci,
+					nilaipagu : opsi_unit.nilaipagu,
+					nilaipagumurni : opsi_unit.nilaipagumurni,
+					nilairincian : opsi_unit.nilairincian,
+					pagu_giat : opsi_unit.pagu_giat,
+					realisasi : opsi_unit.realisasi,
+					rinci_giat : opsi_unit.rinci_giat,
+					set_pagu_giat : opsi_unit.set_pagu_giat,
+					set_pagu_skpd : opsi_unit.set_pagu_skpd,
+					tahun : opsi_unit.tahun,
+					total_giat : opsi_unit.total_giat,
+					totalgiat : opsi_unit.totalgiat
+				}
+			};
+			var data = {
+			    message:{
+			        type: "get-url",
+			        content: {
+					    url: config.url_server_lokal,
+					    type: 'post',
+					    data: opsi,
+		    			no_return: true
+					}
+			    }
+			};
+			chrome.runtime.sendMessage(data, function(response) {
+			    console.log('responeMessage', response);
+			});
+		}
 		jQuery.ajax({
 			url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-giat/'+config.id_daerah+'/'+id_unit,
 			type: 'get',
 			success: function(subkeg){
-				// subkeg.data.map(function(b, i){
-				// 	if(b.nama_sub_giat.mst_lock != 3){
-				// 		singkron_rka_ke_lokal({
-				// 			idbl: b.id_bl,
-				// 			idsubbl: b.id_sub_bl,
-				// 			kode_skpd: b.kode_skpd,
-				// 			nama_skpd: b.nama_skpd,
-				// 			kode_sub_skpd: b.kode_sub_skpd
-				// 		});
-				// 	}
-				// });
+				var cat_wp = '';
 				var last = subkeg.data.length-1;
 				subkeg.data.reduce(function(sequence, nextData){
                     return sequence.then(function(current_data){
                 		return new Promise(function(resolve_reduce, reject_reduce){
-                        	if(current_data.nama_sub_giat.mst_lock != 3){
+                        	if(current_data.nama_sub_giat.mst_lock != 3 && current_data.kode_sub_skpd){
+                        		cat_wp = current_data.kode_sub_skpd+' '+current_data.nama_sub_skpd;
                         		var nama_skpd = current_data.nama_skpd.split(' ');
                         		nama_skpd.shift();
                         		nama_skpd = nama_skpd.join(' ');
 								singkron_rka_ke_lokal({
+									id_unit: id_unit,
 									kode_bl: current_data.kode_bl,
 									kode_sbl: current_data.kode_sbl,
 									idbl: current_data.id_bl,
@@ -881,25 +1003,29 @@ function singkron_rka_ke_lokal_all() {
                     });
                 }, Promise.resolve(subkeg.data[last]))
                 .then(function(data_last){
-                	var opsi = { 
-						action: 'get_cat_url',
-						api_key: config.api_key,
-						category : data_last.kode_sub_skpd+' '+data_last.nama_sub_skpd
-					};
-					var data = {
-					    message:{
-					        type: "get-url",
-					        content: {
-							    url: config.url_server_lokal,
-							    type: 'post',
-							    data: opsi,
-				    			return: true
-							}
-					    }
-					};
-					chrome.runtime.sendMessage(data, function(response) {
-					    console.log('responeMessage', response);
-					});
+					if(callback){
+						return callback();
+					}else{
+	                	var opsi = { 
+							action: 'get_cat_url',
+							api_key: config.api_key,
+							category : cat_wp
+						};
+						var data = {
+						    message:{
+						        type: "get-url",
+						        content: {
+								    url: config.url_server_lokal,
+								    type: 'post',
+								    data: opsi,
+					    			return: true
+								}
+						    }
+						};
+						chrome.runtime.sendMessage(data, function(response) {
+						    console.log('responeMessage', response);
+						});
+					}
                 })
                 .catch(function(e){
                     console.log(e);
@@ -913,6 +1039,9 @@ function singkron_rka_ke_lokal(opsi, callback) {
 	if((opsi && opsi.kode_bl) || confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 		jQuery('#wrap-loading').show();
 		var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+		if(opsi && opsi.id_unit){
+			id_unit = opsi.id_unit;
+		}
 		var kode_bl = false;
 		var kode_sbl = false;
 		var idbl = false;
@@ -943,17 +1072,20 @@ function singkron_rka_ke_lokal(opsi, callback) {
 			pagu = opsi.pagu;
 		}
 		if((idbl && idsubbl) || kode_sbl){
+			// get detail SKPD
 			jQuery.ajax({
 				url: config.sipd_url+'daerah/main/budget/skpd/'+config.tahun_anggaran+'/detil-skpd/'+config.id_daerah+'/'+id_unit,
 				type: 'post',
 				data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idskpd='+id_unit,
 				success: function(data_unit){
+					// get detail indikator kegiatan
 					jQuery.ajax({
 						url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/detil-giat/'+config.id_daerah+'/'+id_unit,
 						type: 'post',
 						data: "_token="+jQuery('meta[name=_token]').attr('content')+'&kodesbl='+kode_sbl,
 						success: function(subkeg){
 							// subkeg = JSON.parse(subkeg);
+							// get rincian belanja
 							jQuery.ajax({
 								// url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?idbl='+idbl+'&idsubbl='+idsubbl,
 								url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?kodesbl='+kode_sbl,

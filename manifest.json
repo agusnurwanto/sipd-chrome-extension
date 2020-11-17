@@ -3,7 +3,7 @@
 
 	"name": "sipd.kemendagri.go.id tools",
 	"description": "Chrome extension untuk mempermudah manajemen data di web sipd.kemendagri.go.id",
-	"version": "1.8.1",
+	"version": "1.9",
 	"icons": {
 		"16": "img/indonesia-flag.png",
         "48": "img/indonesia-flag.png",

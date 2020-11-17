@@ -24,6 +24,9 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 	console.log('sender, request', sender, request);
 	if(request.type == 'response-fecth-url'){
 		jQuery('#wrap-loading').hide();
+		jQuery('#persen-loading').html('');
+		jQuery('#persen-loading').attr('persen', '');
+		jQuery('#persen-loading').attr('total', '');
 		var res = request.data;
 		alert(res.message);
 		console.log(request.data);
