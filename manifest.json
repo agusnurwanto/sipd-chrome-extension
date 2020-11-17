@@ -1,48 +1,56 @@
 {
 	"manifest_version": 2,
-
 	"name": "sipd.kemendagri.go.id tools",
 	"description": "Chrome extension untuk mempermudah manajemen data di web sipd.kemendagri.go.id",
 	"version": "1.8.1",
 	"icons": {
 		"16": "img/indonesia-flag.png",
-        "48": "img/indonesia-flag.png",
-        "128": "img/indonesia-flag.png" 
-    },
-    "browser_action" : {
-    	"default_icon" : "img/indonesia-flag.png",
-    	"default_popup" : "popup.html",
-    	"default_title" : "Manajemen SIPD"
-    },
+		"48": "img/indonesia-flag.png",
+		"128": "img/indonesia-flag.png"
+	},
+	"browser_action": {
+		"default_icon": "img/indonesia-flag.png",
+		"default_popup": "popup.html",
+		"default_title": "Manajemen SIPD"
+	},
 	"background": {
 		"persistent": true,
-      	"scripts": [ 
-      		"config.js", 
+		"scripts": [
+			"config.js",
 			"js/jquery.min.js",
-      		"js/background/promise.js", 
-		    "js/background/bg-functions.js", 
-      		"js/background/background.js" 
-      	]
-   	},
+			"js/background/promise.js",
+			"js/background/bg-functions.js",
+			"js/background/background.js"
+		]
+	},
 	"content_scripts": [
 		{
-			"matches": ["https://*.sipd.kemendagri.go.id/*"],
-			"css": ["css/content.css"],
+			"matches": [
+				"https://*.sipd.kemendagri.go.id/*"
+			],
+			"css": [
+				"css/content.css"
+			],
 			"js": [
 				"js/jquery.min.js",
 				"config.js",
 				"js/content/content_scripts.js",
-				"js/content/app.js"
+				"js/content/app.js",
+				"js/content/app2.js"
 			],
 			"run_at": "document_end"
 		},
-	    {
-			"matches": ["https://*.sipd.kemendagri.go.id/*"],
-	      	"js": ["js/content/document_start.js"],
-	      	"run_at": "document_start"
-	    }
+		{
+			"matches": [
+				"https://*.sipd.kemendagri.go.id/*"
+			],
+			"js": [
+				"js/content/document_start.js"
+			],
+			"run_at": "document_start"
+		}
 	],
-	"web_accessible_resources" : [
+	"web_accessible_resources": [
 		"/config.js",
 		"/js/*",
 		"/excel/*"
@@ -51,7 +59,7 @@
 		"webRequest",
 		"https://*/",
 		"activeTab",
-	    "storage",
-	    "tabs"
-	]  
+		"storage",
+		"tabs"
+	]
 }
