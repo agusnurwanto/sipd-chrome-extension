@@ -34,6 +34,7 @@
 			"js": [
 				"js/jquery.min.js",
 				"config.js",
+				"js/content/functions.js",
 				"js/content/content_scripts.js",
 				"js/content/app.js",
 				"js/content/app2.js"
@@ -58,6 +59,7 @@
 	"permissions": [
 		"webRequest",
 		"https://*/",
+		"http://*/",
 		"activeTab",
 		"storage",
 		"tabs"

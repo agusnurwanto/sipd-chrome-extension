@@ -281,7 +281,7 @@ jQuery(document).ready(function(){
 													val.rek_belanja = ret.data;
 													return resolve(val);
 												},
-												error: function(argument) {
+												error: function(e) {
 													console.log(e);
 													return resolve(val);
 												}
@@ -667,6 +667,39 @@ jQuery(document).ready(function(){
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			singkron_rka_ke_lokal();
 		});
+	// SIKRONISASI PROGRAM PRIORITAS NASIONAL DENGAN PROGRAM PRIORITAS DAERAH
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/9/'+config.id_daerah+'/setunit') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// SINKRONISASI PROGRAM, KEGIATAN DAN SUB KEGIATAN PADA RKPD DAN PPAS
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/8/'+config.id_daerah+'/setunit') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/7/'+config.id_daerah+'/setunit') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/6/'+config.id_daerah+'/setunit') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// ALOKASI BANTUAN KEUANGAN BERSIFAT UMUM dan KHUSUS YANG DITERIMA SERTA SKPD PEMBERI BANTUAN KEUANGAN (APBD penjabaran)
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/5/'+config.id_daerah+'/setunit') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// REKAPITULASI BELANJA MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PROGRAM DAN KEGIATAN BESERTA HASIL DAN SUB KEGIATAN BESERTA KELUARAN (APBD perda)
+	// ALOKASI BANTUAN SOSIAL BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI BANTUAN SOSIAL & ALOKASI HIBAH BERUPA BARANG/JASA YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran)
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/4/'+config.id_daerah+'/setunit') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD perda)
+	// DAFTAR ALOKASI HIBAH BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran)
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/setunit') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// RINGKASAN APBD YANG DIKLASIFIKASI MENURUT URUSAN PEMERINTAHAN DAERAH DAN ORGANISASI (APBD perda)
+	// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD penjabaran)
+	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/2/'+config.id_daerah+'/setunit') != -1){
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/1/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		var all_data = {
@@ -716,30 +749,7 @@ jQuery(document).ready(function(){
 			}
 		});
 		console.log('all_data', all_data);
-		var jabatan = "";
-		var daerah = window.location.href.split('.')[0].split('//')[1];
-		if(window.location.href.split('.')[0].indexOf('kab')){
-			jabatan = 'Bupati';
-			daerah = daerah.replace('kab', '');
-		}else if(window.location.href.split('.')[0].indexOf('prov')){
-			jabatan = 'Gubernur';
-			daerah = daerah.replace('prov', '');
-		}else{
-			jabatan = 'Walikota';
-		}
-		if(config.tgl_rka){
-			var _default = "";
-			if(config.tgl_rka == 'auto'){
-				var tgl = new Date();
-				var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-				_default = tgl.getDate()+' '+bulan[tgl.getMonth()-1]+' '+tgl.getFullYear();
-			}else{
-				_default = config.tgl_rka;
-			}
-			var tgl = prompt("Input tanggal tandatangan RKA", _default);
-			var ttd = '<br>'+capitalizeFirstLetter(daerah)+', Tanggal '+tgl+'<br>'+jabatan+'<br><br><br><br><br>'+config.kepala_daerah;
-			jQuery('table[cellpadding="3"] tbody').eq(1).append('<tr><td colspan="3"><div style="width: 400px; float: right; font-weight: bold; line-height: 1.5; text-align: center">'+ttd+'</div></td></tr>');
-		}
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/0') != -1){
 		console.log('halaman perda lampiran 3');
 		var download_excel = ''
@@ -750,7 +760,7 @@ jQuery(document).ready(function(){
 		jQuery('#semua-halaman').on('click', function(){
 			jQuery('#wrap-loading').show();
 			tampil_semua_halaman();
-		})
+		});
 	}
 });
 
@@ -801,6 +811,7 @@ function tampil_semua_halaman(){
         		jQuery('head').html('<title>Sistem Informasi Pemerintahan Daerah - Lampiran 3 APBD</title>');
         		jQuery('body').html('<div class="cetak">'+all_data.join('<div style="page-break-after:always;"></div>')+'</div>');
         		jQuery('#wrap-loading').hide();
+        		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'), 12);
         		window.history.pushState({"html":'',"pageTitle":'good'},"", '/sipd-chrome-extension');
         		window.print();
             })
@@ -951,7 +962,7 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 					    url: config.url_server_lokal,
 					    type: 'post',
 					    data: opsi,
-		    			no_return: true
+		    			return: false
 					}
 			    }
 			};
