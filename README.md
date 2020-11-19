@@ -2,6 +2,8 @@
 Optimasi aplikasi SIPD dengan chrome extension
 Semoga bermanfaat
 
+### GRUP telegram https://t.me/sipd_chrome_extension
+
 ### Fitur:
 	- Export data SSH ke database lokal
 	- Export data akun belanja ke database lokal

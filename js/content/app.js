@@ -438,13 +438,6 @@ jQuery(document).ready(function(){
 			});
 		}
 		var download_excel = ''
-			  +'<style>'
-			      +'table { page-break-inside:auto }'
-			      +'div   { page-break-inside:avoid; } /* This is the key */'
-			      +'tr    { page-break-inside:avoid; page-break-after:auto }'
-			      +'thead { display:table-header-group }'
-			      +'tfoot { display:table-footer-group }'
-			  +'</style>'
 			+'<div id="action-sipd" class="hide-print">'
 				+'<a id="excel" onclick="return false;" href="#">DOWNLOAD EXCEL</a>'
 			+'</div>';
@@ -667,20 +660,23 @@ jQuery(document).ready(function(){
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			singkron_rka_ke_lokal();
 		});
-	// SIKRONISASI PROGRAM PRIORITAS NASIONAL DENGAN PROGRAM PRIORITAS DAERAH
+	// SIKRONISASI PROGRAM PRIORITAS NASIONAL DENGAN PROGRAM PRIORITAS DAERAH (APBD perda)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/9/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
-	// SINKRONISASI PROGRAM, KEGIATAN DAN SUB KEGIATAN PADA RKPD DAN PPAS
+	// SINKRONISASI PROGRAM, KEGIATAN DAN SUB KEGIATAN PADA RKPD DAN PPAS (APBD perda)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/8/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// SINKRONISASI PROGRAM PADA RPJMD DENGAN APBD (APBD perda)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/7/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// REKAPITULASI BELANJA UNTUK PEMENUHAN SPM (APBD perda)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/6/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// URUSAN PEMERINTAHAN DAERAH DAN FUNGSI DALAM KERANGKA PENGELOLAAN KEUANGAN NEGARA (APBD perda)
 	// ALOKASI BANTUAN KEUANGAN BERSIFAT UMUM dan KHUSUS YANG DITERIMA SERTA SKPD PEMBERI BANTUAN KEUANGAN (APBD penjabaran)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/5/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
@@ -699,7 +695,23 @@ jQuery(document).ready(function(){
 	// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD penjabaran)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/2/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		var bidang_urusan = {};
+		jQuery('table[cellpadding="3"]>tbody tr').map(function(i, b){
+			var td = jQuery(b).find('td');
+			var urusan = td.eq(0).text().trim();
+			var bidang = td.eq(1).text().trim();
+			if(!bidang_urusan[urusan]){
+				bidang_urusan[urusan] = {};
+			}
+			if(bidang && !bidang_urusan[urusan][bidang]){
+				bidang_urusan[urusan][bidang] = {};
+			}
+			var kode_unit = td.eq(2).text().trim();
+			console.log('kode_unit', kode_unit);
+		});
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// RINGKASAN APBD YANG DIKLASIFIKASI MENURUT KELOMPOK DAN JENIS PENDAPATAN, BELANJA, DAN PEMBIAYAAN (APBD perda)
+	// RINGKASAN PENJABARAN APBD YANG DIKLASIFIKASI MENURUT KELOMPOK DAN JENIS PENDAPATAN, BELANJA, DAN PEMBIAYAAN (APBD penjabaran)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/1/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		var all_data = {
@@ -812,7 +824,7 @@ function tampil_semua_halaman(){
         		jQuery('body').html('<div class="cetak">'+all_data.join('<div style="page-break-after:always;"></div>')+'</div>');
         		jQuery('#wrap-loading').hide();
         		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'), 12);
-        		window.history.pushState({"html":'',"pageTitle":'good'},"", '/sipd-chrome-extension');
+        		window.history.pushState({"html":'',"pageTitle":'good'},"", '/sce');
         		window.print();
             })
             .catch(function(err){
