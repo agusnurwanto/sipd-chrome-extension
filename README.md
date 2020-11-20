@@ -21,11 +21,11 @@ Semoga bermanfaat
 	- Export program kegiatan ke database lokal
 	- Menampilkan nama TAPD di RKA pendapatan
 	- Menampilkan daftar SKPD yang lintas urusan di lampiran 2 APBD perda
-	- Menmapilkan tanggal dan nama kepala daerah di lampiran 1-9 APBD perda dan 1-5 APBD penjabaran
+	- Menampilkan tanggal dan nama kepala daerah di lampiran 1-9 APBD perda dan 1-5 APBD penjabaran
 	- Import Dana Desa ke Rincian Sub kegiatan
+	- Import data sumber dana ke db lokal
 
 ### Pengembangan berikutnya:
-	- Import data sumber dana ke db lokal
 	- Melengkapi dokumentasi penggunaan di halaman wiki
 	- Melengkapi video tutorial di youtube
 	- Import data provinsi, kabupaten, kecamatan, desa
