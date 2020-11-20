@@ -134,3 +134,11 @@ thead{
     width: 100vw;
     margin-left: -50vw;
 }
+.border-table-sce{
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+.border-table-sce td, .border-table-sce th{
+    border: 1px solid #000;
+    padding: 5px 10px;
+}

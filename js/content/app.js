@@ -437,83 +437,8 @@ jQuery(document).ready(function(){
 				td.eq(3).text(b.jabatan);
 			});
 		}
-		var download_excel = ''
-			+'<div id="action-sipd" class="hide-print">'
-				+'<a id="excel" onclick="return false;" href="#">DOWNLOAD EXCEL</a>'
-			+'</div>';
-		// jQuery('td.kiri.kanan.bawah[colspan="13"]').parent().attr('style', 'page-break-inside:avoid; page-break-after:auto');
-		jQuery('body').prepend(download_excel);
-		jQuery('.cetak > table').attr('id', 'rka');
-		// jQuery('html').attr('id', 'rka');
 
-		var style = '';
-
-		style = jQuery('.cetak').attr('style');
-		if (typeof style == 'undefined'){ style = ''; };
-		jQuery('.cetak').attr('style', style+" font-family:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; padding:0; margin:0; font-size:13px;");
-		
-		jQuery('.bawah').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" border-bottom:1px solid #000;");
-		});
-		
-		jQuery('.kiri').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" border-left:1px solid #000;");
-		});
-
-		jQuery('.kanan').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" border-right:1px solid #000;");
-		});
-
-		jQuery('.atas').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" border-top:1px solid #000;");
-		});
-
-		jQuery('.text_tengah').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" text-align: center;");
-		});
-
-		jQuery('.text_kiri').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" text-align: left;");
-		});
-
-		jQuery('.text_kanan').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" text-align: right;");
-		});
-
-		jQuery('.text_block').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" font-weight: bold;");
-		});
-
-		jQuery('.text_15').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" font-size: 15px;");
-		});
-
-		jQuery('.text_20').map(function(i, b){
-			style = jQuery(b).attr('style');
-			if (typeof style == 'undefined'){ style = ''; };
-			jQuery(b).attr('style', style+" font-size: 20px;");
-		});
-
-		// jQuery('#rka > tbody > tr > td > table').attr('style', 'min-width: 1000px;');
-
+		run_download_excel();
 		if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1){
 			jQuery('table[cellpadding="5"] tr').map(function(i,b){
 			    var kode = jQuery(b).find('td').eq(0).text().split('.');
@@ -533,26 +458,6 @@ jQuery(document).ready(function(){
 				}
 			});
 		}
-
-		jQuery('#excel').on('click', function(){
-			var name = "Laporan";
-			if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1){
-				name = 'KUA dan PPAS Lampiran 4.1 '+document.querySelectorAll('td[colspan="10"]')[0].innerText;
-				jQuery('td.kanan.bawah.text_kanan').map(function(i, b){
-					var style = jQuery(b).attr('style');
-					jQuery(b).attr('style', style+' mso-number-format:\\@;');
-				});
-			}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/42/'+config.id_daerah+'/setunit') != -1){
-				name = 'KUA dan PPAS Lampiran 4.2 '+document.querySelectorAll('td[colspan="10"]')[0].innerText;
-				jQuery('td.kanan.bawah.text_kanan').map(function(i, b){
-					var style = jQuery(b).attr('style');
-					jQuery(b).attr('style', style+' mso-number-format:\\@;');
-				});
-			}else if(current_url.indexOf('rka-bl-rinci/cetak') != -1){
-				name = document.querySelectorAll('.cetak > table table')[1].querySelectorAll('tbody > tr')[7].querySelectorAll('td')[2].innerText;
-			}
-			tableHtmlToExcel('rka', name);
-		});
 	}else if(
 		current_url.indexOf('belanja/'+config.tahun_anggaran+'/giat/unit/'+config.id_daerah+'/') != -1
 		|| current_url.indexOf('belanja/'+config.tahun_anggaran+'/giat/list/'+config.id_daerah+'/') != -1
@@ -696,19 +601,98 @@ jQuery(document).ready(function(){
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/2/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		var bidang_urusan = {};
+		var skpd = {};
 		jQuery('table[cellpadding="3"]>tbody tr').map(function(i, b){
 			var td = jQuery(b).find('td');
 			var urusan = td.eq(0).text().trim();
+			if(isNaN(urusan)){
+				return;
+			}
 			var bidang = td.eq(1).text().trim();
+			var nama = td.eq(3).text().trim();
 			if(!bidang_urusan[urusan]){
-				bidang_urusan[urusan] = {};
+				bidang_urusan = {};
+				bidang_urusan[urusan] = {
+					nama: nama
+				};
 			}
 			if(bidang && !bidang_urusan[urusan][bidang]){
-				bidang_urusan[urusan][bidang] = {};
+				bidang_urusan[urusan] = {
+					nama: bidang_urusan[urusan].nama
+				};
+				bidang_urusan[urusan][bidang] = {
+					nama: nama
+				};
 			}
 			var kode_unit = td.eq(2).text().trim();
-			console.log('kode_unit', kode_unit);
+			if(kode_unit){
+				var kodes = kode_unit.split('.');
+				var cek = false;
+				if(bidang_urusan[kodes[0]] && bidang_urusan[kodes[0]][kodes[1]]){
+					cek = true;
+				}else if(bidang_urusan[kodes[2]] && bidang_urusan[kodes[2]][kodes[3]]){
+					cek = true;
+				}else if(bidang_urusan[kodes[4]] && bidang_urusan[kodes[4]][kodes[5]]){
+					cek = true;
+				}
+				if(!cek){
+					console.log('bidang_urusan', bidang_urusan);
+					if(!skpd[kode_unit]){
+						skpd[kode_unit] = {
+							nama: nama
+						};
+					}
+					if(!skpd[kode_unit][urusan]){
+						skpd[kode_unit][urusan] = {
+							nama: bidang_urusan[urusan].nama
+						};
+					}
+					if(!skpd[kode_unit][urusan][bidang]){
+						skpd[kode_unit][urusan][bidang] = {
+							nama: bidang_urusan[urusan][bidang].nama
+						}
+					}
+				}
+			}
 		});
+		// console.log('skpd', skpd);
+		var lintas_urusan = '';
+		var no = 0;
+		for(var i in skpd){
+			if(i=='nama'){ continue; }
+			for(var j in skpd[i]){
+				if(j=='nama'){ continue; }
+				for(var k in skpd[i][j]){
+					if(k=='nama'){ continue; }
+					no++;
+					lintas_urusan += ''
+						+'<tr>'
+							+'<td>'+no+'</td>'
+							+'<td class="text_kiri">'+skpd[i].nama+'</td>'
+							+'<td class="text_kiri">'+skpd[i][j].nama+'</td>'
+							+'<td class="text_kiri">'+skpd[i][j][k].nama+'</td>'
+						+'</tr>';
+				}
+			}
+		};
+		var skpd_lintas_urusan = ''
+			+'<table class="border-table-sce">'
+				+'<thead>'
+					+'<tr>'
+						+'<th colspan="4">Data SKPD Lintas Urusan</th>'
+					+'</tr>'
+					+'<tr>'
+						+'<th>No</th>'
+						+'<th>SKPD</th>'
+						+'<th>Urusan</th>'
+						+'<th>Bidang</th>'
+					+'</tr>'
+				+'</thead>'
+				+'<tbody>'
+					+lintas_urusan
+				+'</tbody>'
+			+'</table>';
+		jQuery('#action-sipd').prepend(skpd_lintas_urusan);
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
 	// RINGKASAN APBD YANG DIKLASIFIKASI MENURUT KELOMPOK DAN JENIS PENDAPATAN, BELANJA, DAN PEMBIAYAAN (APBD perda)
 	// RINGKASAN PENJABARAN APBD YANG DIKLASIFIKASI MENURUT KELOMPOK DAN JENIS PENDAPATAN, BELANJA, DAN PEMBIAYAAN (APBD penjabaran)
