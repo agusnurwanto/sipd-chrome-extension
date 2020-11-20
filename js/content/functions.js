@@ -11,15 +11,7 @@ function ttd_kepala_daerah(target){
 		jabatan = 'Walikota';
 	}
 	if(config.tgl_rka){
-		var _default = "";
-		if(config.tgl_rka == 'auto'){
-			var tgl = new Date();
-			var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-			_default = tgl.getDate()+' '+bulan[tgl.getMonth()-1]+' '+tgl.getFullYear();
-		}else{
-			_default = config.tgl_rka;
-		}
-		var tgl = prompt("Input tanggal tandatangan RKA", _default);
+		var tgl = get_tanggal();
 		var ttd = '<br>'+capitalizeFirstLetter(daerah)+', Tanggal '+tgl+'<br>'+jabatan+'<br><br><br><br><br>'+config.kepala_daerah;
 		var length = 0;
 		target.map(function(n, j){
@@ -34,6 +26,18 @@ function ttd_kepala_daerah(target){
 		});
 	}
 	run_download_excel();
+}
+
+function get_tanggal(){
+	var _default = "";
+	if(config.tgl_rka == 'auto'){
+		var tgl = new Date();
+		var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+		_default = tgl.getDate()+' '+bulan[tgl.getMonth()-1]+' '+tgl.getFullYear();
+	}else{
+		_default = config.tgl_rka;
+	}
+	return prompt("Input tanggal tanda tangan", _default);
 }
 
 function run_download_excel(){

@@ -413,20 +413,15 @@ jQuery(document).ready(function(){
 		current_url.indexOf('rka-bl-rinci/cetak') != -1
 		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1
 		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/42/'+config.id_daerah+'/setunit') != -1
+		|| current_url.indexOf('dokumen/'+config.tahun_anggaran+'/rka-penda/cetak/'+config.id_daerah+'/') != -1
 	){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'html');
-		if(config.tgl_rka){
-			var _default = "";
-			if(config.tgl_rka == 'auto'){
-				var tgl = new Date();
-				var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-				_default = tgl.getDate()+' '+bulan[tgl.getMonth()-1]+' '+tgl.getFullYear();
-			}else{
-				_default = config.tgl_rka;
+		if(current_url.indexOf('dokumen/'+config.tahun_anggaran+'/rka-penda/cetak/'+config.id_daerah+'/') == -1){
+			if(config.tgl_rka){
+				var tgl = get_tanggal();
+				var tgl_rka = jQuery(jQuery('td.text_tengah[colspan="3"]')[0]);
+				tgl_rka.text(tgl_rka.text()+' '+tgl);
 			}
-			var tgl = prompt("Input tanggal tandatangan RKA", _default);
-			var tgl_rka = jQuery(jQuery('td.text_tengah[colspan="3"]')[0]);
-			tgl_rka.text(tgl_rka.text()+' '+tgl);
 		}
 		if(config.tapd){
 			var tr_tapd = jQuery('table[cellpadding="5"][cellspacing="0"] tr.text_tengah').parent().find('tr');
