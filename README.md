@@ -2,6 +2,8 @@
 Optimasi aplikasi SIPD dengan chrome extension
 Semoga bermanfaat
 
+### GRUP telegram https://t.me/sipd_chrome_extension
+
 ### Fitur:
 	- Export data SSH ke database lokal
 	- Export data akun belanja ke database lokal
@@ -17,9 +19,13 @@ Semoga bermanfaat
 	- Print APBD lampiran III semua Perangkat Daerah menjadi satu
 	- Export RKA seluruh perangkat daerah
 	- Export program kegiatan ke database lokal
+	- Menampilkan nama TAPD di RKA pendapatan
+	- Menampilkan daftar SKPD yang lintas urusan di lampiran 2 APBD perda
+	- Menmapilkan tanggal dan nama kepala daerah di lampiran 1-9 APBD perda dan 1-5 APBD penjabaran
+	- Import Dana Desa ke Rincian Sub kegiatan
 
 ### Pengembangan berikutnya:
+	- Import data sumber dana ke db lokal
 	- Melengkapi dokumentasi penggunaan di halaman wiki
 	- Melengkapi video tutorial di youtube
-	- Import Dana Desa ke Rincian Sub kegiatan
 	- Import data provinsi, kabupaten, kecamatan, desa
