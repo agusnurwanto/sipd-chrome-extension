@@ -137,3 +137,116 @@ function run_download_excel(){
 		tableHtmlToExcel('rka', name);
 	});
 }
+
+function getAllUnit(){
+	return new Promise(function(resolve, reject){
+		if(typeof(allUnitSCE) == 'undefined'){
+			jQuery.ajax({
+				url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-unit/'+config.id_daerah+'/0',
+				type: 'get',
+				success: function(unit){
+					window.allUnitSCE = unit.data;
+					return resolve(unit.data);
+				}
+			});
+		}else{
+			return resolve(allUnitSCE);
+		}
+	});
+}
+
+function getAllSubKeg(id_unit){
+	return new Promise(function(resolve, reject){
+		getAllUnit().then(function(unit){
+			unit.map(function(b, i){
+				if(b.id_unit == id_unit){
+					if(!b.data_sub){
+						jQuery.ajax({
+							url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-giat/'+config.id_daerah+'/'+id_unit,
+							type: 'get',
+							success: function(allsub){
+								allUnitSCE[i].data_sub = allsub.data; 
+								return resolve(allUnitSCE[i].data_sub);
+							}
+						});
+					}else{
+						return resolve(b.data_sub);
+					}
+				}
+			});
+		})
+	});
+}
+
+function getRincSubKeg(id_unit, kode_sbl){
+	return new Promise(function(resolve, reject){
+		getAllSubKeg(id_unit).then(function(allsub){
+			allsub.map(function(b, i){
+				if(b.kode_sbl == kode_sbl){
+					if(!b.data_rinc){
+						jQuery.ajax({
+							url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?kodesbl='+kode_sbl,
+							type: 'get',
+							success: function(allrinc){
+								allUnitSCE.map(function(un, n){
+									if(un.id_unit == id_unit){
+										allUnitSCE[n].data_sub[i].data_rinc = allrinc.data;
+										return resolve(allUnitSCE[n].data_sub[i].data_rinc);
+									}
+								})
+							}
+						});
+					}else{
+						return resolve(b.data_rinc);
+					}
+				}
+			});
+		})
+	});
+}
+
+function getDetailPenerima(kode_sbl, rek){
+	return new Promise(function(resolve, reject){
+		if(typeof(allPenerimaSCE) == 'undefined'){
+			getToken().then(function(_token){
+				var _rek = rek;
+				if(!_rek){
+					_rek = '7168||lainnya';
+				}
+				jQuery.ajax({
+					url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-penerima/'+config.id_daerah+'/0',
+					type: 'post',
+					data: "_token="+_token+'&kodesbl='+kode_sbl+'&rekening='+_rek,
+					success: function(penerima){
+						window.allPenerimaSCE = penerima.data;
+						return resolve(penerima.data);
+					}
+				});
+			});
+		}else{
+			return resolve(allPenerimaSCE);
+		}
+	});
+}
+
+function getToken(){
+	return new Promise(function(resolve, reject){
+		if(typeof(tokenSCE) == 'undefined'){
+			var token = jQuery('meta[name=_token]').attr('content');
+			if(!token){
+				jQuery.ajax({
+					url: config.sipd_url+'daerah/main/budget/dashboard/'+config.tahun_anggaran+'/unit/'+config.id_daerah+'/0',
+					type: 'get',
+					success: function(html){
+						html = html.split('<meta name="_token" content="');
+						html = html[1].split('"');
+						window.tokenSCE = html[0];
+						return resolve(tokenSCE);
+					}
+				});
+			}
+		}else{
+			return resolve(tokenSCE);
+		}
+	});
+}

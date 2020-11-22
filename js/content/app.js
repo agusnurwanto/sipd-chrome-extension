@@ -586,6 +586,187 @@ jQuery(document).ready(function(){
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/4/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+
+		getDetailPenerima('2264.2264.399.1798.7957').then(function(all_penerima){
+			console.log('all_penerima', all_penerima);
+		}); // perlu develop lagi
+
+		var table = [];
+		jQuery('table[cellpadding="3"]').map(function(i, b){
+			table.push(b);
+		});
+		var last = table.length-1;
+		table.reduce(function(sequence, nextData){
+            return sequence.then(function(current_data){
+        		return new Promise(function(resolve_reduce, reject_reduce){
+        			var dinas = {
+						kode: '',
+						nama: '',
+						data: {}
+					};
+					var subkeg = {
+						kode: '',
+						nama: '',
+						data: {}
+					}
+        			var tr = [];
+        			jQuery(current_data).find('>tbody>tr').map(function(n, m){
+        				tr.push(m);
+        			});
+        			var lasttr = tr.length-1;
+        			tr.reduce(function(sequence2, nextData2){
+			            return sequence2.then(function(current_data2){
+			        		return new Promise(function(resolve_reduce2, reject_reduce2){
+        						var td = jQuery(current_data2).find('td');
+								if(td.length == 2){
+									var text = td.eq(1).text().split(' ');
+									var kode = text.shift();
+									var nama = text.join(' ');
+									if(kode.split('.').length == 8){
+										dinas.kode = kode;
+										dinas.nama = nama;
+										getAllUnit().then(function(unit){
+											unit.map(function(un, m){
+												if(un.kode_skpd == dinas.kode){
+													dinas.data = un;
+												}
+											});
+			        						resolve_reduce2(nextData2);
+										});
+									}else{
+										subkeg.kode = kode;
+										subkeg.nama = nama;
+										getAllSubKeg(dinas.data.id_unit).then(function(all_sub){
+											all_sub.map(function(sub, m){
+												if(sub.kode_sub_giat == subkeg.kode){
+													subkeg.data = sub;
+												}
+											});
+			        						resolve_reduce2(nextData2);
+										});
+									}
+								}else if(td.length == 4){
+									var kelompok = {
+										nama: td.eq(1).text().trim(),
+										data: []
+									};
+									getRincSubKeg(dinas.data.id_unit, subkeg.data.kode_sbl).then(function(all_rinc){
+										var penerima = '';
+										var nomor = 0;
+										all_rinc.map(function(rin, m){
+											if(rin.subs_bl_teks == kelompok.nama){
+												kelompok.data.push(rin);
+												nomor++;
+												penerima += ''
+													+'<tr>'
+														+'<td>'+nomor+'</td>'
+														+'<td>'+rin.nama_standar_harga.nama_komponen+'</td>'
+														+'<td>'+rin.koefisien+'</td>'
+														+'<td>'+rin.harga_satuan+'</td>'
+														+'<td>'+rin.pajak+'</td>'
+														+'<td>'+rin.rincian+'</td>'
+													+'</tr>';
+											}
+										})
+										console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
+										if(penerima){
+											var table_penerima = ''
+												+'<table>'
+													+'<thead>'
+														+'<tr>'
+															+'<th>No</th>'
+															+'<th>Uraian</th>'
+															+'<th>koefisien</th>'
+															+'<th>Harga</th>'
+															+'<th>Pajak</th>'
+															+'<th>Total</th>'
+														+'</tr>'
+													+'</thead>'
+													+'<tbody>'
+														+penerima
+													+'</tbody>'
+												+'</table>';
+											td.eq(2).append(table_penerima);
+										}
+				        				resolve_reduce2(nextData2);
+									});
+								}else{
+									console.log('tr skip', current_data2);
+									resolve_reduce2(nextData2);
+								}
+			                })
+			                .catch(function(e){
+			                    console.log(e);
+			                    return Promise.resolve(nextData2);
+			                });
+			            })
+			            .catch(function(e){
+			                console.log(e);
+			                return Promise.resolve(nextData2);
+			            });
+			        }, Promise.resolve(tr[lasttr]))
+			        .then(function(){
+                		resolve_reduce(nextData);
+			        });
+                })
+                .catch(function(e){
+                    console.log(e);
+                    return Promise.resolve(nextData);
+                });
+            })
+            .catch(function(e){
+                console.log(e);
+                return Promise.resolve(nextData);
+            });
+        }, Promise.resolve(table[last]))
+        .then(function(){
+
+        });
+
+  //       table.map(function(i, b){
+		// 	var dinas = {
+		// 		kode: '',
+		// 		nama: '',
+		// 		data: {}
+		// 	};
+		// 	var subkeg = {
+		// 		kode: '',
+		// 		nama: '',
+		// 		data: {}
+		// 	}
+		// 	jQuery(b).find('>tbody>tr').map(function(n, tr){
+		// 		var td = jQuery(tr).find('td');
+		// 		if(td.length == 2){
+		// 			var text = td.eq(1).text().split(' ');
+		// 			var kode = text.shift();
+		// 			var nama = text.join(' ');
+		// 			if(kode.split('.').length == 8){
+		// 				dinas.kode = kode;
+		// 				dinas.nama = nama;
+		// 				getAllUnit().then(function(unit){
+		// 					unit.map(function(un, m){
+		// 						if(un.kode_skpd == dinas.kode){
+		// 							dinas.data = un;
+		// 						}
+		// 					});
+		// 				});
+		// 			}else{
+		// 				subkeg.kode = kode;
+		// 				subkeg.nama = nama;
+		// 				getAllSubKeg(dinas.data.id_unit).then(function(all_sub){
+		// 					all_sub.map(function(sub, m){
+		// 						if(sub.kode_sub_giat == subkeg.kode){
+		// 							subkeg.data = sub;
+		// 						}
+		// 					});
+		// 				});
+		// 			}
+		// 		}else if(td.length == 4){
+		// 			var kelompok = td.eq(1).text();
+		// 			console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
+		// 		}
+		// 	})
+		// });
 	// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD perda)
 	// DAFTAR ALOKASI HIBAH BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/setunit') != -1){
