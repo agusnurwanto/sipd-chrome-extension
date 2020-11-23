@@ -14,6 +14,7 @@ function ttd_kepala_daerah(target){
 		var tgl = get_tanggal();
 		var ttd = '<br>'+capitalizeFirstLetter(daerah)+', Tanggal '+tgl+'<br>'+jabatan+'<br><br><br><br><br>'+config.kepala_daerah;
 		var length = 0;
+
 		target.map(function(n, j){
 			jQuery(j).find('tr').eq(0).find('td').map(function(i, b){
 				var colspan = jQuery(b).attr('colspan');
@@ -23,6 +24,9 @@ function ttd_kepala_daerah(target){
 				length += +colspan;
 			});
 			jQuery(j).append('<tr><td colspan="'+length+'"><div style="width: 400px; float: right; font-weight: bold; line-height: 1.5; text-align: center">'+ttd+'</div></td></tr>');
+			if(n < target.length-1){
+				jQuery(j).closest('table').after('<div style="page-break-after:always;"></div>');
+			}
 		});
 	}
 	run_download_excel();
@@ -249,4 +253,21 @@ function getToken(){
 			return resolve(tokenSCE);
 		}
 	});
+}
+
+function formatRupiah(angka, prefix){
+	var number_string = angka.replace(/[^,\d]/g, '').toString(),
+	split   		= number_string.split(','),
+	sisa     		= split[0].length % 3,
+	rupiah     		= split[0].substr(0, sisa),
+	ribuan     		= split[0].substr(sisa).match(/\d{3}/gi);
+
+	// tambahkan titik jika yang di input sudah menjadi angka ribuan
+	if(ribuan){
+		separator = sisa ? '.' : '';
+		rupiah += separator + ribuan.join('.');
+	}
+
+	rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+	return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
 }

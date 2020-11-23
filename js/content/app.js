@@ -585,11 +585,12 @@ jQuery(document).ready(function(){
 	// ALOKASI BANTUAN SOSIAL BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI BANTUAN SOSIAL & ALOKASI HIBAH BERUPA BARANG/JASA YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/4/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		jQuery('table[cellpadding="3"]').map(function(i, b){
+			jQuery(b).before('<table id="header-title'+i+'" width="100%"><tbody></tbody></table>');
+			jQuery(b).find('tr>td>div').closest('tr').prependTo("#header-title"+i+">tbody");
+		});
+		jQuery('table[align="right"]').prependTo(".cetak");
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
-
-		getDetailPenerima('2264.2264.399.1798.7957').then(function(all_penerima){
-			console.log('all_penerima', all_penerima);
-		}); // perlu develop lagi
 
 		var table = [];
 		jQuery('table[cellpadding="3"]').map(function(i, b){
@@ -651,44 +652,59 @@ jQuery(document).ready(function(){
 										data: []
 									};
 									getRincSubKeg(dinas.data.id_unit, subkeg.data.kode_sbl).then(function(all_rinc){
-										var penerima = '';
+										var penerima = [];
 										var nomor = 0;
+										var _style = {
+											td_1: 'class="'+td.eq(0).attr('class')+'" width="'+td.eq(0).attr('width')+'" style="'+td.eq(0).attr('style')+'"',
+											td_2: 'class="'+td.eq(1).attr('class')+'" width="'+td.eq(1).attr('width')+'" style="'+td.eq(1).attr('style')+'"',
+											td_3: 'class="'+td.eq(2).attr('class')+'" width="'+td.eq(2).attr('width')+'" style="'+td.eq(2).attr('style')+'"',
+											td_4: 'class="'+td.eq(3).attr('class')+'" width="'+td.eq(3).attr('width')+'" style="'+td.eq(3).attr('style')+'"'
+										}
 										all_rinc.map(function(rin, m){
 											if(rin.subs_bl_teks == kelompok.nama){
 												kelompok.data.push(rin);
 												nomor++;
-												penerima += ''
-													+'<tr>'
-														+'<td>'+nomor+'</td>'
-														+'<td>'+rin.nama_standar_harga.nama_komponen+'</td>'
-														+'<td>'+rin.koefisien+'</td>'
-														+'<td>'+rin.harga_satuan+'</td>'
-														+'<td>'+rin.pajak+'</td>'
-														+'<td>'+rin.rincian+'</td>'
-													+'</tr>';
+												rin.nomor = nomor;
+												penerima.push(rin);
 											}
-										})
-										console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
-										if(penerima){
-											var table_penerima = ''
-												+'<table>'
-													+'<thead>'
-														+'<tr>'
-															+'<th>No</th>'
-															+'<th>Uraian</th>'
-															+'<th>koefisien</th>'
-															+'<th>Harga</th>'
-															+'<th>Pajak</th>'
-															+'<th>Total</th>'
-														+'</tr>'
-													+'</thead>'
-													+'<tbody>'
-														+penerima
-													+'</tbody>'
-												+'</table>';
-											td.eq(2).append(table_penerima);
-										}
-				        				resolve_reduce2(nextData2);
+										});
+										var penerimaHTML = [];
+										var lastpenerima = penerima.length-1;
+										penerima.reduce(function(sequence3, nextData3){
+								            return sequence3.then(function(current_data3){
+								        		return new Promise(function(resolve_reduce3, reject_reduce3){
+													getDetailPenerima(subkeg.data.kode_sbl).then(function(all_penerima){
+														var alamat = '';
+														all_penerima.map(function(p, o){
+															if(p.nama_teks == current_data3.lokus_akun_teks){
+																alamat = p.alamat_teks+' - '+p.jenis_penerima;
+															}
+														});
+														penerimaHTML[current_data3.nomor] = ''
+															+'<tr class="tambahan">'
+																+'<td '+_style.td_1+'>'+current_data3.nomor+'</td>'
+																+'<td '+_style.td_2+'>'+current_data3.lokus_akun_teks+'</td>'
+																+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+current_data3.harga_satuan+')</td>'
+																+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian)+'</td>'
+															+'</tr>';
+								                    	return resolve_reduce3(nextData3);
+													});
+								        		})
+								                .catch(function(e){
+								                    console.log(e);
+								                    return Promise.resolve(nextData3);
+								                });
+								            })
+								            .catch(function(e){
+								                console.log(e);
+								                return Promise.resolve(nextData3);
+								            });
+								        }, Promise.resolve(penerima[lastpenerima]))
+								        .then(function(){
+											console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
+											jQuery(current_data2).after(penerimaHTML.join(''));
+					        				resolve_reduce2(nextData2);
+								        });
 									});
 								}else{
 									console.log('tr skip', current_data2);
