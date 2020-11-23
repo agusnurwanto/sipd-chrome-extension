@@ -12,7 +12,7 @@ function ttd_kepala_daerah(target){
 	}
 	if(config.tgl_rka){
 		var tgl = get_tanggal();
-		var ttd = '<br>'+capitalizeFirstLetter(daerah)+', Tanggal '+tgl+'<br>'+jabatan+'<br><br><br><br><br>'+config.kepala_daerah;
+		var ttd = '<br>'+capitalizeFirstLetter(daerah)+', '+tgl+'<br>'+jabatan+'<br><br><br><br><br>'+config.kepala_daerah;
 		var length = 0;
 
 		target.map(function(n, j){
@@ -230,6 +230,21 @@ function getDetailPenerima(kode_sbl, rek){
 		}else{
 			return resolve(allPenerimaSCE);
 		}
+	});
+}
+
+function getDetailRin(id_unit, kode_sbl, idbelanjarinci){
+	return new Promise(function(resolve, reject){
+		getToken().then(function(_token){
+			jQuery.ajax({
+				url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/cari-rincian/'+config.id_daerah+'/'+id_unit,
+				type: 'post',
+				data: "_token="+_token+'&kodesbl='+kode_sbl+'&idbelanjarinci='+idbelanjarinci,
+				success: function(rinci){
+					return resolve(rinci);
+				}
+			});
+		});
 	});
 }
 

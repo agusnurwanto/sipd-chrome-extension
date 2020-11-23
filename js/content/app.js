@@ -585,6 +585,7 @@ jQuery(document).ready(function(){
 	// ALOKASI BANTUAN SOSIAL BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI BANTUAN SOSIAL & ALOKASI HIBAH BERUPA BARANG/JASA YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/4/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		jQuery('#wrap-loading').show();
 		jQuery('table[cellpadding="3"]').map(function(i, b){
 			jQuery(b).before('<table id="header-title'+i+'" width="100%"><tbody></tbody></table>');
 			jQuery(b).find('tr>td>div').closest('tr').prependTo("#header-title"+i+">tbody");
@@ -674,20 +675,22 @@ jQuery(document).ready(function(){
 								            return sequence3.then(function(current_data3){
 								        		return new Promise(function(resolve_reduce3, reject_reduce3){
 													getDetailPenerima(subkeg.data.kode_sbl).then(function(all_penerima){
-														var alamat = '';
-														all_penerima.map(function(p, o){
-															if(p.nama_teks == current_data3.lokus_akun_teks){
-																alamat = p.alamat_teks+' - '+p.jenis_penerima;
-															}
+														getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl).then(function(rinci_penerima){
+															var alamat = '';
+															all_penerima.map(function(p, o){
+																if(p.id_profil == rinci_penerima.id_penerima){
+																	alamat = p.alamat_teks+' - '+p.jenis_penerima;
+																}
+															});
+															penerimaHTML[current_data3.nomor] = ''
+																+'<tr class="tambahan">'
+																	+'<td '+_style.td_1+'>'+current_data3.nomor+'</td>'
+																	+'<td '+_style.td_2+'>'+current_data3.lokus_akun_teks+'</td>'
+																	+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+current_data3.harga_satuan+')</td>'
+																	+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian)+'</td>'
+																+'</tr>';
+									                    	return resolve_reduce3(nextData3);
 														});
-														penerimaHTML[current_data3.nomor] = ''
-															+'<tr class="tambahan">'
-																+'<td '+_style.td_1+'>'+current_data3.nomor+'</td>'
-																+'<td '+_style.td_2+'>'+current_data3.lokus_akun_teks+'</td>'
-																+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+current_data3.harga_satuan+')</td>'
-																+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian)+'</td>'
-															+'</tr>';
-								                    	return resolve_reduce3(nextData3);
 													});
 								        		})
 								                .catch(function(e){
@@ -736,7 +739,8 @@ jQuery(document).ready(function(){
             });
         }, Promise.resolve(table[last]))
         .then(function(){
-
+        	jQuery('#wrap-loading').hide();
+        	window.print(true);
         });
 
   //       table.map(function(i, b){

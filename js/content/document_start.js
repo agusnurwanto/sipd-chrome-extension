@@ -4,6 +4,8 @@ var code = "\
 		function tblKomponen(){\
 	      	alert('tes')\
 		};\
+		window.print2 = print;\
+		print = function(t){ if(!t){ return false; }else{ print2(); } }\
 ";
 
 var script = document.createElement('script');
