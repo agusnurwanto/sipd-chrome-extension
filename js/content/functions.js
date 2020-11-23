@@ -286,3 +286,69 @@ function formatRupiah(angka, prefix){
 	rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
 	return prefix == undefined ? rupiah : (rupiah ? 'Rp. ' + rupiah : '');
 }
+
+function getNomorLampiran(){
+	var current_url = window.location.href;
+	return current_url.split('apbd/')[1].split('/')[0];
+}
+
+function getMultiAkunByJenisBl(jenis_bls, id_unit, kode_sbl){
+	return new Promise(function(resolve, reject){
+		var jenis_bl = jenis_bls.split(',');
+		var sendData = jenis_bl.map(function(b, i){
+			return new Promise(function(resolve2, reject2){
+				getAkunByJenisBl(b, id_unit, kode_sbl).then(function(akun){
+					resolve2(akun);
+				});
+			})
+	        .catch(function(e){
+	            console.log(e);
+	            return Promise.resolve({});
+	        });
+	    });
+	    Promise.all(sendData)
+		.then(function(all_akun){
+			var ret = {};
+			all_akun.map(function(b, i){
+				for(var n in b){
+					ret[n] = b[n];
+				}
+			});
+			return resolve(ret);
+		});
+	});
+}
+
+function getAkunByJenisBl(jenis_bl, id_unit, kode_sbl){
+	return new Promise(function(resolve, reject){
+		if(typeof(akunBl) == 'undefined' || !akunBl[jenis_bl]){
+			getToken().then(function(_token){
+				jQuery.ajax({
+					url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/cari-rekening/'+config.id_daerah+'/'+id_unit,
+					type: 'post',
+					data: "_token="+_token+'&kodesbl='+kode_sbl+'&komponenkel='+jenis_bl,
+					success: function(ret){
+						if(typeof(akunBl) == 'undefined'){
+							window.akunBl = {};
+						}
+						var akun = {};
+						jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
+							var val = jQuery(b).attr('value');
+							var nama = jQuery(b).text();
+							var kode = nama.split(' ')[0];
+							akun[kode] = { 
+								nama: nama,
+								kode: kode,
+								val: val
+							};
+						});
+						akunBl[jenis_bl] = akun;
+						return resolve(akunBl[jenis_bl]);
+					}
+				});
+			});
+		}else{
+			return resolve(akunBl[jenis_bl]);
+		}
+	});
+}

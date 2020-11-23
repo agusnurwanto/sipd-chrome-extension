@@ -581,9 +581,14 @@ jQuery(document).ready(function(){
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/5/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
-	// REKAPITULASI BELANJA MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PROGRAM DAN KEGIATAN BESERTA HASIL DAN SUB KEGIATAN BESERTA KELUARAN (APBD perda)
-	// ALOKASI BANTUAN SOSIAL BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI BANTUAN SOSIAL & ALOKASI HIBAH BERUPA BARANG/JASA YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran)
-	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/4/'+config.id_daerah+'/setunit') != -1){
+	// REKAPITULASI BELANJA MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PROGRAM DAN KEGIATAN BESERTA HASIL DAN SUB KEGIATAN BESERTA KELUARAN (APBD perda) 4
+	// ALOKASI BANTUAN SOSIAL BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI BANTUAN SOSIAL & ALOKASI HIBAH BERUPA BARANG/JASA YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran) 4
+	// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD perda) 3
+	// DAFTAR ALOKASI HIBAH BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran) 3
+	}else if(
+		current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/4/'+config.id_daerah+'/setunit') != -1
+		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/setunit') != -1
+	){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		jQuery('#wrap-loading').show();
 		jQuery('table[cellpadding="3"]').map(function(i, b){
@@ -597,6 +602,7 @@ jQuery(document).ready(function(){
 		jQuery('table[cellpadding="3"]').map(function(i, b){
 			table.push(b);
 		});
+		var nomor_lampiran = getNomorLampiran();
 		var last = table.length-1;
 		table.reduce(function(sequence, nextData){
             return sequence.then(function(current_data){
@@ -661,53 +667,192 @@ jQuery(document).ready(function(){
 											td_3: 'class="'+td.eq(2).attr('class')+'" width="'+td.eq(2).attr('width')+'" style="'+td.eq(2).attr('style')+'"',
 											td_4: 'class="'+td.eq(3).attr('class')+'" width="'+td.eq(3).attr('width')+'" style="'+td.eq(3).attr('style')+'"'
 										}
-										all_rinc.map(function(rin, m){
-											if(rin.subs_bl_teks == kelompok.nama){
-												kelompok.data.push(rin);
-												nomor++;
-												rin.nomor = nomor;
-												penerima.push(rin);
+
+										var jenis_bl = '';
+										if(nomor_lampiran == 3){
+											jenis_bl = 'HIBAH,BOS'; // rekening bos sudah tidak nyambung lagi :)
+										}else if(nomor_lampiran == 4){
+											jenis_bl = 'BANSOS';
+										}
+										getMultiAkunByJenisBl(jenis_bl, dinas.data.id_unit, subkeg.data.kode_sbl).then(function(akun){
+											if(!kelompok.nama){
+												var total_bansos = 0;
+												all_rinc.map(function(rin, m){
+													if(
+														(
+															(rin.jenis_bl == 'bansos' && nomor_lampiran == 4)
+															|| (rin.jenis_bl == 'hibah' && nomor_lampiran == 3)
+														)
+														&& akun[rin.kode_akun]
+													){
+														kelompok.data.push(rin);
+														nomor++;
+														rin.nomor = nomor;
+														penerima.push(rin);
+														total_bansos += +rin.rincian;
+													}
+												});
+												console.log('total bansos/hibah uang', dinas.nama, subkeg.nama, total_bansos);
+											}else{
+												all_rinc.map(function(rin, m){
+													if(
+														rin.subs_bl_teks == kelompok.nama
+														&& akun[rin.kode_akun]
+													){
+														kelompok.data.push(rin);
+														nomor++;
+														rin.nomor = nomor;
+														penerima.push(rin);
+													}
+												});
 											}
-										});
-										var penerimaHTML = [];
-										var lastpenerima = penerima.length-1;
-										penerima.reduce(function(sequence3, nextData3){
-								            return sequence3.then(function(current_data3){
-								        		return new Promise(function(resolve_reduce3, reject_reduce3){
-													getDetailPenerima(subkeg.data.kode_sbl).then(function(all_penerima){
-														getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl).then(function(rinci_penerima){
-															var alamat = '';
-															all_penerima.map(function(p, o){
-																if(p.id_profil == rinci_penerima.id_penerima){
-																	alamat = p.alamat_teks+' - '+p.jenis_penerima;
-																}
+											var penerimaHTML = [];
+											var lastpenerima = penerima.length-1;
+											penerima.reduce(function(sequence3, nextData3){
+									            return sequence3.then(function(current_data3){
+									        		return new Promise(function(resolve_reduce3, reject_reduce3){
+														getDetailPenerima(subkeg.data.kode_sbl).then(function(all_penerima){
+															getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl).then(function(rinci_penerima){
+																var alamat = '';
+																all_penerima.map(function(p, o){
+																	if(p.id_profil == rinci_penerima.id_penerima){
+																		alamat = p.alamat_teks+' - '+p.jenis_penerima;
+																	}
+																});
+																penerimaHTML[current_data3.nomor] = ''
+																	+'<tr class="tambahan">'
+																		+'<td '+_style.td_1+'>'+current_data3.nomor+'</td>'
+																		+'<td '+_style.td_2+'>'+current_data3.lokus_akun_teks+'</td>'
+																		+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+current_data3.harga_satuan+')</td>'
+																		+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian)+'</td>'
+																	+'</tr>';
+										                    	return resolve_reduce3(nextData3);
 															});
-															penerimaHTML[current_data3.nomor] = ''
-																+'<tr class="tambahan">'
-																	+'<td '+_style.td_1+'>'+current_data3.nomor+'</td>'
-																	+'<td '+_style.td_2+'>'+current_data3.lokus_akun_teks+'</td>'
-																	+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+current_data3.harga_satuan+')</td>'
-																	+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian)+'</td>'
-																+'</tr>';
-									                    	return resolve_reduce3(nextData3);
 														});
-													});
-								        		})
-								                .catch(function(e){
-								                    console.log(e);
-								                    return Promise.resolve(nextData3);
-								                });
-								            })
-								            .catch(function(e){
-								                console.log(e);
-								                return Promise.resolve(nextData3);
-								            });
-								        }, Promise.resolve(penerima[lastpenerima]))
-								        .then(function(){
-											console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
-											jQuery(current_data2).after(penerimaHTML.join(''));
-					        				resolve_reduce2(nextData2);
-								        });
+									        		})
+									                .catch(function(e){
+									                    console.log(e);
+									                    return Promise.resolve(nextData3);
+									                });
+									            })
+									            .catch(function(e){
+									                console.log(e);
+									                return Promise.resolve(nextData3);
+									            });
+									        }, Promise.resolve(penerima[lastpenerima]))
+									        .then(function(){
+												console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
+												jQuery(current_data2).after(penerimaHTML.join(''));
+						        				resolve_reduce2(nextData2);
+									        });
+									    });
+									});
+								}else if(td.length == 5){
+									var kelompok = {
+										nama: td.eq(1).text().trim(),
+										bentuk: td.eq(3).text().trim(),
+										total: td.eq(4).text().trim().replace(/\./g, ''),
+										data: []
+									};
+									if(kelompok.bentuk.indexOf('[?]') != -1){
+										kelompok.bentuk = '[?]';
+									}
+									getRincSubKeg(dinas.data.id_unit, subkeg.data.kode_sbl).then(function(all_rinc){
+										var penerima = [];
+										var nomor = 0;
+										var _style = {
+											td_1: 'class="'+td.eq(0).attr('class')+'" width="'+td.eq(0).attr('width')+'" style="'+td.eq(0).attr('style')+'"',
+											td_2: 'class="'+td.eq(1).attr('class')+'" width="'+td.eq(1).attr('width')+'" style="'+td.eq(1).attr('style')+'"',
+											td_3: 'class="'+td.eq(2).attr('class')+'" width="'+td.eq(2).attr('width')+'" style="'+td.eq(2).attr('style')+'"',
+											td_4: 'class="'+td.eq(3).attr('class')+'" width="'+td.eq(3).attr('width')+'" style="'+td.eq(3).attr('style')+'"',
+											td_5: 'class="'+td.eq(4).attr('class')+'" width="'+td.eq(4).attr('width')+'" style="'+td.eq(4).attr('style')+'"'
+										}
+
+										var jenis_bl = '';
+										if(nomor_lampiran == 3){
+											jenis_bl = 'HIBAH-BRG';
+										}else if(nomor_lampiran == 4){
+											jenis_bl = 'BANSOS-BRG';
+										}
+										getAkunByJenisBl(jenis_bl, dinas.data.id_unit, subkeg.data.kode_sbl).then(function(akun){
+											if(!kelompok.nama){
+												var total_bansos = 0;
+												all_rinc.map(function(rin, m){
+													if(
+														(
+															(rin.jenis_bl == jenis_bl.toLowerCase() && nomor_lampiran == 4)
+															|| (rin.jenis_bl == jenis_bl.toLowerCase() && nomor_lampiran == 3)
+														)
+														&& kelompok.bentuk == (rin.nama_standar_harga.nama_komponen+rin.nama_standar_harga.spek_komponen).trim()
+														&& akun[rin.kode_akun]
+														&& rin.subs_bl_teks == '[#]'
+													){
+														kelompok.data.push(rin);
+														nomor++;
+														rin.nomor = nomor;
+														penerima.push(rin);
+														total_bansos += +rin.rincian;
+													}
+												});
+												console.log('total bansos/hibah barang', dinas.nama, subkeg.nama, total_bansos);
+											}else{
+												all_rinc.map(function(rin, m){
+													if(
+														rin.subs_bl_teks == kelompok.nama
+														&& kelompok.bentuk == (rin.nama_standar_harga.nama_komponen+rin.nama_standar_harga.spek_komponen).trim()
+														&& akun[rin.kode_akun]
+													){
+														kelompok.data.push(rin);
+														nomor++;
+														rin.nomor = nomor;
+														penerima.push(rin);
+													}
+												});
+												if(kelompok.data.length == 0){
+													console.log('Kelompok tidak ditemukan! dinas, subkeg, kelompok', dinas, subkeg, kelompok, all_rinc, akun);
+												}
+											}
+											var penerimaHTML = [];
+											var lastpenerima = penerima.length-1;
+											penerima.reduce(function(sequence3, nextData3){
+									            return sequence3.then(function(current_data3){
+									        		return new Promise(function(resolve_reduce3, reject_reduce3){
+														getDetailPenerima(subkeg.data.kode_sbl).then(function(all_penerima){
+															getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl).then(function(rinci_penerima){
+																var alamat = '';
+																all_penerima.map(function(p, o){
+																	if(p.id_profil == rinci_penerima.id_penerima){
+																		alamat = p.alamat_teks+' - '+p.jenis_penerima;
+																	}
+																});
+																penerimaHTML[current_data3.nomor] = ''
+																	+'<tr class="tambahan">'
+																		+'<td '+_style.td_1+'>'+current_data3.nomor+'</td>'
+																		+'<td '+_style.td_2+'>'+current_data3.lokus_akun_teks+'</td>'
+																		+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+current_data3.harga_satuan+')</td>'
+																		+'<td '+_style.td_4+'>'+current_data3.nama_standar_harga.nama_komponen+'<br>'+current_data3.nama_standar_harga.spek_komponen+'</td>'
+																		+'<td '+_style.td_5+'>'+formatRupiah(current_data3.rincian)+'</td>'
+																	+'</tr>';
+										                    	return resolve_reduce3(nextData3);
+															});
+														});
+									        		})
+									                .catch(function(e){
+									                    console.log(e);
+									                    return Promise.resolve(nextData3);
+									                });
+									            })
+									            .catch(function(e){
+									                console.log(e);
+									                return Promise.resolve(nextData3);
+									            });
+									        }, Promise.resolve(penerima[lastpenerima]))
+									        .then(function(){
+												console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
+												jQuery(current_data2).after(penerimaHTML.join(''));
+						        				resolve_reduce2(nextData2);
+									        });
+										});
 									});
 								}else{
 									console.log('tr skip', current_data2);
@@ -742,56 +887,6 @@ jQuery(document).ready(function(){
         	jQuery('#wrap-loading').hide();
         	window.print(true);
         });
-
-  //       table.map(function(i, b){
-		// 	var dinas = {
-		// 		kode: '',
-		// 		nama: '',
-		// 		data: {}
-		// 	};
-		// 	var subkeg = {
-		// 		kode: '',
-		// 		nama: '',
-		// 		data: {}
-		// 	}
-		// 	jQuery(b).find('>tbody>tr').map(function(n, tr){
-		// 		var td = jQuery(tr).find('td');
-		// 		if(td.length == 2){
-		// 			var text = td.eq(1).text().split(' ');
-		// 			var kode = text.shift();
-		// 			var nama = text.join(' ');
-		// 			if(kode.split('.').length == 8){
-		// 				dinas.kode = kode;
-		// 				dinas.nama = nama;
-		// 				getAllUnit().then(function(unit){
-		// 					unit.map(function(un, m){
-		// 						if(un.kode_skpd == dinas.kode){
-		// 							dinas.data = un;
-		// 						}
-		// 					});
-		// 				});
-		// 			}else{
-		// 				subkeg.kode = kode;
-		// 				subkeg.nama = nama;
-		// 				getAllSubKeg(dinas.data.id_unit).then(function(all_sub){
-		// 					all_sub.map(function(sub, m){
-		// 						if(sub.kode_sub_giat == subkeg.kode){
-		// 							subkeg.data = sub;
-		// 						}
-		// 					});
-		// 				});
-		// 			}
-		// 		}else if(td.length == 4){
-		// 			var kelompok = td.eq(1).text();
-		// 			console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
-		// 		}
-		// 	})
-		// });
-	// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD perda)
-	// DAFTAR ALOKASI HIBAH BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran)
-	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/setunit') != -1){
-		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
-		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
 	// RINGKASAN APBD YANG DIKLASIFIKASI MENURUT URUSAN PEMERINTAHAN DAERAH DAN ORGANISASI (APBD perda)
 	// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD penjabaran)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/2/'+config.id_daerah+'/setunit') != -1){
