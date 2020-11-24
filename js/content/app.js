@@ -576,11 +576,8 @@ jQuery(document).ready(function(){
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/6/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
-	// URUSAN PEMERINTAHAN DAERAH DAN FUNGSI DALAM KERANGKA PENGELOLAAN KEUANGAN NEGARA (APBD perda)
-	// ALOKASI BANTUAN KEUANGAN BERSIFAT UMUM dan KHUSUS YANG DITERIMA SERTA SKPD PEMBERI BANTUAN KEUANGAN (APBD penjabaran)
-	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/5/'+config.id_daerah+'/setunit') != -1){
-		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
-		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	// URUSAN PEMERINTAHAN DAERAH DAN FUNGSI DALAM KERANGKA PENGELOLAAN KEUANGAN NEGARA (APBD perda) 5
+	// ALOKASI BANTUAN KEUANGAN BERSIFAT UMUM dan KHUSUS YANG DITERIMA SERTA SKPD PEMBERI BANTUAN KEUANGAN (APBD penjabaran) 5
 	// REKAPITULASI BELANJA MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PROGRAM DAN KEGIATAN BESERTA HASIL DAN SUB KEGIATAN BESERTA KELUARAN (APBD perda) 4
 	// ALOKASI BANTUAN SOSIAL BERUPA UANG YANG DITERIMA SERTA SKPD PEMBERI BANTUAN SOSIAL & ALOKASI HIBAH BERUPA BARANG/JASA YANG DITERIMA SERTA SKPD PEMBERI HIBAH (APBD penjabaran) 4
 	// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD perda) 3
@@ -588,6 +585,7 @@ jQuery(document).ready(function(){
 	}else if(
 		current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/4/'+config.id_daerah+'/setunit') != -1
 		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/setunit') != -1
+		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/5/'+config.id_daerah+'/setunit') != -1
 	){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
 		jQuery('#wrap-loading').show();
@@ -687,6 +685,9 @@ jQuery(document).ready(function(){
 										}else if(nomor_lampiran == 4){
 											jenis_bl = 'BANSOS';
 											jenis_akun = 'is_sosial_uang';
+										}else if(nomor_lampiran == 5){
+											jenis_bl = 'BANKEU';
+											jenis_akun = 'is_bankeu_khusus,is_bankeu_umum';
 										}
 										getMultiAkunByJenisBl(jenis_bl, dinas.data.id_unit, subkeg.data.kode_sbl, jenis_akun).then(function(akun){
 											if(!kelompok.nama){
@@ -725,19 +726,27 @@ jQuery(document).ready(function(){
 											penerima.reduce(function(sequence3, nextData3){
 									            return sequence3.then(function(current_data3){
 									        		return new Promise(function(resolve_reduce3, reject_reduce3){
-														getDetailPenerima(subkeg.data.kode_sbl).then(function(all_penerima){
-															getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl).then(function(rinci_penerima){
+														getDetailPenerima(subkeg.data.kode_sbl, false, nomor_lampiran).then(function(all_penerima){
+															getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl, nomor_lampiran)
+															.then(function(rinci_penerima){
 																var alamat = '';
-																all_penerima.map(function(p, o){
-																	if(p.id_profil == rinci_penerima.id_penerima){
-																		alamat = p.alamat_teks+' - '+p.jenis_penerima;
-																	}
-																});
+																if(nomor_lampiran == 5){
+																	alamat = 'Provinsi '+rinci_penerima.nama_prop
+																		+', '+rinci_penerima.nama_kab
+																		+', Kecamatan '+rinci_penerima.nama_kec
+																		+', '+rinci_penerima.nama_kel;
+																}else{
+																	all_penerima.map(function(p, o){
+																		if(p.id_profil == rinci_penerima.id_penerima){
+																			alamat = p.alamat_teks+' - '+p.jenis_penerima;
+																		}
+																	});
+																}
 																penerimaHTML[current_data3.nomor] = ''
 																	+'<tr class="tambahan">'
 																		+'<td '+_style.td_1+'>'+current_data3.nomor+'</td>'
 																		+'<td '+_style.td_2+'>'+current_data3.lokus_akun_teks+'</td>'
-																		+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+current_data3.harga_satuan+')</td>'
+																		+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+formatRupiah(current_data3.harga_satuan)+')</td>'
 																		+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian)+'</td>'
 																	+'</tr>';
 										                    	return resolve_reduce3(nextData3);

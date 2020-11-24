@@ -24,8 +24,12 @@ Semoga bermanfaat
 	- Menampilkan tanggal dan nama kepala daerah di lampiran 1-9 APBD perda dan 1-5 APBD penjabaran
 	- Import Dana Desa ke Rincian Sub kegiatan
 	- Import data sumber dana ke db lokal
+	- Menampilkan detail rincian lampiran 3-5 APBD penjabaran
+	- Import data RPJM
 
 ### Pengembangan berikutnya:
 	- Melengkapi dokumentasi penggunaan di halaman wiki
 	- Melengkapi video tutorial di youtube
 	- Import data provinsi, kabupaten, kecamatan, desa
+	- Import data profile penerima bantuan
+	- Import data RENSTRA
