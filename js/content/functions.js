@@ -292,7 +292,7 @@ function getNomorLampiran(){
 	return current_url.split('apbd/')[1].split('/')[0];
 }
 
-function getMultiAkunByJenisBl(jenis_bls, id_unit, kode_sbl){
+function getMultiAkunByJenisBl(jenis_bls, id_unit, kode_sbl, jenis_akun){
 	return new Promise(function(resolve, reject){
 		var jenis_bl = jenis_bls.split(',');
 		var sendData = jenis_bl.map(function(b, i){
@@ -314,7 +314,31 @@ function getMultiAkunByJenisBl(jenis_bls, id_unit, kode_sbl){
 					ret[n] = b[n];
 				}
 			});
-			return resolve(ret);
+			new Promise(function(resolve2, reject2){
+				if(!akunBl['all-akun']){
+					jQuery.ajax({
+						url: config.sipd_url+'daerah/main/budget/akun/'+config.tahun_anggaran+'/tampil-akun/'+config.id_daerah+'/0',
+						type: 'get',
+						success: function(ret){
+							akunBl['all-akun'] = ret.data;
+							return resolve2(akunBl['all-akun']);
+						}
+					});
+				}else{
+					return resolve2(akunBl['all-akun']);
+				}
+			}).then(function(all_akun){
+				for(var i in all_akun){
+					if(all_akun[i][jenis_akun]){
+						ret[all_akun[i].kode_akun] = {
+							nama: all_akun[i].nama_akun,
+							kode: all_akun[i].kode_akun,
+							val: all_akun[i].id_akun
+						}
+					}
+				}
+				return resolve(ret);
+			})
 		});
 	});
 }

@@ -595,7 +595,9 @@ jQuery(document).ready(function(){
 			jQuery(b).before('<table id="header-title'+i+'" width="100%"><tbody></tbody></table>');
 			jQuery(b).find('tr>td>div').closest('tr').prependTo("#header-title"+i+">tbody");
 		});
-		jQuery('table[align="right"]').prependTo(".cetak");
+		jQuery('table[align="right"]').map(function(i, b){
+			jQuery(b).insertBefore("#header-title"+i);
+		});
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
 
 		var table = [];
@@ -626,6 +628,7 @@ jQuery(document).ready(function(){
 			            return sequence2.then(function(current_data2){
 			        		return new Promise(function(resolve_reduce2, reject_reduce2){
         						var td = jQuery(current_data2).find('td');
+        						console.log('tr', current_data2);
 								if(td.length == 2){
 									var text = td.eq(1).text().split(' ');
 									var kode = text.shift();
@@ -640,7 +643,11 @@ jQuery(document).ready(function(){
 												}
 											});
 			        						resolve_reduce2(nextData2);
-										});
+										})
+							            .catch(function(e){
+							                console.log(e);
+							                resolve_reduce2(nextData2);
+							            });
 									}else{
 										subkeg.kode = kode;
 										subkeg.nama = nama;
@@ -651,7 +658,11 @@ jQuery(document).ready(function(){
 												}
 											});
 			        						resolve_reduce2(nextData2);
-										});
+										})
+							            .catch(function(e){
+							                console.log(e);
+							                resolve_reduce2(nextData2);
+							            });
 									}
 								}else if(td.length == 4){
 									var kelompok = {
@@ -669,12 +680,15 @@ jQuery(document).ready(function(){
 										}
 
 										var jenis_bl = '';
+										var jenis_akun = '';
 										if(nomor_lampiran == 3){
-											jenis_bl = 'HIBAH,BOS'; // rekening bos sudah tidak nyambung lagi :)
+											jenis_bl = 'HIBAH,BOS';
+											jenis_akun = 'is_hibah_uang';
 										}else if(nomor_lampiran == 4){
 											jenis_bl = 'BANSOS';
+											jenis_akun = 'is_sosial_uang';
 										}
-										getMultiAkunByJenisBl(jenis_bl, dinas.data.id_unit, subkeg.data.kode_sbl).then(function(akun){
+										getMultiAkunByJenisBl(jenis_bl, dinas.data.id_unit, subkeg.data.kode_sbl, jenis_akun).then(function(akun){
 											if(!kelompok.nama){
 												var total_bansos = 0;
 												all_rinc.map(function(rin, m){
@@ -744,8 +758,16 @@ jQuery(document).ready(function(){
 												console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
 												jQuery(current_data2).after(penerimaHTML.join(''));
 						        				resolve_reduce2(nextData2);
-									        });
-									    });
+									        })
+								            .catch(function(e){
+								                console.log(e);
+								                resolve_reduce2(nextData2);
+								            });
+									    })
+							            .catch(function(e){
+							                console.log(e);
+							                resolve_reduce2(nextData2);
+							            });
 									});
 								}else if(td.length == 5){
 									var kelompok = {
@@ -754,9 +776,12 @@ jQuery(document).ready(function(){
 										total: td.eq(4).text().trim().replace(/\./g, ''),
 										data: []
 									};
+									if(isNaN(kelompok.total) || +kelompok.total == 0){
+							            resolve_reduce2(nextData2);
+									};
 									if(kelompok.bentuk.indexOf('[?]') != -1){
 										kelompok.bentuk = '[?]';
-									}
+									};
 									getRincSubKeg(dinas.data.id_unit, subkeg.data.kode_sbl).then(function(all_rinc){
 										var penerima = [];
 										var nomor = 0;
@@ -769,12 +794,15 @@ jQuery(document).ready(function(){
 										}
 
 										var jenis_bl = '';
+										var jenis_akun = '';
 										if(nomor_lampiran == 3){
 											jenis_bl = 'HIBAH-BRG';
+											jenis_akun = 'is_hibah_brg';
 										}else if(nomor_lampiran == 4){
 											jenis_bl = 'BANSOS-BRG';
+											jenis_akun = 'is_sosial_brg';
 										}
-										getAkunByJenisBl(jenis_bl, dinas.data.id_unit, subkeg.data.kode_sbl).then(function(akun){
+										getMultiAkunByJenisBl(jenis_bl, dinas.data.id_unit, subkeg.data.kode_sbl, jenis_akun).then(function(akun){
 											if(!kelompok.nama){
 												var total_bansos = 0;
 												all_rinc.map(function(rin, m){
@@ -851,8 +879,16 @@ jQuery(document).ready(function(){
 												console.log('dinas, subkeg, kelompok', dinas, subkeg, kelompok);
 												jQuery(current_data2).after(penerimaHTML.join(''));
 						        				resolve_reduce2(nextData2);
-									        });
-										});
+									        })
+								            .catch(function(e){
+								                console.log(e);
+								                resolve_reduce2(nextData2);
+								            });
+									    })
+							            .catch(function(e){
+							                console.log(e);
+							                resolve_reduce2(nextData2);
+							            });
 									});
 								}else{
 									console.log('tr skip', current_data2);
