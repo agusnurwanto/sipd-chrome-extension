@@ -1082,6 +1082,26 @@ jQuery(document).ready(function(){
 		});
 		console.log('all_data', all_data);
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+	}else if(current_url.indexOf('dashboard/'+config.tahun_anggaran+'/unit/'+config.id_daerah+'/') != -1){
+		console.log('halaman dashboard');
+		var master_html = ''
+			+'<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">'
+            	+'<button onclick="return false;" class="btn btn-primary" id="singkron_master_cse" style="float:right; margin-left: 10px;">Singkron Data Master ke DB Lokal</button>'
+            	+'<select class="form-control" style="width: 300px; float: right;" id="data_master_cse">'
+            		+'<option value="">Pilih Data Master</option>'
+            		+'<option value="penerima_bantuan">Master Data Penerima Bantuan</option>'
+            		+'<option value="alamat">Master Data Provinsi, Kabupaten/Kota, Kecamatan, Desa/Kelurahan</option>'
+            	+'</select>'
+        	+'</div>'
+		jQuery('.bg-title').append(master_html);
+		jQuery('#singkron_master_cse').on('click', function(){
+			var val = jQuery('#data_master_cse').val();
+			if(val == ''){
+				alert('Data Master tidak boleh kosong!');
+			}else{
+				singkron_master_cse(val);
+			}
+		});
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/0') != -1){
 		console.log('halaman perda lampiran 3');
 		var download_excel = ''
