@@ -1618,6 +1618,14 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										_rka.updatedtime = rka.updatedtime;
 										_rka.user1 = rka.user1;
 										_rka.user2 = rka.user2;
+										_rka.id_prop_penerima = 0;
+										_rka.id_camat_penerima = 0;
+										_rka.id_kokab_penerima = 0;
+										_rka.id_lurah_penerima = 0;
+										_rka.id_penerima = 0;
+										_rka.idkomponen = 0;
+										_rka.idketerangan = 0;
+										_rka.idsubtitle = 0;
 										_data.push(rka);
 										if((i+1)%_leng == 0){
 											_data_all.push(_data);
@@ -1634,17 +1642,21 @@ function singkron_rka_ke_lokal(opsi, callback) {
 						                	return new Promise(function(resolve_reduce, reject_reduce){
 						                		// console.log('current_data', current_data);
 						                		var sendData = current_data.map(function(rka, i){
-													return getDetailRin(id_unit, kode_sbl, rka.id_rinci_sub_bl, 0).then(function(detail_rin){
-														data_rka.rka[i] = rka;
-														data_rka.rka[i].id_prop_penerima = detail_rin.id_prop_penerima;
-														data_rka.rka[i].id_camat_penerima = detail_rin.id_camat_penerima;
-														data_rka.rka[i].id_kokab_penerima = detail_rin.id_kokab_penerima;
-														data_rka.rka[i].id_lurah_penerima = detail_rin.id_lurah_penerima;
-														data_rka.rka[i].id_penerima = detail_rin.id_penerima;
-														data_rka.rka[i].idkomponen = detail_rin.idkomponen;
-														data_rka.rka[i].idketerangan = detail_rin.idketerangan;
-														data_rka.rka[i].idsubtitle = detail_rin.idsubtitle;
-													});
+						                			if(!rka.id_rinci_sub_bl){
+						                				return Promise.resolve();
+						                			}else{
+														return getDetailRin(id_unit, kode_sbl, rka.id_rinci_sub_bl, 0).then(function(detail_rin){
+															data_rka.rka[i] = rka;
+															data_rka.rka[i].id_prop_penerima = detail_rin.id_prop_penerima;
+															data_rka.rka[i].id_camat_penerima = detail_rin.id_camat_penerima;
+															data_rka.rka[i].id_kokab_penerima = detail_rin.id_kokab_penerima;
+															data_rka.rka[i].id_lurah_penerima = detail_rin.id_lurah_penerima;
+															data_rka.rka[i].id_penerima = detail_rin.id_penerima;
+															data_rka.rka[i].idkomponen = detail_rin.idkomponen;
+															data_rka.rka[i].idketerangan = detail_rin.idketerangan;
+															data_rka.rka[i].idsubtitle = detail_rin.idsubtitle;
+														});
+													}
 						                		});
 												Promise.all(sendData)
 									        	.then(function(val_all){
@@ -1680,7 +1692,8 @@ function singkron_rka_ke_lokal(opsi, callback) {
 						                });
 						            }, Promise.resolve(_data_all[last]))
 						            .then(function(data_last){
-										if(!opsi || opsi.no_return){
+						            	console.log('opsi', opsi);
+										if(!opsi || !opsi.no_return){
 											alert('Berhasil Singkron RKA ke DB lokal!');
 											jQuery('#wrap-loading').hide();
 										}
