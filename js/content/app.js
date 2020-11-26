@@ -1624,6 +1624,10 @@ function singkron_rka_ke_lokal(opsi, callback) {
 											_data = [];
 										}
 									});
+									if(_data.length > 0){
+										_data_all.push(_data);
+									}
+
 									var last = _data_all.length-1;
 									_data_all.reduce(function(sequence, nextData){
 						                return sequence.then(function(current_data){
