@@ -1420,6 +1420,9 @@ function singkron_rka_ke_lokal(opsi, callback) {
 				if(script.length > 1){
 					script = script[1].split("'");
 					kode_sbl = script[0];
+					var _kode_bl = kode_sbl.split('.');
+					_kode_bl.pop();
+					kode_bl = _kode_bl.join('.');
 					// idbl = script[0];
 					// idsubbl = script[1];
 				}
@@ -1583,58 +1586,104 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							            data_rka.dataCapaian[i].targetcapaian = d.targetcapaian;
 									});
 
+									var _leng = 250;
+									var _data_all = [];
+									var _data = [];
 									data.data.map(function(rka, i){
-										// if(i<5){
-											data_rka.rka[i] = {};
-											data_rka.rka[i].created_user = rka.created_user;
-											data_rka.rka[i].createddate = rka.createddate;
-											data_rka.rka[i].createdtime = rka.createdtime;
-											data_rka.rka[i].harga_satuan = rka.harga_satuan;
-											data_rka.rka[i].id_daerah = rka.id_daerah;
-											data_rka.rka[i].id_rinci_sub_bl = rka.id_rinci_sub_bl;
-											data_rka.rka[i].id_standar_nfs = rka.id_standar_nfs;
-											data_rka.rka[i].is_locked = rka.is_locked;
-											data_rka.rka[i].jenis_bl = rka.jenis_bl;
-											data_rka.rka[i].ket_bl_teks = rka.ket_bl_teks;
-											data_rka.rka[i].kode_akun = rka.kode_akun;
-											data_rka.rka[i].koefisien = rka.koefisien;
-											data_rka.rka[i].lokus_akun_teks = rka.lokus_akun_teks;
-											data_rka.rka[i].nama_akun = rka.nama_akun;
-											data_rka.rka[i].nama_komponen = rka.nama_standar_harga.nama_komponen;
-											data_rka.rka[i].spek_komponen = rka.nama_standar_harga.spek_komponen;
-											data_rka.rka[i].satuan = rka.satuan;
-											data_rka.rka[i].spek = rka.spek;
-											data_rka.rka[i].subs_bl_teks = rka.subs_bl_teks;
-											data_rka.rka[i].total_harga = rka.rincian;
-											data_rka.rka[i].rincian = rka.rincian;
-											data_rka.rka[i].totalpajak = rka.totalpajak;
-											data_rka.rka[i].updated_user = rka.updated_user;
-											data_rka.rka[i].updateddate = rka.updateddate;
-											data_rka.rka[i].updatedtime = rka.updatedtime;
-											data_rka.rka[i].user1 = rka.user1;
-											data_rka.rka[i].user2 = rka.user2;
-										// }
+										var _rka = {};
+										_rka.created_user = rka.created_user;
+										_rka.createddate = rka.createddate;
+										_rka.createdtime = rka.createdtime;
+										_rka.harga_satuan = rka.harga_satuan;
+										_rka.id_daerah = rka.id_daerah;
+										_rka.id_rinci_sub_bl = rka.id_rinci_sub_bl;
+										_rka.id_standar_nfs = rka.id_standar_nfs;
+										_rka.is_locked = rka.is_locked;
+										_rka.jenis_bl = rka.jenis_bl;
+										_rka.ket_bl_teks = rka.ket_bl_teks;
+										_rka.kode_akun = rka.kode_akun;
+										_rka.koefisien = rka.koefisien;
+										_rka.lokus_akun_teks = rka.lokus_akun_teks;
+										_rka.nama_akun = rka.nama_akun;
+										_rka.nama_komponen = rka.nama_standar_harga.nama_komponen;
+										_rka.spek_komponen = rka.nama_standar_harga.spek_komponen;
+										_rka.satuan = rka.satuan;
+										_rka.spek = rka.spek;
+										_rka.subs_bl_teks = rka.subs_bl_teks;
+										_rka.total_harga = rka.rincian;
+										_rka.rincian = rka.rincian;
+										_rka.totalpajak = rka.totalpajak;
+										_rka.updated_user = rka.updated_user;
+										_rka.updateddate = rka.updateddate;
+										_rka.updatedtime = rka.updatedtime;
+										_rka.user1 = rka.user1;
+										_rka.user2 = rka.user2;
+										_data.push(rka);
+										if((i+1)%_leng == 0){
+											_data_all.push(_data);
+											_data = [];
+										}
 									});
-									var data = {
-									    message:{
-									        type: "get-url",
-									        content: {
-											    url: config.url_server_lokal,
-											    type: 'post',
-											    data: data_rka,
-								    			return: true
-											}
-									    }
-									};
-									if(opsi && opsi.no_return){
-										data.message.content.return = false;
-									}
-									chrome.runtime.sendMessage(data, function(response) {
-									    console.log('responeMessage', response);
-									    if(callback){
+									var last = _data_all.length-1;
+									_data_all.reduce(function(sequence, nextData){
+						                return sequence.then(function(current_data){
+						                	return new Promise(function(resolve_reduce, reject_reduce){
+						                		// console.log('current_data', current_data);
+						                		var sendData = current_data.map(function(rka, i){
+													return getDetailRin(id_unit, kode_sbl, rka.id_rinci_sub_bl, 0).then(function(detail_rin){
+														data_rka.rka[i] = rka;
+														data_rka.rka[i].id_prop_penerima = detail_rin.id_prop_penerima;
+														data_rka.rka[i].id_camat_penerima = detail_rin.id_camat_penerima;
+														data_rka.rka[i].id_kokab_penerima = detail_rin.id_kokab_penerima;
+														data_rka.rka[i].id_lurah_penerima = detail_rin.id_lurah_penerima;
+														data_rka.rka[i].id_penerima = detail_rin.id_penerima;
+														data_rka.rka[i].idkomponen = detail_rin.idkomponen;
+														data_rka.rka[i].idketerangan = detail_rin.idketerangan;
+														data_rka.rka[i].idsubtitle = detail_rin.idsubtitle;
+													});
+						                		});
+												Promise.all(sendData)
+									        	.then(function(val_all){
+													var data = {
+													    message:{
+													        type: "get-url",
+													        content: {
+															    url: config.url_server_lokal,
+															    type: 'post',
+															    data: data_rka,
+												    			return: false
+															}
+													    }
+													};
+													chrome.runtime.sendMessage(data, function(response) {
+													    console.log('responeMessage', response);
+													    return resolve_reduce(nextData);
+													});
+									            })
+									            .catch(function(err){
+									                console.log('err', err);
+													return resolve_reduce(nextData);
+									            });
+						                	})
+						                    .catch(function(e){
+						                        console.log(e);
+						                        return Promise.resolve(nextData);
+						                    });
+						                })
+						                .catch(function(e){
+						                    console.log(e);
+						                    return Promise.resolve(nextData);
+						                });
+						            }, Promise.resolve(_data_all[last]))
+						            .then(function(data_last){
+										if(!opsi || opsi.no_return){
+											alert('Berhasil Singkron RKA ke DB lokal!');
+											jQuery('#wrap-loading').hide();
+										}
+						            	if(callback){
 									    	callback();
 									    }
-									});
+						            });
 								}
 							});
 						}
