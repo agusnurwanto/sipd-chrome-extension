@@ -798,5 +798,38 @@ function singkron_master_cse(val){
 
 function tampil_alamat_rka(){
 	jQuery('#wrap-loading').show();
-
+	var akun = {
+		kode: '',
+		nama: '',
+		data: {}
+	};
+	var kelompok = '';
+	var keterangan = '';
+	jQuery('table[cellpadding="5"]').eq(4).find('>tbody>tr').map(function(i, b){
+		var td = jQuery(b).find('td');
+		if(td.length == 3){
+			var kode = td.eq(0).text().trim();
+			var nama = td.eq(1).text().trim();
+			if(kode && kode.split('.').length==6){
+				akun.kode = kode; 
+				akun.nama = kode;
+			}else if(kode == ''){
+				if(nama.indexOf('[#]') != -1){
+					kelompok = nama;
+					akun.data[kelompok] = {};
+				}else if(nama.indexOf('[-]') != -1){
+					keterangan = nama;
+					akun.data[kelompok][keterangan] = [];
+				}
+			}
+		}else if(td.length == 7){
+			var item = {
+				nama : td.eq(1).text().trim(),
+				koef : td.eq(2).text().trim(),
+				jumlah : td.eq(6).text().trim()
+			};
+			akun.data[kelompok][keterangan].push(item);
+			console.log('item, keterangan, kelompok, akun.data[kelompok][keterangan]', item, keterangan, kelompok, akun.data[kelompok][keterangan]);
+		}
+	});
 }
