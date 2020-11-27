@@ -795,3 +795,8 @@ function singkron_master_cse(val){
 		jQuery('#wrap-loading').hide();
 	}
 }
+
+function tampil_alamat_rka(){
+	jQuery('#wrap-loading').show();
+
+}

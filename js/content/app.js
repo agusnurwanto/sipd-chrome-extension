@@ -414,13 +414,14 @@ jQuery(document).ready(function(){
 		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1
 		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/42/'+config.id_daerah+'/setunit') != -1
 		|| current_url.indexOf('dokumen/'+config.tahun_anggaran+'/rka-penda/cetak/'+config.id_daerah+'/') != -1
+		|| current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/cetak/'+config.id_daerah+'/') != -1
 	){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'html');
 		if(current_url.indexOf('dokumen/'+config.tahun_anggaran+'/rka-penda/cetak/'+config.id_daerah+'/') == -1){
 			if(config.tgl_rka){
 				var tgl = get_tanggal();
 				var tgl_rka = jQuery(jQuery('td.text_tengah[colspan="3"]')[0]);
-				tgl_rka.text(tgl_rka.text()+' '+tgl);
+				tgl_rka.text(tgl_rka.text().replace(/\./g, '')+' '+tgl);
 			}
 		}
 		if(config.tapd){
@@ -451,6 +452,13 @@ jQuery(document).ready(function(){
 					jQuery('.kegiatan').remove();
 					jQuery('.sub_kegiatan').remove();
 				}
+			});
+		}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/cetak/'+config.id_daerah+'/') != -1){
+			var opsiprint = ''
+				+'<label><input type="radio" id="tampil_alamat"> Tampilkan Alamat Rincian</label><br>'
+			jQuery('#action-sipd').append(opsiprint);
+			jQuery('#tampil_alamat').on('click', function(){
+				tampil_alamat_rka();
 			});
 		}
 	}else if(
