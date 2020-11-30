@@ -26,10 +26,11 @@ Semoga bermanfaat
 	- Import data sumber dana ke db lokal
 	- Menampilkan detail rincian lampiran 3-5 APBD penjabaran
 	- Import data RPJM
+	- Import data provinsi, kabupaten, kecamatan, desa
+	- Import data profile penerima bantuan
+	- Menampilkan detail rincian penerima bantuan di RKA dan rincian belanja
 
 ### Pengembangan berikutnya:
 	- Melengkapi dokumentasi penggunaan di halaman wiki
 	- Melengkapi video tutorial di youtube
-	- Import data provinsi, kabupaten, kecamatan, desa
-	- Import data profile penerima bantuan
 	- Import data RENSTRA
