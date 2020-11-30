@@ -303,10 +303,12 @@ function getKel(id_unit, id_prov, id_kab, id_kec){
 						jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
 							var id_kel = jQuery(b).attr('value');
 							var nama = jQuery(b).text();
-							alamat.kab[id_prov].kec[id_kab].kel[id_kec][id_kel] = { 
-								nama: nama,
-								id_kel: id_kel
-							};
+							if(id_kel != 0){
+								alamat.kab[id_prov].kec[id_kab].kel[id_kec][id_kel] = { 
+									nama: nama,
+									id_kel: id_kel
+								};
+							}
 						});
 						return resolve(alamat.kab[id_prov].kec[id_kab].kel[id_kec]);
 					}
@@ -335,10 +337,12 @@ function getKec(id_unit, id_prov, id_kab){
 						jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
 							var id_kec = jQuery(b).attr('value');
 							var nama = jQuery(b).text();
-							alamat.kab[id_prov].kec[id_kab][id_kec] = { 
-								nama: nama,
-								id_kec: id_kec
-							};
+							if(id_kec != 0){
+								alamat.kab[id_prov].kec[id_kab][id_kec] = { 
+									nama: nama,
+									id_kec: id_kec
+								};
+							}
 						});
 						return resolve(alamat.kab[id_prov].kec[id_kab]);
 					}
@@ -367,10 +371,12 @@ function getKab(id_unit, id_prov){
 						jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
 							var id_kab = jQuery(b).attr('value');
 							var nama = jQuery(b).text();
-							alamat.kab[id_prov][id_kab] = { 
-								nama: nama,
-								id_kab: id_kab
-							};
+							if(id_kab!=0){
+								alamat.kab[id_prov][id_kab] = { 
+									nama: nama,
+									id_kab: id_kab
+								};
+							}
 						});
 						return resolve(alamat.kab[id_prov]);
 					}
@@ -397,10 +403,12 @@ function getProv(id_unit){
 						jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
 							var val = jQuery(b).attr('value');
 							var nama = jQuery(b).text();
-							alamat[val] = { 
-								nama: nama,
-								val: val
-							};
+							if(val!=0){
+								alamat[val] = { 
+									nama: nama,
+									val: val
+								};
+							}
 						});
 						return resolve(alamat);
 					}
@@ -796,40 +804,162 @@ function singkron_master_cse(val){
 	}
 }
 
-function tampil_alamat_rka(){
-	jQuery('#wrap-loading').show();
-	var akun = {
-		kode: '',
-		nama: '',
-		data: {}
-	};
-	var kelompok = '';
-	var keterangan = '';
-	jQuery('table[cellpadding="5"]').eq(4).find('>tbody>tr').map(function(i, b){
-		var td = jQuery(b).find('td');
-		if(td.length == 3){
-			var kode = td.eq(0).text().trim();
-			var nama = td.eq(1).text().trim();
-			if(kode && kode.split('.').length==6){
-				akun.kode = kode; 
-				akun.nama = kode;
-			}else if(kode == ''){
-				if(nama.indexOf('[#]') != -1){
-					kelompok = nama;
-					akun.data[kelompok] = {};
-				}else if(nama.indexOf('[-]') != -1){
-					keterangan = nama;
-					akun.data[kelompok][keterangan] = [];
+function tampil_alamat_rka(kode_sub, tr_all, callback){
+	if(!callback){
+		jQuery('#wrap-loading').show();
+	}
+	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+	if(!kode_sub){
+		kode_sub = jQuery('table[cellpadding="2"]').eq(0).find('tr').eq(5).find('td').eq(2).html().split('&nbsp;')[0];
+	}
+	jQuery.ajax({
+		url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-giat/'+config.id_daerah+'/'+id_unit,
+		type: 'get',
+		success: function(subkeg){
+			var kode_sbl = '';
+			subkeg.data.map(function(b, i){
+				if(b.kode_sub_giat == kode_sub && b.nama_sub_giat.mst_lock != 3){
+					kode_sbl = b.nama_sub_giat.kode_sbl;
 				}
+			});
+			if(kode_sbl == ''){
+				return alert('kode_sbl tidak ditemukan!');
 			}
-		}else if(td.length == 7){
-			var item = {
-				nama : td.eq(1).text().trim(),
-				koef : td.eq(2).text().trim(),
-				jumlah : td.eq(6).text().trim()
-			};
-			akun.data[kelompok][keterangan].push(item);
-			console.log('item, keterangan, kelompok, akun.data[kelompok][keterangan]', item, keterangan, kelompok, akun.data[kelompok][keterangan]);
+			getRincSubKeg(id_unit, kode_sbl).then(function(all_rinc){
+				var akun = {
+					kode: '',
+					nama: '',
+					data: {}
+				};
+				var kelompok = '';
+				var keterangan = '';
+				var all_data = [];
+				jQuery('table[cellpadding="5"]').eq(4).find('>tbody>tr').map(function(i, b){
+					if(tr_all && !tr_all[i]){
+						return;
+					}else{
+						var td = jQuery(b).find('td');
+						if(td.length == 3){
+							var kode = td.eq(0).text().trim();
+							var nama = td.eq(1).text().trim();
+							if(kode && kode.split('.').length==6){
+								akun.kode = kode; 
+								akun.nama = nama;
+							}else if(kode == ''){
+								if(nama.indexOf('[#]') != -1){
+									kelompok = nama;
+									akun.data[kelompok] = {};	
+								}else if(nama.indexOf('[-]') != -1){
+									keterangan = nama;
+									akun.data[kelompok][keterangan] = [];
+								}
+							}
+						}else if(td.length == 7){
+							var item = {
+								nama : td.eq(1).find('div').eq(0).text().trim(),
+								spek : td.eq(1).find('div').eq(1).text().trim(),
+								koef : td.eq(2).text().trim(),
+								jumlah : +(td.eq(6).text().trim().replace(/\./g,'').replace('Rp ','')),
+								tr_id : i,
+								kode_akun : akun.kode,
+								nama_akun : akun.nama,
+								kelompok : kelompok,
+								keterangan : keterangan
+							};
+							all_data.push(item);
+							akun.data[kelompok][keterangan].push(item);
+						}
+					}
+				});
+
+				var last = all_data.length-1;
+				all_data.reduce(function(sequence, nextData){
+			        return sequence.then(function(current_data){
+			    		return new Promise(function(resolve_reduce, reject_reduce){
+			    			var idbelanjarinci = '';
+			    			var nama_sh = [];
+			    			all_rinc.map(function(b, i){
+			    				if(
+			    					b.kode_akun == current_data.kode_akun
+			    					&& b.subs_bl_teks.trim() == current_data.kelompok
+			    					&& b.ket_bl_teks.trim() == current_data.keterangan
+			    					&& b.nama_standar_harga.nama_komponen.trim() == current_data.nama
+			    					&& b.koefisien == current_data.koef
+			    					&& b.rincian == current_data.jumlah
+			    				){
+			    					idbelanjarinci = b.id_rinci_sub_bl;
+			    					var nama = '';
+			    					if(b.nama_standar_harga.nama_komponen){
+			    						nama = b.nama_standar_harga.nama_komponen;
+			    					}
+			    					var spek = '';
+			    					if(b.nama_standar_harga.spek_komponen){
+			    						spek = b.nama_standar_harga.spek_komponen;
+			    					}
+			    					nama_sh = ''
+			    						+'<div>'+nama+'</div>'
+			    						+'<div style="margin-left: 20px">'+spek+'</div>';
+			    					current_data.lokus_akun_teks = b.lokus_akun_teks;
+			    				}
+			    			});
+			    			if(idbelanjarinci != ''){
+				    			getDetailPenerima(kode_sbl).then(function(all_penerima){
+					    			getDetailRin(id_unit, kode_sbl, idbelanjarinci, 5).then(function(rinci_penerima){
+					    				if(rinci_penerima.id_penerima != 0){
+						    				all_penerima.map(function(p, o){
+												if(p.id_profil == rinci_penerima.id_penerima){
+													nama_sh += ''
+								    					+'<div style="margin-left: 40px">'
+								    						+current_data.lokus_akun_teks+' ('+p.alamat_teks+' - '+p.jenis_penerima+')'
+						    							+'</div>';
+												}
+											});
+						    			}else if(rinci_penerima.nama_prop){
+						    				nama_sh += ''
+						    					+'<div style="margin-left: 40px">'
+						    						+'Provinsi '+rinci_penerima.nama_prop
+													+', '+rinci_penerima.nama_kab
+													+', Kecamatan '+rinci_penerima.nama_kec
+													+', '+rinci_penerima.nama_kel;
+						    					+'</div>';
+						    			}else{
+			    							console.log('current_data skip (bukan penerima bantuan)', current_data);
+						    			}
+					    				jQuery('table[cellpadding="5"]').eq(4).find('>tbody>tr').eq(current_data.tr_id).find('td').eq(1).html(nama_sh);
+					    				resolve_reduce(nextData);
+					    			});
+					    		});
+				    		}else{
+			    				console.log('current_data skip (idbelanjarinci tidak ditemukan)', current_data);
+					    		resolve_reduce(nextData);
+				    		}
+			    		})
+			            .catch(function(e){
+			                console.log(e);
+			                return Promise.resolve(nextData);
+			            });
+			        })
+			        .catch(function(e){
+			            console.log(e);
+			            return Promise.resolve(nextData);
+			        });
+			    }, Promise.resolve(all_data[last]))
+			    .then(function(data_last){
+			    	if(callback){
+			    		callback();
+			    	}else{
+			    		jQuery('#wrap-loading').hide();
+			    	}
+			    })
+			    .catch(function(e){
+			        console.log(e);
+			    	if(callback){
+			    		callback();
+			    	}else{
+			    		jQuery('#wrap-loading').hide();
+			    	}
+			    });
+			});
 		}
 	});
 }

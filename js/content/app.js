@@ -453,12 +453,43 @@ jQuery(document).ready(function(){
 					jQuery('.sub_kegiatan').remove();
 				}
 			});
-		}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/cetak/'+config.id_daerah+'/') != -1){
+		}else if(
+			current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/cetak/'+config.id_daerah+'/') != -1
+			|| current_url.indexOf('rka-bl-rinci/cetak') != -1
+		){
 			var opsiprint = ''
 				+'<label><input type="radio" id="tampil_alamat"> Tampilkan Alamat Rincian</label><br>'
 			jQuery('#action-sipd').append(opsiprint);
 			jQuery('#tampil_alamat').on('click', function(){
-				tampil_alamat_rka();
+				if(current_url.indexOf('rka-bl-rinci/cetak') != -1){
+					jQuery('#wrap-loading').show();
+					var subkeg = {};
+					var kode_sub = '';
+					jQuery('table[cellpadding="5"]').eq(4).find('>tbody>tr').map(function(i, b){
+						var td = jQuery(b).find('>td');
+						if(td.length == 1){
+							kode_sub = td.find('table>tbody>tr').eq(0).find('td').eq(2).html().split('&nbsp;')[0];
+							subkeg[kode_sub] = {};
+						}else{
+							subkeg[kode_sub][i] = 'tr_id';
+						}
+
+					});
+					var sendData = [];
+					for(var i in subkeg){
+						sendData.push(new Promise(function(resolve_reduce, reject_reduce){
+							tampil_alamat_rka(i, subkeg[i], function(){
+								resolve_reduce();
+							});
+						}))
+					}
+					Promise.all(sendData)
+					.then(function(val){
+						jQuery('#wrap-loading').hide();
+					});
+				}else{
+					tampil_alamat_rka();
+				}
 			});
 		}
 	}else if(
