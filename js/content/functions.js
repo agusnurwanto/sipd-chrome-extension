@@ -142,11 +142,14 @@ function run_download_excel(){
 	});
 }
 
-function getAllUnit(){
+function getAllUnit(id_unit){
 	return new Promise(function(resolve, reject){
 		if(typeof(allUnitSCE) == 'undefined'){
+			if(!id_unit){
+				id_unit = 0;
+			};
 			jQuery.ajax({
-				url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-unit/'+config.id_daerah+'/0',
+				url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-unit/'+config.id_daerah+'/'+id_unit,
 				type: 'get',
 				success: function(unit){
 					window.allUnitSCE = unit.data;
@@ -161,7 +164,7 @@ function getAllUnit(){
 
 function getAllSubKeg(id_unit){
 	return new Promise(function(resolve, reject){
-		getAllUnit().then(function(unit){
+		getAllUnit(id_unit).then(function(unit){
 			unit.map(function(b, i){
 				if(b.id_unit == id_unit){
 					if(!b.data_sub){
@@ -962,4 +965,35 @@ function tampil_alamat_rka(kode_sub, tr_all, callback){
 			});
 		}
 	});
+}
+
+function hapusKomponen(kodesbl,idblrinci){
+    jQuery.ajax({
+      	url: '../../hapus-rincian/90/2185',
+      	type: "POST",
+      	data:{
+      		"_token": jQuery('meta[name=_token]').attr('content'),
+      		"skrim":CR64('kodesbl='+kodesbl+'&idbelanjarinci='+idblrinci+'&jeniskk=0')
+      	},
+      	success: function(data){
+          	jQuery.ajax({
+	            url: "../../refresh-belanja/90/2185",
+	            type: "post",
+	            data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl":kodesbl},
+	            success: function(hasil){
+	              	var res=hasil.split("||");
+	              	var pagu, rinci;
+	              	if(res[0]==0){ pagu=0; } else if(res[0]!=0){ pagu = jQuery.number(res[0],0,',','.'); }
+	              	if(res[1]==0){ rinci=0; } else if(res[1]!=0){ rinci = jQuery.number(res[1],0,',','.'); }
+	              	jQuery(".statustotalpagu").html(pagu);
+	              	jQuery(".statustotalrincian").html(rinci);
+	            }
+          	});
+          	if(thpStatus=="murni"){
+            	jQuery('#table_rinci').DataTable().ajax.reload();
+          	}else if(thpStatus=="perubahan" || thpStatus=="pergeseran"){
+            	jQuery('#table_rinci_perubahan').DataTable().ajax.reload();
+          	}
+      }
+    });
 }

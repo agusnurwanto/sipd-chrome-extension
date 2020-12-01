@@ -592,11 +592,49 @@ jQuery(document).ready(function(){
 		injectScript( chrome.extension.getURL('/js/content/rka.js'), 'html');
 
 		var singkron_rka = ''
+			+'<button class="fcbtn btn btn-info btn-outline btn-1b" id="download_data_excel" style="display: none;">'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Download Rincian Excel</span>'
+			+'</button>'
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_rka_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RKA ke DB lokal</span>'
 			+'</button>';
 		jQuery('.icon-basket').closest('.m-t-10').find('.pull-right.p-t-20').prepend(singkron_rka);
+		jQuery('#download_data_excel').on('click', function(){
+			tableHtmlToExcel('data_rin_excel', jQuery('table.m-b-0>tbody>tr').eq(4).find('td').eq(2).text().trim());
+		});
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
+			jQuery('#download_data_excel').hide();
+			jQuery('body').prepend(''
+				+'<table id="data_rin_excel" style="display:none; margin-top: 60px; background: #fff;" class="table table-bordered">'
+					+'<thead>'
+						+'<tr>'
+							+'<th>No</th>'
+							+'<th>kode_sbl</th>'
+							+'<th>jenis_bl</th>'
+							+'<th>idsubtitle</th>'
+							+'<th>subs_bl_teks</th>'
+							+'<th>idketerangan</th>'
+							+'<th>ket_bl_teks</th>'
+							+'<th>kode_akun</th>'
+							+'<th>nama_akun</th>'
+							+'<th>nama_komponen</th>'
+							+'<th>spek_komponen</th>'
+							+'<th>koefisien</th>'
+							+'<th>satuan</th>'
+							+'<th>harga_satuan</th>'
+							+'<th>totalpajak</th>'
+							+'<th>rincian</th>'
+							+'<th>id_rinci_sub_bl</th>'
+							+'<th>id_penerima</th>'
+							+'<th>lokus_akun_teks</th>'
+							+'<th>id_prop_penerima</th>'
+							+'<th>id_camat_penerima</th>'
+							+'<th>id_kokab_penerima</th>'
+							+'<th>id_lurah_penerima</th>'
+							+'<th>idkomponen</th>'
+						+'</tr>'
+					+'</thead>'
+				+'</table>');
 			singkron_rka_ke_lokal();
 		});
 	// SIKRONISASI PROGRAM PRIORITAS NASIONAL DENGAN PROGRAM PRIORITAS DAERAH (APBD perda)
@@ -1644,9 +1682,18 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										_rka.koefisien = rka.koefisien;
 										_rka.lokus_akun_teks = rka.lokus_akun_teks;
 										_rka.nama_akun = rka.nama_akun;
-										_rka.nama_komponen = rka.nama_standar_harga.nama_komponen;
-										_rka.spek_komponen = rka.nama_standar_harga.spek_komponen;
-										_rka.satuan = rka.satuan;
+										if(rka.nama_standar_harga && rka.nama_standar_harga.nama_komponen){
+											_rka.nama_komponen = rka.nama_standar_harga.nama_komponen;
+											_rka.spek_komponen = rka.nama_standar_harga.spek_komponen;
+										}else{
+											_rka.nama_komponen = '';
+											_rka.spek_komponen = '';
+										}
+										if(rka.satuan){
+											_rka.satuan = rka.satuan;
+										}else{
+											_rka.satuan = '';
+										}
 										_rka.spek = rka.spek;
 										_rka.subs_bl_teks = rka.subs_bl_teks;
 										_rka.total_harga = rka.rincian;
@@ -1665,7 +1712,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										_rka.idkomponen = 0;
 										_rka.idketerangan = 0;
 										_rka.idsubtitle = 0;
-										_data.push(rka);
+										_data.push(_rka);
 										if((i+1)%_leng == 0){
 											_data_all.push(_data);
 											_data = [];
@@ -1675,6 +1722,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										_data_all.push(_data);
 									}
 
+									var no_excel = 0;
 									var last = _data_all.length-1;
 									_data_all.reduce(function(sequence, nextData){
 						                return sequence.then(function(current_data){
@@ -1694,6 +1742,38 @@ function singkron_rka_ke_lokal(opsi, callback) {
 															data_rka.rka[i].idkomponen = detail_rin.idkomponen;
 															data_rka.rka[i].idketerangan = detail_rin.idketerangan;
 															data_rka.rka[i].idsubtitle = detail_rin.idsubtitle;
+															if(!opsi){
+																no_excel++;
+																var tbody_excel = ''
+																	+'<tr>'
+																		+'<td style="mso-number-format:\@;">'+no_excel+'</td>'
+																		+'<td style="mso-number-format:\@;">'+kode_sbl+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].jenis_bl+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].idsubtitle+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].subs_bl_teks+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].idketerangan+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].ket_bl_teks+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].kode_akun+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].nama_akun+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].nama_komponen+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].spek_komponen+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].koefisien+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].satuan+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].harga_satuan+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].totalpajak+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].rincian+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].id_rinci_sub_bl+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].id_penerima+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].lokus_akun_teks+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].id_prop_penerima+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].id_camat_penerima+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].id_kokab_penerima+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].id_lurah_penerima+'</td>'
+																		+'<td style="mso-number-format:\@;">'+data_rka.rka[i].idkomponen+'</td>'
+																	+'</tr>';
+																jQuery('#data_rin_excel').append(tbody_excel);
+																console.log('data_rka.rka[i]', data_rka.rka[i]);
+															}
 														});
 													}
 						                		});
@@ -1735,6 +1815,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										if(!opsi || !opsi.no_return){
 											alert('Berhasil Singkron RKA ke DB lokal!');
 											jQuery('#wrap-loading').hide();
+											jQuery('#download_data_excel').show();
 										}
 						            	if(callback){
 									    	callback();

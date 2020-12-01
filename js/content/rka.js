@@ -206,11 +206,14 @@ var modal = ''
                       		+'<label class="control-label">Jenis Data Excel</label>'
                           	+'<select class="form-control" name="jenis_data" id="jenis_data">'
                                 +'<option value="">Pilih Format Data Excel</option>'
-                                +'<option value="dana-desa">Dana Desa</option>'
+                                +'<option value="dana-desa">Dana Desa / ADD (BANKEU)</option>'
+                                +'<option value="bagi-hasil">Belanja Bagi Hasil</option>'
+                                +'<option value="dana-bos">Dana BOS (BOS Pusat)</option>'
+                                +'<option value="upload-rincian">Upload Rincian</option>'
                             +'</select>'
                       	+'</div>'
                       	+'<div class="form-group">'
-                      		+'<label class="control-label">Contoh format excel <a id="label-excel" href="" target="_blank"></a></label>'
+                      		+'<label class="control-label">Contoh format excel <a id="label-excel" href="" target="_blank"></a> atau DOWNLOAD Excel dari Rincian belanja</label>'
                       		+'<input type="file" id="file_input" />'
                       	+'</div>'
                       	+'<div class="form-group">'
@@ -259,8 +262,56 @@ jQuery('body').append(modal);
 var import_excel = ''
 	+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="import_excel">'
 		+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Import Excel</span>'
+	+'</button>'
+	+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="hapus_multi_komponen">'
+		+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Hapus Multi komponen</span>'
 	+'</button>';
 jQuery('.tambah-detil').closest('.pull-right.p-t-20').prepend(import_excel);
+jQuery('#hapus_multi_komponen').on('click', function(){
+	var selected = [];
+	jQuery('.hapus-multi-komponen').map(function(i, b){
+		if(jQuery(b).is(':checked')){
+			var val = jQuery(b).val();
+			if(val){
+				selected.push(val);
+			}
+		}
+	});
+	if(selected.length == 0){
+		if(jQuery('#_select_all').length == 0){
+			var _select_all = '<label style="margin-left: 30px;"><input type="checkbox" onclick="select_all({start: 0, type:\'all\', checked: this.checked});" id="_select_all" style="margin: 0;"> Select All</label>';
+			jQuery('#table_rinci_length').append(_select_all);
+		}
+		jQuery('#table_rinci tbody tr').map(function(i, b){
+			var td = jQuery(b).find('td');
+			var val = td.eq(7).find('.btn-danger').attr('onclick');
+			if(val){
+				val = val.split("'")[3];
+			}
+			if(td.eq(0).find('.hapus-multi-komponen').length == 0){
+				var onclick = '';
+				var _class = 'class="hapus-multi-komponen"';
+				if(!val){
+					val = '';
+					// _class = '';
+					var type = 'rekening';
+					if(td.eq(0).text().indexOf('[#]') != -1){
+						type = 'kelompok';
+					}else if(td.eq(0).text().indexOf('[-]') != -1){
+						type = 'keterangan';
+					}
+					onclick = 'onclick="select_all({start: '+i+', type:\''+type+'\', checked: this.checked});"'
+				}
+				td.eq(0).html('<input type="checkbox" value="'+val+'" '+onclick+' '+_class+'> '+td.eq(0).html());
+			}
+		});
+		alert('Pilih komponen dulu!');
+	}else{
+		if(confirm('Apakah anda yakin untuk menghapus data ini? ('+selected.join(', ')+')')){
+			console.log(selected);
+		}
+	}
+});
 jQuery('#import_excel').on('click', function(){
 	jQuery('#mod-import-excel').modal('show');
 });
@@ -283,6 +334,28 @@ jQuery('#jenis_data').on('change', function(){
 		jQuery('#label-excel').attr('href', ext_url+'excel/ADD-2021.xlsx');
 		jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
 		jQuery('#jenis-bel-excel').val('BANKEU').trigger('change');
+		jQuery('#jenis-bel-excel').attr('disabled', true);
+		// jQuery('#rek-excel').html();
+		jQuery('#paket-excel').html(jQuery('select[name="subtitle"]').html());
+		jQuery('#keterangan-excel').html(jQuery('select[name="keterangan"]').html());
+		jQuery('#satuan-excel').html(jQuery('select[name="satuan1"]').html());
+		jQuery('#satuan-excel').select2();
+		jQuery('.group-dana-desa').show();
+	}else if(jenis == 'bagi-hasil'){
+		jQuery('#label-excel').attr('href', ext_url+'excel/ADD-2021.xlsx');
+		jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
+		jQuery('#jenis-bel-excel').val('BAGI-HASIL').trigger('change');
+		jQuery('#jenis-bel-excel').attr('disabled', true);
+		// jQuery('#rek-excel').html();
+		jQuery('#paket-excel').html(jQuery('select[name="subtitle"]').html());
+		jQuery('#keterangan-excel').html(jQuery('select[name="keterangan"]').html());
+		jQuery('#satuan-excel').html(jQuery('select[name="satuan1"]').html());
+		jQuery('#satuan-excel').select2();
+		jQuery('.group-dana-desa').show();
+	}else if(jenis == 'dana-bos'){
+		jQuery('#label-excel').attr('href', ext_url+'excel/ADD-2021.xlsx');
+		jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
+		jQuery('#jenis-bel-excel').val('BOS').trigger('change');
 		jQuery('#jenis-bel-excel').attr('disabled', true);
 		// jQuery('#rek-excel').html();
 		jQuery('#paket-excel').html(jQuery('select[name="subtitle"]').html());
@@ -535,7 +608,10 @@ function filePicked(oEvent) {
 	        var type_data = jQuery('#jenis_data').val();
 	        if(type_data == ''){
 	        	return alert('Jenis Data Excel tidak boleh kosong!');
-	        }else if(type_data == 'dana-desa'){
+	        }else if(
+	        	type_data == 'dana-desa'
+	        	|| type_data == 'bagi-hasil'
+	        ){
 	        	var data = [];
 	        	var kec = '';
 	        	var kab = '';
@@ -574,6 +650,19 @@ function filePicked(oEvent) {
 		        var json_object = JSON.stringify(data);
 		        console.log(data);
 		        jQuery("#file_output").html(json_object);
+	        }else if(
+	        	type_data == 'dana-bos'
+	        ){
+	        	var data = [];
+	        	var kec = '';
+	        	var kab = '';
+	        	var prov = '';
+	        	XL_row_object.map(function(b, i){
+	        		console.log('b', b);
+	        	});
+		        var json_object = JSON.stringify(data);
+		        console.log(data);
+		        jQuery("#file_output").html(json_object);
 	        }
       	});
 	};
@@ -583,4 +672,38 @@ function filePicked(oEvent) {
     };
 
     reader.readAsBinaryString(oFile);
+}
+
+function select_all(opsi){
+	var tr_id = opsi.start;
+	var type = opsi.type;
+	var checked = opsi.checked;
+	if(type == 'all'){
+		jQuery('.hapus-multi-komponen').prop('checked', checked);
+	}else{
+		var cek = false;
+		jQuery('#table_rinci tbody tr').map(function(i, b){
+			if(i > tr_id && !cek){
+				var td = jQuery(b).find('td');
+				if(td.length == 1){
+					var text = td.eq(0).text();
+					if(type == 'kelompok' && text.indexOf('[#]') != -1){
+						cek = true;
+					}else if(
+						type == 'keterangan' 
+						&& (text.indexOf('[#]') != -1 || text.indexOf('[-]') != -1)
+					){
+						cek = true;
+					}else if(
+						type == 'rekening'
+					){
+						cek = true;
+					}
+				}
+				if(!cek){
+					td.eq(0).find('.hapus-multi-komponen').prop('checked', checked);
+				}
+			}
+		});
+	}
 }
