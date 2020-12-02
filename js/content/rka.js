@@ -339,7 +339,56 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 		alert('Pilih komponen dulu!');
 	}else{
 		if(confirm('Apakah anda yakin untuk menghapus data ini? ('+selected.join(', ')+')')){
-			console.log(selected);
+			jQuery('#wrap-loading').show();
+			var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+			jQuery('.tambah-detil').click();
+			jQuery('.tambah-detil').click();
+			var kodesbl = jQuery('input[name="kodesbl"]').val();
+			var last = selected.length-1;
+			selected.reduce(function(sequence3, nextData3){
+	            return sequence3.then(function(current_data3){
+	        		return new Promise(function(resolve_reduce3, reject_reduce3){
+						jQuery.ajax({
+			              	url: '../../hapus-rincian/'+config.id_daerah+'/'+id_unit,
+			              	type: "POST",
+			              	data:{"_token": $('meta[name=_token]').attr('content'),"skrim":CR64('kodesbl='+kodesbl+'&idbelanjarinci='+current_data3+'&jeniskk=0')},
+			              	success: function(data){
+			              		resolve_reduce3(nextData3);
+			              	}
+			            });
+	        		})
+	                .catch(function(e){
+	                    console.log(e);
+	                    return Promise.resolve(nextData3);
+	                });
+	            })
+	            .catch(function(e){
+	                console.log(e);
+	                return Promise.resolve(nextData3);
+	            });
+	        }, Promise.resolve(selected[last]))
+	        .then(function(){
+				jQuery.ajax({
+                    url: "../../refresh-belanja/"+config.id_daerah+'/'+id_unit,
+                    type: "post",
+                    data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl":kodesbl},
+                    success: function(hasil){
+                      	var res=hasil.split("||");
+                      	var pagu, rinci;
+                      	if(res[0]==0){ pagu=0; } else if(res[0]!=0){ pagu = jQuery.number(res[0],0,',','.'); }
+                      	if(res[1]==0){ rinci=0; } else if(res[1]!=0){ rinci = jQuery.number(res[1],0,',','.'); }
+                      	jQuery(".statustotalpagu").html(pagu);
+                      	jQuery(".statustotalrincian").html(rinci);
+						jQuery('#wrap-loading').hide();
+						alert('Berhasil hapus multi komponen!');
+                    }
+              	});
+              	if(thpStatus=="murni"){
+                	jQuery('#table_rinci').DataTable().ajax.reload();
+              	}else if(thpStatus=="perubahan" || thpStatus=="pergeseran"){
+                	jQuery('#table_rinci_perubahan').DataTable().ajax.reload();
+              	}
+	        });
 		}
 	}
 });
