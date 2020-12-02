@@ -874,6 +874,7 @@ function tampil_alamat_rka(kode_sub, tr_all, callback){
 						}
 					}
 				});
+				// console.log('all_data', all_data);
 
 				var last = all_data.length-1;
 				all_data.reduce(function(sequence, nextData){
@@ -908,15 +909,20 @@ function tampil_alamat_rka(kode_sub, tr_all, callback){
 			    			if(idbelanjarinci != ''){
 				    			getDetailPenerima(kode_sbl).then(function(all_penerima){
 					    			getDetailRin(id_unit, kode_sbl, idbelanjarinci, 5).then(function(rinci_penerima){
-					    				if(rinci_penerima.id_penerima != 0){
+					    				if(rinci_penerima.id_penerima && rinci_penerima.id_penerima != 0){
+					    					var cek =  false;
 						    				all_penerima.map(function(p, o){
 												if(p.id_profil == rinci_penerima.id_penerima){
+													cek = true;
 													nama_sh += ''
 								    					+'<div style="margin-left: 40px">'
 								    						+current_data.lokus_akun_teks+' ('+p.alamat_teks+' - '+p.jenis_penerima+')'
 						    							+'</div>';
 												}
 											});
+											if(!cek){
+			    								console.log('current_data skip (bukan penerima bantuan)', current_data, rinci_penerima);
+											}
 						    			}else if(rinci_penerima.nama_prop){
 						    				nama_sh += ''
 						    					+'<div style="margin-left: 40px">'
@@ -925,6 +931,11 @@ function tampil_alamat_rka(kode_sub, tr_all, callback){
 													+', Kecamatan '+rinci_penerima.nama_kec
 													+', '+rinci_penerima.nama_kel;
 						    					+'</div>';
+						    			}else if(current_data.lokus_akun_teks){
+						    				nama_sh += ''
+						    					+'<div style="margin-left: 40px">'
+						    						+current_data.lokus_akun_teks
+				    							+'</div>';
 						    			}else{
 			    							console.log('current_data skip (bukan penerima bantuan)', current_data);
 						    			}

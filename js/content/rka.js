@@ -257,6 +257,37 @@ var modal = ''
                 +'</div>'
             +'</div>'
         +'</div>'
+    +'</div>'
+    +'<div class="modal fade" id="mod-ganti-rek" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 9999">'
+        +'<div class="modal-dialog modal-lg" role="document">'
+            +'<div class="modal-content">'
+                +'<div class="modal-header bgpanel-theme">'
+                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
+                    +'<h4 class="modal-title text-white" id="">Pilih Rekening Sesuai Jenis Belanja</h4>'
+                +'</div>'
+                +'<div class="modal-body">'
+                  	+'<form>'
+                      	+'<div class="form-group">'
+                      		+'<label class="control-label">Jenis Belanja Asal</label>'
+                          	+'<select class="form-control" name="ganti-jbl-asal" id="ganti-jbl-asal" disabled></select>'
+                      	+'</div>'
+                      	+'<div class="form-group">'
+                      		+'<label class="control-label">Rekening / Akun Asal</label>'
+                          	+'<select class="form-control" name="ganti-rek-asal" id="ganti-rek-asal" disabled></select>'
+                      	+'</div>'
+                      	+'<div class="form-group">'
+                      		+'<label class="control-label">Pilih Rekening / Akun</label>'
+                          	+'<select class="form-control" name="pilih-ganti-rek" id="pilih-ganti-rek">'
+                            +'</select>'
+                      	+'</div>'
+                  	+'</form>'
+                +'</div>'
+                +'<div class="modal-footer">'
+                    +'<button type="button" class="btn btn-success" id="simpan-ganti-rek">Simpan</button>'
+                    +'<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>'
+                +'</div>'
+            +'</div>'
+        +'</div>'
     +'</div>';
 jQuery('body').append(modal);
 var import_excel = ''
@@ -707,3 +738,52 @@ function select_all(opsi){
 		});
 	}
 }
+
+function gantiRekKomponen(){
+	jQuery('#wrap-loading').show();
+	jQuery('#mod-ganti-rek').modal('show');
+	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+	var jenisbl = jQuery('select[name="jenisbl"]').val();
+	var rek_asal = jQuery('select[name="akun"]').val();
+	jQuery('#ganti-jbl-asal').html(jQuery('select[name="jenisbl"]').html());
+	jQuery('#ganti-jbl-asal').val(jenisbl);
+	jQuery('#ganti-rek-asal').html(jQuery('select[name="akun"]').html());
+	jQuery('#ganti-rek-asal').val(rek_asal);
+	jQuery.ajax({
+	    url: "../../cari-rekening/"+config.id_daerah+"/"+id_unit,
+	    type: "post",
+	    data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idbl=0&idsubbl=0'+'&komponenkel='+jenisbl,
+	    success: function(data){
+	      	jQuery("#pilih-ganti-rek").html(data);
+	      	jQuery("#pilih-ganti-rek").val(rek_asal);
+			jQuery('#wrap-loading').hide();
+	    }
+	});
+}
+
+var f_ubah = ubahKomponen.toString();
+var ganti_rek = '<button class="btn btn-danger btn-sm pull-right" style="margin: 0px 0px 5px 0px" id="ganti-rek-sce" onclick="gantiRekKomponen(); return false;" type="button">Ganti Rekening</button>';
+eval(f_ubah.replace(/.$/," jQuery('.group-kodrek-komponen label').eq(0).append('"+ganti_rek+"') }"));
+
+jQuery(".windowtoggle").on("click",function(){
+	jQuery('#ganti-rek-sce').remove();
+});
+
+jQuery('#simpan-ganti-rek').on("click", function(){
+	if(confirm('Apakah anda yakin untuk merubah rekening dari komponen ini? Data komponen akan dihapus dan diinput dengan rekening yang baru!')){
+		jQuery('select[name="akun"]').attr('disabled', false);
+		jQuery('select[name="akun"]').html(jQuery('#pilih-ganti-rek').html());
+		jQuery('select[name="akun"]').val(jQuery('#pilih-ganti-rek').val()).trigger('change');
+		var kodesbl = jQuery('input[name="kodesbl"]').val();
+		var idblrinci = jQuery('input[name="idbelanjarinci"]').val();
+		if(kodesbl && idblrinci){
+			hapusKomponen(kodesbl,idblrinci);
+		}
+		jQuery('input[name="idbelanjarinci"]').val('');
+		jQuery('input[name="idakunrinci"]').val('');
+		jQuery('#mod-ganti-rek').modal('hide');
+		jQuery('#ganti-rek-asal').html('');
+		jQuery('#pilih-ganti-rek').html('');
+		jQuery('#ganti-jbl-asal').html('');
+	}
+});
