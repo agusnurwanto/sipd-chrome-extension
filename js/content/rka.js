@@ -267,17 +267,36 @@ var modal = ''
                 +'</div>'
                 +'<div class="modal-body">'
                   	+'<form>'
+                  		+'<input type="hidden" value="" id="ganti-selected"/>'
                       	+'<div class="form-group">'
                       		+'<label class="control-label">Jenis Belanja Asal</label>'
                           	+'<select class="form-control" name="ganti-jbl-asal" id="ganti-jbl-asal" disabled></select>'
                       	+'</div>'
-                      	+'<div class="form-group">'
+                      	+'<div class="form-group ganti-rekening">'
                       		+'<label class="control-label">Rekening / Akun Asal</label>'
                           	+'<select class="form-control" name="ganti-rek-asal" id="ganti-rek-asal" disabled></select>'
                       	+'</div>'
-                      	+'<div class="form-group">'
+                      	+'<div class="form-group ganti-rekening">'
                       		+'<label class="control-label">Pilih Rekening / Akun</label>'
                           	+'<select class="form-control" name="pilih-ganti-rek" id="pilih-ganti-rek">'
+                            +'</select>'
+                      	+'</div>'
+                      	+'<div class="form-group ganti-kelompok">'
+                      		+'<label class="control-label">Kelompok Asal</label>'
+                          	+'<select class="form-control" name="ganti-kelompok-asal" id="ganti-kelompok-asal" disabled></select>'
+                      	+'</div>'
+                      	+'<div class="form-group ganti-kelompok">'
+                      		+'<label class="control-label">Pilih Kelompok</label>'
+                          	+'<select class="form-control" name="pilih-ganti-kelompok" id="pilih-ganti-kelompok">'
+                            +'</select>'
+                      	+'</div>'
+                      	+'<div class="form-group ganti-keterangan">'
+                      		+'<label class="control-label">Keterangan Asal</label>'
+                          	+'<select class="form-control" name="ganti-keterangan-asal" id="ganti-keterangan-asal" disabled></select>'
+                      	+'</div>'
+                      	+'<div class="form-group ganti-keterangan">'
+                      		+'<label class="control-label">Pilih Keterangan</label>'
+                          	+'<select class="form-control" name="pilih-ganti-keterangan" id="pilih-ganti-keterangan">'
                             +'</select>'
                       	+'</div>'
                   	+'</form>'
@@ -313,6 +332,9 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 			var _select_all = '<label style="margin-left: 30px;"><input type="checkbox" onclick="select_all({start: 0, type:\'all\', checked: this.checked});" id="_select_all" style="margin: 0;"> Select All</label>';
 			jQuery('#table_rinci_length').append(_select_all);
 		}
+		var rekening = '';
+		var kelompok = '';
+		var keterangan = '';
 		jQuery('#table_rinci tbody tr').map(function(i, b){
 			var td = jQuery(b).find('td');
 			var val = td.eq(7).find('.btn-danger').attr('onclick');
@@ -322,18 +344,31 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 			if(td.eq(0).find('.hapus-multi-komponen').length == 0){
 				var onclick = '';
 				var _class = 'class="hapus-multi-komponen"';
+				var edit_all = ''
 				if(!val){
 					val = '';
 					// _class = '';
+					var text = td.eq(0).text();
 					var type = 'rekening';
-					if(td.eq(0).text().indexOf('[#]') != -1){
+					if(text.indexOf('[#]') != -1){
 						type = 'kelompok';
-					}else if(td.eq(0).text().indexOf('[-]') != -1){
+						kelompok = text;
+						keterangan = '';
+						rekening = '';
+					}else if(text.indexOf('[-]') != -1){
 						type = 'keterangan';
+						keterangan = text;
+						rekening = '';
+					}else{
+						rekening = text;
 					}
 					onclick = 'onclick="select_all({start: '+i+', type:\''+type+'\', checked: this.checked});"'
+					edit_all = ''
+						+'<a href="javascript:;" onclick="ubahKomponenAll(\''+type+'\', this);" style="margin-left: 20px;" class="btn btn-info btn-outline btn-circle m-r-5">'
+							+'<i class="ti-pencil-alt"></i>'
+						+'</a>';
 				}
-				td.eq(0).html('<input type="checkbox" value="'+val+'" '+onclick+' '+_class+'> '+td.eq(0).html());
+				td.eq(0).html('<input kelompok="'+kelompok+'" keterangan="'+keterangan+'" rekening="'+rekening+'" type="checkbox" value="'+val+'" '+onclick+' '+_class+'> '+td.eq(0).html()+edit_all);
 			}
 		});
 		alert('Pilih komponen dulu!');
@@ -788,26 +823,103 @@ function select_all(opsi){
 	}
 }
 
-function gantiRekKomponen(){
+function gantiRekKomponen(type, selected){
 	jQuery('#wrap-loading').show();
 	jQuery('#mod-ganti-rek').modal('show');
 	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 	var jenisbl = jQuery('select[name="jenisbl"]').val();
-	var rek_asal = jQuery('select[name="akun"]').val();
 	jQuery('#ganti-jbl-asal').html(jQuery('select[name="jenisbl"]').html());
 	jQuery('#ganti-jbl-asal').val(jenisbl);
-	jQuery('#ganti-rek-asal').html(jQuery('select[name="akun"]').html());
-	jQuery('#ganti-rek-asal').val(rek_asal);
-	jQuery.ajax({
-	    url: "../../cari-rekening/"+config.id_daerah+"/"+id_unit,
-	    type: "post",
-	    data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idbl=0&idsubbl=0'+'&komponenkel='+jenisbl,
-	    success: function(data){
-	      	jQuery("#pilih-ganti-rek").html(data);
-	      	jQuery("#pilih-ganti-rek").val(rek_asal);
-			jQuery('#wrap-loading').hide();
-	    }
+	jQuery('#simpan-ganti-rek').attr('data-type', type);
+	if(selected){
+		jQuery('#ganti-selected').val(selected.join(','));
+	}else{
+		jQuery('#ganti-selected').val('');
+	}
+	if(!type || type == 'rekening'){
+		var rek_asal = jQuery('select[name="akun"]').val();
+		jQuery('.ganti-kelompok').hide();
+		jQuery('.ganti-keterangan').hide();
+		jQuery('#ganti-rek-asal').html(jQuery('select[name="akun"]').html());
+		jQuery('#ganti-rek-asal').val(rek_asal);
+		jQuery.ajax({
+		    url: "../../cari-rekening/"+config.id_daerah+"/"+id_unit,
+		    type: "post",
+		    data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idbl=0&idsubbl=0'+'&komponenkel='+jenisbl,
+		    success: function(data){
+		      	jQuery("#pilih-ganti-rek").html(data);
+		      	jQuery("#pilih-ganti-rek").val(rek_asal);
+				jQuery('#wrap-loading').hide();
+		    }
+		});
+	} else if(type == 'kelompok'){
+		var kelompok_asal = jQuery('select[name="subtitle"]').val();
+		jQuery('.ganti-rekening').hide();
+		jQuery('.ganti-keterangan').hide();
+		jQuery('#ganti-kelompok-asal').html(jQuery('select[name="subtitle"]').html());
+		jQuery('#ganti-kelompok-asal').val(kelompok_asal);
+      	jQuery("#pilih-ganti-kelompok").html(jQuery('select[name="subtitle"]').html());
+      	jQuery("#pilih-ganti-kelompok").val(kelompok_asal);
+		jQuery('#wrap-loading').hide();
+	} else if(type == 'keterangan'){
+		var keterangan_asal = jQuery('select[name="keterangan"]').val();
+		jQuery('.ganti-rekening').hide();
+		jQuery('.ganti-kelompok').hide();
+		jQuery('#ganti-keterangan-asal').html(jQuery('select[name="keterangan"]').html());
+		jQuery('#ganti-keterangan-asal').val(keterangan_asal);
+      	jQuery("#pilih-ganti-keterangan").html(jQuery('select[name="keterangan"]').html());
+      	jQuery("#pilih-ganti-keterangan").val(keterangan_asal);
+	}
+}
+
+function ubahKomponenAll(type, that){
+	var selected = [];
+	var checkbox = jQuery(that).parent().find('input');
+	var kelompok = checkbox.attr('kelompok');
+	var keterangan = checkbox.attr('keterangan');
+	var rekening = checkbox.attr('rekening');
+	jQuery('.hapus-multi-komponen').map(function(i, b){
+		if(jQuery(b).is(':checked')){
+			var _kelompok = jQuery(b).attr('kelompok');
+			var _keterangan = jQuery(b).attr('keterangan');
+			var _rekening = jQuery(b).attr('rekening');
+			var val = jQuery(b).val();
+			if(
+				val
+				&& (
+					(
+						type == 'rekening'
+						&& _kelompok == kelompok
+						&& _keterangan == keterangan
+						&& _rekening == rekening
+					)
+					|| (
+						type == 'keterangan'
+						&& _keterangan == keterangan
+						&& _rekening == rekening
+					)
+					|| (
+						type == 'kelompok'
+						&& _kelompok == kelompok
+					)
+				)
+			){
+				selected.push(val);
+			}
+		}
 	});
+	if(selected.length == 0){
+		alert('Pilih komponen dulu!');
+	}else{
+		jQuery('.close-form').click();
+		jQuery('.tambah-detil').click();
+		jQuery('.tambah-detil').click();
+		var kodesbl = jQuery('input[name="kodesbl"]').val();
+		ubahKomponen(kodesbl, selected[0]);
+		setTimeout(function(){
+			gantiRekKomponen(type, selected);
+		}, 1000);
+	}
 }
 
 var f_ubah = ubahKomponen.toString();
@@ -819,20 +931,27 @@ jQuery(".windowtoggle").on("click",function(){
 });
 
 jQuery('#simpan-ganti-rek').on("click", function(){
-	if(confirm('Apakah anda yakin untuk merubah rekening dari komponen ini? Data komponen akan dihapus dan diinput dengan rekening yang baru!')){
-		jQuery('select[name="akun"]').attr('disabled', false);
-		jQuery('select[name="akun"]').html(jQuery('#pilih-ganti-rek').html());
-		jQuery('select[name="akun"]').val(jQuery('#pilih-ganti-rek').val()).trigger('change');
-		var kodesbl = jQuery('input[name="kodesbl"]').val();
-		var idblrinci = jQuery('input[name="idbelanjarinci"]').val();
-		if(kodesbl && idblrinci){
-			hapusKomponen(kodesbl,idblrinci);
+	var type = jQuery('#simpan-ganti-rek').attr('data-type');
+	if(!type || type == 'rekening'){
+		if(confirm('Apakah anda yakin untuk merubah rekening dari komponen ini? Data komponen akan dihapus dan diinput dengan rekening yang baru!')){
+			jQuery('select[name="akun"]').attr('disabled', false);
+			jQuery('select[name="akun"]').html(jQuery('#pilih-ganti-rek').html());
+			jQuery('select[name="akun"]').val(jQuery('#pilih-ganti-rek').val()).trigger('change');
+			var kodesbl = jQuery('input[name="kodesbl"]').val();
+			var idblrinci = jQuery('input[name="idbelanjarinci"]').val();
+			if(kodesbl && idblrinci){
+				hapusKomponen(kodesbl,idblrinci);
+			}
+			jQuery('input[name="idbelanjarinci"]').val('');
+			jQuery('input[name="idakunrinci"]').val('');
+			jQuery('#mod-ganti-rek').modal('hide');
+			jQuery('#ganti-rek-asal').html('');
+			jQuery('#pilih-ganti-rek').html('');
+			jQuery('#ganti-jbl-asal').html('');
 		}
-		jQuery('input[name="idbelanjarinci"]').val('');
-		jQuery('input[name="idakunrinci"]').val('');
-		jQuery('#mod-ganti-rek').modal('hide');
-		jQuery('#ganti-rek-asal').html('');
-		jQuery('#pilih-ganti-rek').html('');
-		jQuery('#ganti-jbl-asal').html('');
+	}else if(type == 'kelompok'){
+
+	}else if(type == 'keterangan'){
+
 	}
 });
