@@ -840,6 +840,18 @@ function gantiRekKomponen(type, selected){
 	}else{
 		jQuery('#ganti-selected').val(jQuery('input[name="idbelanjarinci"'));
 	}
+	var kelompok_asal = jQuery('select[name="subtitle"]').val();
+	jQuery('.ganti-kelompok').show();
+	jQuery('.ganti-keterangan').show();
+	jQuery('#ganti-kelompok-asal').html(jQuery('select[name="subtitle"]').html());
+	jQuery('#ganti-kelompok-asal').val(kelompok_asal);
+  	jQuery("#pilih-ganti-kelompok").html(jQuery('select[name="subtitle"]').html());
+  	jQuery("#pilih-ganti-kelompok").val(kelompok_asal);
+	var keterangan_asal = jQuery('select[name="keterangan"]').val();
+	jQuery('#ganti-keterangan-asal').html(jQuery('select[name="keterangan"]').html());
+	jQuery('#ganti-keterangan-asal').val(keterangan_asal);
+  	jQuery("#pilih-ganti-keterangan").html(jQuery('select[name="keterangan"]').html());
+  	jQuery("#pilih-ganti-keterangan").val(keterangan_asal);
 	if(!type || type == 'rekening'){
 		jQuery('.ganti-jbl').show();
 		jQuery('.ganti-rekening').show();
@@ -859,18 +871,6 @@ function gantiRekKomponen(type, selected){
 		});
 	} else if(type == 'kelompok' || type == 'keterangan'){
 		jQuery('#mod-ganti-rek h4.modal-title').text('Ganti Kelompok atau Keterangan');
-		var kelompok_asal = jQuery('select[name="subtitle"]').val();
-		jQuery('.ganti-kelompok').show();
-		jQuery('.ganti-keterangan').show();
-		jQuery('#ganti-kelompok-asal').html(jQuery('select[name="subtitle"]').html());
-		jQuery('#ganti-kelompok-asal').val(kelompok_asal);
-      	jQuery("#pilih-ganti-kelompok").html(jQuery('select[name="subtitle"]').html());
-      	jQuery("#pilih-ganti-kelompok").val(kelompok_asal);
-		var keterangan_asal = jQuery('select[name="keterangan"]').val();
-		jQuery('#ganti-keterangan-asal').html(jQuery('select[name="keterangan"]').html());
-		jQuery('#ganti-keterangan-asal').val(keterangan_asal);
-      	jQuery("#pilih-ganti-keterangan").html(jQuery('select[name="keterangan"]').html());
-      	jQuery("#pilih-ganti-keterangan").val(keterangan_asal);
 		jQuery('#wrap-loading').hide();
 	}
 }
@@ -917,10 +917,9 @@ function ubahKomponenAll(type, that){
 		console.log('selected', selected);
         setTimeout(function(){
     		var kodesbl = jQuery('input[name="kodesbl"]').val();
-    		ubahKomponen(kodesbl, selected[0]);
-    		setTimeout(function(){
+    		ubahKomponen(kodesbl, selected[0], function(){
     			gantiRekKomponen(type, selected);
-    		}, 1000);
+    		});
         }, 500);
 	}
 }
@@ -929,7 +928,7 @@ function ubahKomponenAll(type, that){
 jQuery('.tambah-detil').click();
 jQuery('.tambah-detil').click();
 
-var f_ubah = ubahKomponen.toString();
+var f_ubah = ubahKomponen.toString().replace('function ubahKomponen(kodesbl,idblrinci){', 'function ubahKomponen(kodesbl,idblrinci, callback){').replace('$("select[name=satuan4]")', 'if(callback){ callback() }; $("select[name=satuan4]")');
 var ganti_rek = '<button class="btn btn-danger btn-sm pull-right" style="margin: 0px 0px 5px 0px" id="ganti-rek-sce" onclick="gantiRekKomponen(); return false;" type="button" id="open_ganti_rek">Ganti Rekening</button>';
 eval(f_ubah.replace(/.$/," if(jQuery('#open_ganti_rek').length==0){ jQuery('.group-kodrek-komponen label').eq(0).append('"+ganti_rek+"') } }"));
 
@@ -950,23 +949,19 @@ jQuery('#simpan-ganti-rek').on("click", function(){
         		return new Promise(function(resolve_redurce, reject_redurce){
                     jQuery('.close-form').click();
                     setTimeout(function(){
-                        ubahKomponen(kodesbl, current_data);
-                        setTimeout(function(){
+                        ubahKomponen(kodesbl, current_data, function(){
+        					var idblrinci = jQuery('input[name="idbelanjarinci"]').val();
+    						jQuery('select[name="subtitle"]').html(jQuery('#pilih-ganti-kelompok').html());
+    						jQuery('select[name="subtitle"]').val(jQuery('#pilih-ganti-kelompok').val()).trigger('change');
+    						jQuery('select[name="keterangan"]').html(jQuery('#pilih-ganti-keterangan').html());
+    						jQuery('select[name="keterangan"]').val(jQuery('#pilih-ganti-keterangan').val()).trigger('change');
         					if(!type || type == 'rekening'){
         						jQuery('select[name="akun"]').attr('disabled', false);
         						jQuery('select[name="akun"]').html(jQuery('#pilih-ganti-rek').html());
         						jQuery('select[name="akun"]').val(jQuery('#pilih-ganti-rek').val()).trigger('change');
         						jQuery('input[name="idbelanjarinci"]').val('');
         						jQuery('input[name="idakunrinci"]').val('');
-        					}else if(type == 'kelompok' || type == 'keterangan'){
-        						jQuery('select[name="subtitle"]').html(jQuery('#pilih-ganti-kelompok').html());
-        						jQuery('select[name="subtitle"]').val(jQuery('#pilih-ganti-kelompok').val()).trigger('change');
-        						jQuery('select[name="keterangan"]').html(jQuery('#pilih-ganti-keterangan').html());
-        						jQuery('select[name="keterangan"]').val(jQuery('#pilih-ganti-keterangan').val()).trigger('change');
         					}
-        					var idblrinci = jQuery('input[name="idbelanjarinci"]').val();
-                            // resolve_redurce(nextData);
-                            // return console.log('kodesbl, idblrinci, current_data', kodesbl, idblrinci, current_data);
         					if(kodesbl && idblrinci && idblrinci==current_data){
                                 return new Promise(function(resolve_redurce2, reject_redurce2){
                                     if(!type || type == 'rekening'){
@@ -991,8 +986,10 @@ jQuery('#simpan-ganti-rek').on("click", function(){
     						          	}
     						        });
                                 });
+        					}else{
+        						console.log('skip karena idbelanjarinci salah!', 'kodesbl, idblrinci, current_data', kodesbl, idblrinci, current_data)
         					}
-                        }, 1000);
+                        });
                     }, 1000);
         		 })
                 .catch(function(e){

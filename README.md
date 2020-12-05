@@ -4,6 +4,8 @@ Semoga bermanfaat
 
 ### GRUP telegram https://t.me/sipd_chrome_extension
 
+### Plugin Wordpress WP-SIPD https://github.com/agusnurwanto/wp-sipd
+
 ### Fitur:
 	- Export data SSH ke database lokal
 	- Export data akun belanja ke database lokal
