@@ -838,7 +838,7 @@ function gantiRekKomponen(type, selected){
 	if(selected){
 		jQuery('#ganti-selected').val(selected.join(','));
 	}else{
-		jQuery('#ganti-selected').val(jQuery('input[name="idbelanjarinci"'));
+		jQuery('#ganti-selected').val(jQuery('input[name="idbelanjarinci"').val());
 	}
 	var kelompok_asal = jQuery('select[name="subtitle"]').val();
 	jQuery('.ganti-kelompok').show();
