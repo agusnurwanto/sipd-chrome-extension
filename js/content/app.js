@@ -470,9 +470,7 @@ jQuery(document).ready(function(){
 			current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/cetak/'+config.id_daerah+'/') != -1
 			|| current_url.indexOf('rka-bl-rinci/cetak') != -1
 		){
-			if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/cetak/'+config.id_daerah+'/') != -1){
-				logo_rka();
-			}
+			logo_rka();
 			
 			var opsiprint = ''
 				+'<label><input type="radio" id="tampil_alamat"> Tampilkan Alamat Rincian</label><br>'
