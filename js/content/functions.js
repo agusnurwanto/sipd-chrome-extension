@@ -1,3 +1,17 @@
+function logo_rka(){
+	jQuery('#action-sipd').append('<label><input type="radio" id="tampil-logo-rka"> Tampilkan LOGO daerah</label>');
+	jQuery('#tampil-logo-rka').on('click', function(){
+		if(jQuery('#logo-pemda').length == 0){
+			set_logo_rka();
+		}
+	});
+}
+function set_logo_rka(){
+	var logo = chrome.runtime.getURL("img/logo.png");
+	var logo_daerah = '<td rowspan="2" align="center" width="100px" style="padding:10px; border: 1px solid #000; font-weight: bold;"><img id="logo-pemda" src="'+logo+'" width="75px"/></td>';
+	jQuery('table[cellpadding="5"]').eq(0).find(' tbody tr').eq(0).prepend(logo_daerah);
+}
+
 function ttd_kepala_daerah(target){
 	var jabatan = "";
 	var daerah = window.location.href.split('.')[0].split('//')[1];

@@ -33,6 +33,19 @@ function run_script(code){
 
 // http://swwwitch.com/dl/Font-Awesome-Cheetsheet-4.5.0.pdf
 jQuery(document).ready(function(){
+	if(config.replace_logo){
+		var logo = chrome.runtime.getURL("img/logo.png");
+		if(jQuery('.media-body img').length >=1){
+			jQuery('.media-body img').attr('src', logo);
+		}
+		if(jQuery('.navbar-top-links .dropdown-toggle img').length >=1){
+			jQuery('.navbar-top-links .dropdown-toggle img').attr('src', logo);
+		}
+		if(jQuery('.user-pro-body img').length >=1){
+			jQuery('.user-pro-body img').attr('src', logo);
+		}
+	}
+
 	var loading = ''
 		+'<div id="wrap-loading">'
 	        +'<div class="lds-hourglass"></div>'
@@ -457,6 +470,10 @@ jQuery(document).ready(function(){
 			current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/cetak/'+config.id_daerah+'/') != -1
 			|| current_url.indexOf('rka-bl-rinci/cetak') != -1
 		){
+			if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/cetak/'+config.id_daerah+'/') != -1){
+				logo_rka();
+			}
+			
 			var opsiprint = ''
 				+'<label><input type="radio" id="tampil_alamat"> Tampilkan Alamat Rincian</label><br>'
 			jQuery('#action-sipd').append(opsiprint);
