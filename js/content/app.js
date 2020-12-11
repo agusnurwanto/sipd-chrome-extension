@@ -1205,6 +1205,17 @@ jQuery(document).ready(function(){
 			jQuery('#wrap-loading').show();
 			tampil_semua_halaman();
 		});
+	}else if(current_url.indexOf('setup-user/'+config.tahun_anggaran+'/kel-desa/'+config.id_daerah+'/0') != -1){
+		console.log('halaman user kelurahan/desa');
+		var singkron_lokal = ''
+			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-user-deskel-lokal" style="float: right">'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron User Pengusul Kelurahan/Desa ke DB Lokal</span>'
+			+'</button>';
+		jQuery('.p-b-10 .pull-right').append(singkron_lokal);
+		jQuery('#singkron-user-deskel-lokal').on('click', function(){
+			jQuery('#wrap-loading').show();
+			singkron_user_deskel_lokal();
+		});
 	}
 });
 

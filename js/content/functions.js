@@ -993,8 +993,9 @@ function tampil_alamat_rka(kode_sub, tr_all, callback){
 }
 
 function hapusKomponen(kodesbl,idblrinci){
+	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
     jQuery.ajax({
-      	url: '../../hapus-rincian/90/2185',
+      	url: '../../hapus-rincian/'+config.id_daerah+'/'+id_unit,
       	type: "POST",
       	data:{
       		"_token": jQuery('meta[name=_token]').attr('content'),
@@ -1002,7 +1003,7 @@ function hapusKomponen(kodesbl,idblrinci){
       	},
       	success: function(data){
           	jQuery.ajax({
-	            url: "../../refresh-belanja/90/2185",
+	            url: "../../refresh-belanja/"+config.id_daerah+"/"+id_unit,
 	            type: "post",
 	            data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl":kodesbl},
 	            success: function(hasil){
@@ -1020,5 +1021,168 @@ function hapusKomponen(kodesbl,idblrinci){
             	jQuery('#table_rinci_perubahan').DataTable().ajax.reload();
           	}
       }
+    });
+}
+
+function singkron_user_deskel_lokal(){
+	jQuery.ajax({
+      	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/kel-desa/tampil/'+config.id_daerah+'/0',
+      	type: "GET",
+      	success: function(desa){
+      		var last = desa.data.length-1;
+      		desa.data.reduce(function(sequence, nextData){
+                return sequence.then(function(current_data){
+            		return new Promise(function(resolve_reduce, reject_reduce){
+            			var data_deskel = { 
+							action: 'singkron_user_deskel',
+							tahun_anggaran: config.tahun_anggaran,
+							api_key: config.api_key,
+							data: {}
+						};
+        				data_deskel.data.camat_teks = current_data.camat_teks;
+						data_deskel.data.id_camat = current_data.id_camat;
+						data_deskel.data.id_daerah = current_data.id_daerah;
+						data_deskel.data.id_level = current_data.id_level;
+						data_deskel.data.id_lurah = current_data.id_lurah;
+						data_deskel.data.id_profil = current_data.id_profil;
+						data_deskel.data.id_user = current_data.id_user;
+						data_deskel.data.is_desa = current_data.is_desa;
+						data_deskel.data.is_locked = current_data.is_locked;
+						data_deskel.data.jabatan = current_data.jabatan;
+						data_deskel.data.jenis = current_data.jenis;
+						data_deskel.data.kab_kota = current_data.kab_kota;
+						data_deskel.data.kode_lurah = current_data.kode_lurah;
+						data_deskel.data.login_name = current_data.login_name;
+						data_deskel.data.lurah_teks = current_data.lurah_teks;
+						data_deskel.data.nama_daerah = current_data.nama_daerah;
+						data_deskel.data.nama_user = current_data.nama_user;
+						data_deskel.data.accasmas = '';
+						data_deskel.data.accbankeu = '';
+						data_deskel.data.accdisposisi = '';
+						data_deskel.data.accgiat = '';
+						data_deskel.data.acchibah = '';
+						data_deskel.data.accinput = '';
+						data_deskel.data.accjadwal = '';
+						data_deskel.data.acckunci = '';
+						data_deskel.data.accmaster = '';
+						data_deskel.data.accspv = '';
+						data_deskel.data.accunit = '';
+						data_deskel.data.accusulan = '';
+						data_deskel.data.alamatteks = '';
+						data_deskel.data.camatteks = '';
+						data_deskel.data.daerahpengusul = '';
+						data_deskel.data.dapil = '';
+						data_deskel.data.emailteks = '';
+						data_deskel.data.fraksi = '';
+						data_deskel.data.idcamat = '';
+						data_deskel.data.iddaerahpengusul = '';
+						data_deskel.data.idkabkota = '';
+						data_deskel.data.idlevel = '';
+						data_deskel.data.idlokasidesa = '';
+						data_deskel.data.idlurah = '';
+						data_deskel.data.idlurahpengusul = '';
+						data_deskel.data.idprofil = '';
+						data_deskel.data.iduser = '';
+						data_deskel.data.loginname = '';
+						data_deskel.data.lokasidesateks = '';
+						data_deskel.data.lurahteks = '';
+						data_deskel.data.nama = '';
+						data_deskel.data.namapengusul = '';
+						data_deskel.data.nik = '';
+						data_deskel.data.nip = '';
+						data_deskel.data.notelp = '';
+						data_deskel.data.npwp = '';
+            			if(!current_data.id_user){
+            				var data = {
+							    message:{
+							        type: "get-url",
+							        content: {
+									    url: config.url_server_lokal,
+									    type: 'post',
+									    data: data_deskel,
+						    			return: false
+									}
+							    }
+							};
+							chrome.runtime.sendMessage(data, function(response) {
+							    console.log('responeMessage', response);
+							    resolve_reduce(nextData);
+							});
+            			}else{
+            				jQuery.ajax({
+						      	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/kel-desa/detil/'+config.id_daerah+'/0',
+						      	type: "POST",
+	            				data:{"_token":jQuery('meta[name=_token]').attr('content'),"idxuser":current_data.id_user},
+						      	success: function(detil){
+						      		data_deskel.data.accasmas = detil.accasmas;
+									data_deskel.data.accbankeu = detil.accbankeu;
+									data_deskel.data.accdisposisi = detil.accdisposisi;
+									data_deskel.data.accgiat = detil.accgiat;
+									data_deskel.data.acchibah = detil.acchibah;
+									data_deskel.data.accinput = detil.accinput;
+									data_deskel.data.accjadwal = detil.accjadwal;
+									data_deskel.data.acckunci = detil.acckunci;
+									data_deskel.data.accmaster = detil.accmaster;
+									data_deskel.data.accspv = detil.accspv;
+									data_deskel.data.accunit = detil.accunit;
+									data_deskel.data.accusulan = detil.accusulan;
+									data_deskel.data.alamatteks = detil.alamatteks;
+									data_deskel.data.camatteks = detil.camatteks;
+									data_deskel.data.daerahpengusul = detil.daerahpengusul;
+									data_deskel.data.dapil = detil.dapil;
+									data_deskel.data.emailteks = detil.emailteks;
+									data_deskel.data.fraksi = detil.fraksi;
+									data_deskel.data.idcamat = detil.idcamat;
+									data_deskel.data.iddaerahpengusul = detil.iddaerahpengusul;
+									data_deskel.data.idkabkota = detil.idkabkota;
+									data_deskel.data.idlevel = detil.idlevel;
+									data_deskel.data.idlokasidesa = detil.idlokasidesa;
+									data_deskel.data.idlurah = detil.idlurah;
+									data_deskel.data.idlurahpengusul = detil.idlurahpengusul;
+									data_deskel.data.idprofil = detil.idprofil;
+									data_deskel.data.iduser = detil.iduser;
+									data_deskel.data.jabatan = detil.jabatan;
+									data_deskel.data.loginname = detil.loginname;
+									data_deskel.data.lokasidesateks = detil.lokasidesateks;
+									data_deskel.data.lurahteks = detil.lurahteks;
+									data_deskel.data.nama = detil.nama;
+									data_deskel.data.namapengusul = detil.namapengusul;
+									data_deskel.data.nik = detil.nik;
+									data_deskel.data.nip = detil.nip;
+									data_deskel.data.notelp = detil.notelp;
+									data_deskel.data.npwp = detil.npwp;
+									var data = {
+									    message:{
+									        type: "get-url",
+									        content: {
+											    url: config.url_server_lokal,
+											    type: 'post',
+											    data: data_deskel,
+								    			return: false
+											}
+									    }
+									};
+									chrome.runtime.sendMessage(data, function(response) {
+									    console.log('responeMessage', response);
+							    		resolve_reduce(nextData);
+									});
+						      	}
+						    });
+            			}
+            		})
+                    .catch(function(e){
+                        console.log(e);
+                        return Promise.resolve(nextData);
+                    });
+                })
+                .catch(function(e){
+                    console.log(e);
+                    return Promise.resolve(nextData);
+                });
+            }, Promise.resolve(desa.data[last]))
+            .then(function(data_last){
+
+            });
+      	}
     });
 }
