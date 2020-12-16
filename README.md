@@ -33,8 +33,21 @@ Semoga bermanfaat
 	- Menampilkan detail rincian penerima bantuan di RKA dan rincian belanja
 	- Export data kelurahan/desa ke database lokal
 	- Export data anggota dewan ke database lokal
+	- Menambahkan tombol detail akun/rekening di halaman analisa belanja > standar harga
 
 ### Pengembangan berikutnya:
 	- Melengkapi dokumentasi penggunaan di halaman wiki
 	- Melengkapi video tutorial di youtube
 	- Import data RENSTRA
+
+### Video tutorial
+	- Cara install chrome extension https://www.youtube.com/watch?v=VnySS0RE6zc&t=318s
+	- Mencari Komponen SSH dengan ID Standar Harga di halaman input rincian belanja https://www.youtube.com/watch?v=ixiwcs7xz8g
+	- Export SSH SIPD ke Database Server Lokal https://www.youtube.com/watch?v=lcLXBwSq9Ng
+	- Export RKA Kegiatan ke Database Server Lokal https://www.youtube.com/watch?v=t84n2jZUfFo
+	- Setting Tanggal RKA dan Nama TAPD https://www.youtube.com/watch?v=3z9zn506oTw
+	- Setting Tanggal RKA dan Nama TAPD di Aplikasi SIPD https://www.youtube.com/watch?v=UCroKhfaHKQ
+	- Print Laporan APBD Lampiran III Semua Perangkat Daerah https://www.youtube.com/watch?v=QZKb8LrHcpg
+	- Upload Excel Belanja Bantuan Keuangan Dana Desa https://www.youtube.com/watch?v=F3Db_v40Rh4
+	- Release v1.9 perbaikan beberapa bug error dan menampilkan tanda tangan kepala daerah di lampiran APBD https://www.youtube.com/watch?v=UpQheTCkEN4
+	- Ganti/update Rekening Multi Komponen di halaman rincian belanja https://www.youtube.com/watch?v=Wo6BdOCPb1g
