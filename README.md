@@ -31,8 +31,10 @@ Semoga bermanfaat
 - Import data provinsi, kabupaten, kecamatan, desa
 - Import data profile penerima bantuan
 - Menampilkan detail rincian penerima bantuan di RKA dan rincian belanja
-- Export data kelurahan/desa ke database lokal
-- Export data anggota dewan ke database lokal
+- Ganti Rekening/Akun Multi Komponen Rincian Belanja
+- Hapus multi komponen
+- Export data user kelurahan/desa ke database lokal
+- Export data user anggota dewan ke database lokal
 - Menambahkan tombol detail akun/rekening di halaman analisa belanja > standar harga
 
 ### Pengembangan berikutnya:
