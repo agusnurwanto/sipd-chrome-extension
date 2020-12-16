@@ -31,6 +31,8 @@ Semoga bermanfaat
 	- Import data provinsi, kabupaten, kecamatan, desa
 	- Import data profile penerima bantuan
 	- Menampilkan detail rincian penerima bantuan di RKA dan rincian belanja
+	- Export data kelurahan/desa ke database lokal
+	- Export data anggota dewan ke database lokal
 
 ### Pengembangan berikutnya:
 	- Melengkapi dokumentasi penggunaan di halaman wiki

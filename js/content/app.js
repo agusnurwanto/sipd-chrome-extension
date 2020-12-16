@@ -1216,6 +1216,30 @@ jQuery(document).ready(function(){
 			jQuery('#wrap-loading').show();
 			singkron_user_deskel_lokal();
 		});
+	}else if(current_url.indexOf('budget/analisis/'+config.tahun_anggaran+'/bl/view/'+config.id_daerah+'/0') != -1){
+		console.log('halaman analisis belanja');
+		if(jQuery('#table_standar_harga').length >= 1){
+			var tombol_detil = ''
+				+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="detil-analisis-belanja" style="float: right">'
+					+'<i class="fa fa-eye m-r-5"></i> <span>Detail Akun/Rekening</span>'
+				+'</button>';
+			jQuery('.col-md-10 .box-title').append(tombol_detil);
+			jQuery('#detil-analisis-belanja').on('click', function(){
+				jQuery('#wrap-loading').show();
+				detil_analisis_belanja();
+			});
+		}
+	}else if(current_url.indexOf('setup-user/'+config.tahun_anggaran+'/anggota-dewan/'+config.id_daerah+'/0') != -1){
+		console.log('halaman user anggota-dewan');
+		var singkron_lokal = ''
+			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-user-dewan-lokal" style="float: right">'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron User Anggota Dewan ke DB Lokal</span>'
+			+'</button>';
+		jQuery('.p-b-10 .pull-right').append(singkron_lokal);
+		jQuery('#singkron-user-dewan-lokal').on('click', function(){
+			jQuery('#wrap-loading').show();
+			singkron_user_dewan_lokal();
+		});
 	}
 });
 

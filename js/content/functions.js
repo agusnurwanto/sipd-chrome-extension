@@ -1181,8 +1181,160 @@ function singkron_user_deskel_lokal(){
                 });
             }, Promise.resolve(desa.data[last]))
             .then(function(data_last){
-
+            	alert('Berhasil singkron data User Pengusul Kelurahan/Desa!');
+            	jQuery('#wrap-loading').hide();
             });
       	}
+    });
+}
+
+function singkron_user_dewan_lokal(){
+	jQuery.ajax({
+      	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/anggota-dewan/tampil/'+config.id_daerah+'/0',
+      	type: "GET",
+      	success: function(dewan){
+      		var last = dewan.data.length-1;
+      		dewan.data.reduce(function(sequence, nextData){
+                return sequence.then(function(current_data){
+            		return new Promise(function(resolve_reduce, reject_reduce){
+            			jQuery.ajax({
+					      	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/kel-desa/detil/'+config.id_daerah+'/0',
+					      	type: "POST",
+            				data:{"_token":jQuery('meta[name=_token]').attr('content'),"idxuser":current_data.id_user},
+					      	success: function(detil){
+		            			var data_dewan = { 
+									action: 'singkron_user_dewan',
+									tahun_anggaran: config.tahun_anggaran,
+									api_key: config.api_key,
+									data: {}
+								};
+								data_dewan.data.accasmas = detil.accasmas;
+								data_dewan.data.accbankeu = detil.accbankeu;
+								data_dewan.data.accdisposisi = detil.accdisposisi;
+								data_dewan.data.accgiat = detil.accgiat;
+								data_dewan.data.acchibah = detil.acchibah;
+								data_dewan.data.accinput = detil.accinput;
+								data_dewan.data.accjadwal = detil.accjadwal;
+								data_dewan.data.acckunci = detil.acckunci;
+								data_dewan.data.accmaster = detil.accmaster;
+								data_dewan.data.accspv = detil.accspv;
+								data_dewan.data.accunit = detil.accunit;
+								data_dewan.data.accusulan = detil.accusulan;
+								data_dewan.data.alamatteks = detil.alamatteks;
+								data_dewan.data.camatteks = detil.camatteks;
+								data_dewan.data.daerahpengusul = detil.daerahpengusul;
+								data_dewan.data.dapil = detil.dapil;
+								data_dewan.data.emailteks = detil.emailteks;
+								data_dewan.data.fraksi = detil.fraksi;
+								data_dewan.data.idcamat = detil.idcamat;
+								data_dewan.data.iddaerahpengusul = detil.iddaerahpengusul;
+								data_dewan.data.idkabkota = detil.idkabkota;
+								data_dewan.data.idlevel = detil.idlevel;
+								data_dewan.data.idlokasidesa = detil.idlokasidesa;
+								data_dewan.data.idlurah = detil.idlurah;
+								data_dewan.data.idlurahpengusul = detil.idlurahpengusul;
+								data_dewan.data.idprofil = detil.idprofil;
+								data_dewan.data.iduser = detil.iduser;
+								data_dewan.data.jabatan = detil.jabatan;
+								data_dewan.data.loginname = detil.loginname;
+								data_dewan.data.lokasidesateks = detil.lokasidesateks;
+								data_dewan.data.lurahteks = detil.lurahteks;
+								data_dewan.data.nama = detil.nama;
+								data_dewan.data.namapengusul = detil.namapengusul;
+								data_dewan.data.nik = detil.nik;
+								data_dewan.data.nip = detil.nip;
+								data_dewan.data.notelp = detil.notelp;
+								data_dewan.data.npwp = detil.npwp;
+					      		var data = {
+								    message:{
+								        type: "get-url",
+								        content: {
+										    url: config.url_server_lokal,
+										    type: 'post',
+										    data: data_dewan,
+							    			return: false
+										}
+								    }
+								};
+								chrome.runtime.sendMessage(data, function(response) {
+								    console.log('responeMessage', response);
+						    		resolve_reduce(nextData);
+								});
+					      	}
+					    });
+            		})
+                    .catch(function(e){
+                        console.log(e);
+                        return Promise.resolve(nextData);
+                    });
+                })
+                .catch(function(e){
+                    console.log(e);
+                    return Promise.resolve(nextData);
+                });
+            }, Promise.resolve(dewan.data[last]))
+            .then(function(data_last){
+            	alert('Berhasil singkron data User Anggota Dewan!');
+            	jQuery('#wrap-loading').hide();
+            });
+      	}
+    });
+
+}
+
+function detil_analisis_belanja(){
+	var data_link_akun = [];
+	jQuery('#table_standar_harga tbody tr').map(function(i, b){
+		var td = jQuery(b).find('td');
+		if(td.eq(6).find('.detil_akun').length <= 0){
+			var link = td.eq(6).html().split('href="')[1].split('"')[0];
+			var no = +td.eq(0).text();
+			data_link_akun.push({
+				url: link,
+				tr: i,
+				no: no-1
+			});
+		}
+	});
+	var last = data_link_akun.length-1;
+	data_link_akun.reduce(function(sequence, nextData){
+        return sequence.then(function(current_data){
+    		return new Promise(function(resolve_reduce, reject_reduce){
+				jQuery.ajax({
+			      	url: current_data.url,
+			      	type: "GET",
+			      	success: function(html){
+			      		var link = html.split("budget/analisis/"+config.tahun_anggaran+"/bl/tampil-akun/"+config.id_daerah+"/0")[1].split("'");
+			      		jQuery.ajax({
+					      	url: config.sipd_url+'daerah/main/budget/analisis/'+config.tahun_anggaran+'/bl/tampil-akun/'+config.id_daerah+'/0'+link,
+					      	type: "GET",
+					      	success: function(akun){
+					      		var rek = [];
+					      		akun.data.map(function(b, i){
+					      			rek.push(b.kode_akun+' '+b.nama_akun);
+					      		});
+					      		var ket = ', <br><span class="detil_akun">'+rek.join(', <br>')+'</span>';
+					      		jQuery('#table_standar_harga tbody tr').eq(current_data.tr).find('td').eq(6).append(ket);
+					      		run_script("jQuery('#table_standar_harga').DataTable().rows().data()["+current_data.no+"].totalakun.nilai += '"+ket+"';");
+					      		resolve_reduce(nextData);
+					      	}
+					    });
+			      	}
+			    });
+    		})
+            .catch(function(e){
+                console.log(e);
+                return Promise.resolve(nextData);
+            });
+        })
+        .catch(function(e){
+            console.log(e);
+            return Promise.resolve(nextData);
+        });
+    }, Promise.resolve(data_link_akun[last]))
+    .then(function(data_last){
+    	run_script("jQuery('#table_standar_harga').DataTable().row().invalidate();");
+    	run_script("jQuery('#table_standar_harga').DataTable().draw();");
+    	jQuery('#wrap-loading').hide();
     });
 }
