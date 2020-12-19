@@ -1368,6 +1368,5 @@ function singkron_pengaturan_sipd_lokal(){
 	};
 	chrome.runtime.sendMessage(data, function(response) {
 	    console.log('responeMessage', response);
-		resolve_reduce(nextData);
 	});
 }

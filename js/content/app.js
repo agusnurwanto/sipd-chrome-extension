@@ -1244,7 +1244,7 @@ jQuery(document).ready(function(){
 		console.log('halaman setup sipd');
 		var singkron_lokal = ''
 			+'<div class="col-xs-9">'
-				+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-sipd-lokal" style="float: right">'
+				+'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-sipd-lokal" style="float: right">'
 					+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
 				+'</button>'
 			+'</div>';
