@@ -1240,6 +1240,19 @@ jQuery(document).ready(function(){
 			jQuery('#wrap-loading').show();
 			singkron_user_dewan_lokal();
 		});
+	}else if(current_url.indexOf('/sipd/'+config.tahun_anggaran+'/setup/'+config.id_daerah+'/0') != -1){
+		console.log('halaman setup sipd');
+		var singkron_lokal = ''
+			+'<div class="col-xs-9">'
+				+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-sipd-lokal" style="float: right">'
+					+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
+				+'</button>'
+			+'</div>';
+		jQuery('.m-t-20').append(singkron_lokal);
+		jQuery('#singkron-sipd-lokal').on('click', function(){
+			jQuery('#wrap-loading').show();
+			singkron_pengaturan_sipd_lokal();
+		});
 	}
 });
 
