@@ -36,6 +36,7 @@ Semoga bermanfaat
 - Export data user kelurahan/desa ke database lokal
 - Export data user anggota dewan ke database lokal
 - Menambahkan tombol detail akun/rekening di halaman analisa belanja > standar harga
+- Setting Nomor, tanggal dan keterangan Perkada
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki
