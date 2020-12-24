@@ -741,13 +741,50 @@ jQuery(document).ready(function(){
 									}else{
 										subkeg.kode = kode;
 										subkeg.nama = nama;
-										getAllSubKeg(dinas.data.id_unit).then(function(all_sub){
-											all_sub.map(function(sub, m){
-												if(sub.kode_sub_giat == subkeg.kode){
-													subkeg.data = sub;
+										subkeg.sub_skpd = [];
+										getAllUnit().then(function(unit){
+											unit.map(function(un, m){
+												if(un.id_unit == dinas.data.id_unit){
+													subkeg.sub_skpd.push(un);
 												}
 											});
-			        						resolve_reduce2(nextData2);
+											console.log('subkeg.sub_skpd', subkeg.sub_skpd);
+											var lastsubskpd = subkeg.sub_skpd.length-1;
+											subkeg.sub_skpd.reduce(function(sequence3, nextData3){
+									            return sequence3.then(function(current_data3){
+									        		return new Promise(function(resolve_reduce3, reject_reduce3){
+									        			// console.log('current_data3.id_skpd', current_data3, current_data3.id_skpd);
+														getAllSubKeg(current_data3.id_skpd).then(function(all_sub){
+															all_sub.map(function(sub, m){
+																if(sub.kode_sub_giat == subkeg.kode){
+																	subkeg.data = sub;
+																	dinas.data = current_data3;
+																}
+															});
+							        						resolve_reduce3(nextData3);
+														})
+											            .catch(function(e){
+											                console.log(e);
+											                resolve_reduce3(nextData3);
+											            });
+									        		})
+									                .catch(function(e){
+									                    console.log(e);
+									                    return Promise.resolve(nextData3);
+									                });
+									            })
+									            .catch(function(e){
+									                console.log(e);
+									                return Promise.resolve(nextData3);
+									            });
+									        }, Promise.resolve(subkeg.sub_skpd[lastsubskpd]))
+									        .then(function(){
+						        				resolve_reduce2(nextData2);
+									        })
+								            .catch(function(e){
+								                console.log(e);
+								                resolve_reduce2(nextData2);
+								            });
 										})
 							            .catch(function(e){
 							                console.log(e);
@@ -759,7 +796,7 @@ jQuery(document).ready(function(){
 										nama: td.eq(1).text().trim(),
 										data: []
 									};
-									getRincSubKeg(dinas.data.id_unit, subkeg.data.kode_sbl).then(function(all_rinc){
+									getRincSubKeg(dinas.data.id_skpd, subkeg.data.kode_sbl).then(function(all_rinc){
 										var penerima = [];
 										var nomor = 0;
 										var _style = {
@@ -781,7 +818,7 @@ jQuery(document).ready(function(){
 											jenis_bl = 'BANKEU';
 											jenis_akun = 'is_bankeu_khusus,is_bankeu_umum';
 										}
-										getMultiAkunByJenisBl(jenis_bl, dinas.data.id_unit, subkeg.data.kode_sbl, jenis_akun).then(function(akun){
+										getMultiAkunByJenisBl(jenis_bl, dinas.data.id_skpd, subkeg.data.kode_sbl, jenis_akun).then(function(akun){
 											if(!kelompok.nama){
 												var total_bansos = 0;
 												all_rinc.map(function(rin, m){
@@ -819,7 +856,7 @@ jQuery(document).ready(function(){
 									            return sequence3.then(function(current_data3){
 									        		return new Promise(function(resolve_reduce3, reject_reduce3){
 														getDetailPenerima(subkeg.data.kode_sbl, false, nomor_lampiran).then(function(all_penerima){
-															getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl, nomor_lampiran)
+															getDetailRin(dinas.data.id_skpd, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl, nomor_lampiran)
 															.then(function(rinci_penerima){
 																var alamat = '';
 																if(nomor_lampiran == 5){
@@ -1240,19 +1277,20 @@ jQuery(document).ready(function(){
 			jQuery('#wrap-loading').show();
 			singkron_user_dewan_lokal();
 		});
-	}else if(current_url.indexOf('/sipd/'+config.tahun_anggaran+'/setup/'+config.id_daerah+'/0') != -1){
+	 }else if(current_url.indexOf('/sipd/'+config.tahun_anggaran+'/setup/'+config.id_daerah+'/0') != -1){
 		console.log('halaman setup sipd');
 		var singkron_lokal = ''
-			+'<div class="col-xs-9">'
-				+'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-sipd-lokal" style="float: right">'
-					+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
-				+'</button>'
-			+'</div>';
+	        +'<div class="col-xs-9">'
+	                +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-sipd-lokal" style="float: right">'
+	                        +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
+	                +'</button>'
+	        +'</div>';
 		jQuery('.m-t-20').append(singkron_lokal);
 		jQuery('#singkron-sipd-lokal').on('click', function(){
-			jQuery('#wrap-loading').show();
-			singkron_pengaturan_sipd_lokal();
+	        jQuery('#wrap-loading').show();
+	        singkron_pengaturan_sipd_lokal();
 		});
+
 	}
 });
 
@@ -1408,11 +1446,11 @@ function singkron_skpd_ke_lokal(){
 }
 
 function singkron_rka_ke_lokal_all(opsi_unit, callback) {
-	if((opsi_unit && opsi_unit.id_unit) || confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+	if((opsi_unit && opsi_unit.id_skpd) || confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 		jQuery('#wrap-loading').show();
 		var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
-		if(opsi_unit && opsi_unit.id_unit){
-			id_unit = opsi_unit.id_unit;
+		if(opsi_unit && opsi_unit.id_skpd){
+			id_unit = opsi_unit.id_skpd;
 			var opsi = { 
 				action: 'set_unit_pagu',
 				api_key: config.api_key,

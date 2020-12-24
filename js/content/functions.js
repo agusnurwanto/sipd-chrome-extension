@@ -15,6 +15,9 @@ function set_logo_rka(){
 function ttd_kepala_daerah(target){
 	var jabatan = "";
 	var daerah = window.location.href.split('.')[0].split('//')[1];
+	if(config.nama_daerah){
+		daerah = config.nama_daerah;
+	}
 	if(window.location.href.split('.')[0].indexOf('kab')){
 		jabatan = 'Bupati';
 		daerah = daerah.replace('kab', '');
@@ -42,6 +45,13 @@ function ttd_kepala_daerah(target){
 				jQuery(j).closest('table').after('<div style="page-break-after:always;"></div>');
 			}
 		});
+		if(config.no_perkada){
+			var table_perkada = jQuery('table[cellpadding="0"]').eq(1).find('tbody tr');
+			table_perkada.eq(2).find('td').eq(4).text(tgl)
+			table_perkada.eq(1).find('td').eq(4).text(config.no_perkada);
+			var ket_perkada = prompt("Edit keterangan perkada", table_perkada.eq(0).find('td').eq(2).text());
+			table_perkada.eq(0).find('td').eq(2).text(ket_perkada);
+		}
 	}
 	run_download_excel();
 }
@@ -50,8 +60,21 @@ function get_tanggal(){
 	var _default = "";
 	if(config.tgl_rka == 'auto'){
 		var tgl = new Date();
-		var bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-		_default = tgl.getDate()+' '+bulan[tgl.getMonth()-1]+' '+tgl.getFullYear();
+		var bulan = [
+			"Januari", 
+			"Februari", 
+			"Maret", 
+			"April", 
+			"Mei", 
+			"Juni", 
+			"Juli", 
+			"Agustus", 
+			"September", 
+			"Oktober", 
+			"November", 
+			"Desember"
+		];
+		_default = tgl.getDate()+' '+bulan[tgl.getMonth()]+' '+tgl.getFullYear();
 	}else{
 		_default = config.tgl_rka;
 	}
@@ -180,7 +203,7 @@ function getAllSubKeg(id_unit){
 	return new Promise(function(resolve, reject){
 		getAllUnit(id_unit).then(function(unit){
 			unit.map(function(b, i){
-				if(b.id_unit == id_unit){
+				if(b.id_skpd == id_unit){
 					if(!b.data_sub){
 						jQuery.ajax({
 							url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-giat/'+config.id_daerah+'/'+id_unit,
@@ -193,6 +216,8 @@ function getAllSubKeg(id_unit){
 					}else{
 						return resolve(b.data_sub);
 					}
+				}else{
+					console.log('id_skpd '+id_unit+' tidak ditemukan!');
 				}
 			});
 		})
@@ -210,7 +235,7 @@ function getRincSubKeg(id_unit, kode_sbl){
 							type: 'get',
 							success: function(allrinc){
 								allUnitSCE.map(function(un, n){
-									if(un.id_unit == id_unit){
+									if(un.id_skpd == id_unit){
 										allUnitSCE[n].data_sub[i].data_rinc = allrinc.data;
 										return resolve(allUnitSCE[n].data_sub[i].data_rinc);
 									}
@@ -1344,26 +1369,26 @@ function singkron_pengaturan_sipd_lokal(){
 	    message:{
 	        type: "get-url",
 	        content: {
-			    url: config.url_server_lokal,
-			    type: 'post',
-			    data: { 
-					action: 'singkron_pengaturan_sipd',
-					tahun_anggaran: config.tahun_anggaran,
-					api_key: config.api_key,
-					data: {
-						daerah: jQuery('h4.text-white.font-bold').text(),
-						kepala_daerah: jQuery('input[name="kepala_daerah"]').val(),
-						wakil_kepala_daerah: jQuery('input[name="wakil_kepala_daerah"]').val(),
-						awal_rpjmd: jQuery('input[name="awal_rpjmd"]').val(),
-						akhir_rpjmd: jQuery('input[name="akhir_rpjmd"]').val(),
-						pelaksana_rkpd: jQuery('input[name="pelaksana_rkpd"]').val(),
-						pelaksana_kua: jQuery('input[name="pelaksana_kua"]').val(),
-						pelaksana_apbd: jQuery('input[name="pelaksana_apbd"]').val(),
-						set_kpa_sekda: jQuery('input[name="set_kpa_sekda"]').val(),
-					}
-				},
-    			return: true
-			}
+                url: config.url_server_lokal,
+                type: 'post',
+                data: { 
+                    action: 'singkron_pengaturan_sipd',
+                    tahun_anggaran: config.tahun_anggaran,
+                    api_key: config.api_key,
+                    data: {
+                            daerah: jQuery('h4.text-white.font-bold').text(),
+                            kepala_daerah: jQuery('input[name="kepala_daerah"]').val(),
+                            wakil_kepala_daerah: jQuery('input[name="wakil_kepala_daerah"]').val(),
+                            awal_rpjmd: jQuery('input[name="awal_rpjmd"]').val(),
+                            akhir_rpjmd: jQuery('input[name="akhir_rpjmd"]').val(),
+                            pelaksana_rkpd: jQuery('input[name="pelaksana_rkpd"]').val(),
+                            pelaksana_kua: jQuery('input[name="pelaksana_kua"]').val(),
+                            pelaksana_apbd: jQuery('input[name="pelaksana_apbd"]').val(),
+                            set_kpa_sekda: jQuery('input[name="set_kpa_sekda"]').val(),
+                    }
+                },
+            	return: true
+            }
 	    }
 	};
 	chrome.runtime.sendMessage(data, function(response) {
