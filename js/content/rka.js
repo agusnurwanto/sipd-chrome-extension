@@ -542,29 +542,30 @@ function insertRKA(){
 	      			return jQuery(this).html().toLocaleLowerCase().replace('provinsi ', '') == raw.prov.toLocaleLowerCase();
 	      		}).val();
 				// console.log('id_prov', id_prov, data_prov, raw.prov);
-	      		if(id_prov == ''){
+	      		if(typeof id_prov == 'undefined'){
 	      			raw.error = 'Provinsi tidak ditemukan';
 	      			resolve(raw);
 	      		}else{
 					raw.id_prov = id_prov;
 					getIdKab(raw).then(function(id_kab){
-			      		if(id_kab == ''){
+			      		if(typeof id_kab == 'undefined'){
 			      			raw.error = 'Kabupaten / Kota tidak ditemukan';
 			      			resolve(raw);
 			      		}else{
 							raw.id_kab = id_kab;
 							getIdKec(raw).then(function(id_kec){
-					      		if(id_kec == ''){
+					      		if(typeof id_kec == 'undefined'){
 					      			raw.error = 'Kecamatan tidak ditemukan';
 					      			resolve(raw);
 					      		}else{
 							      	raw.id_kec = id_kec;
 					      			getIdKel(raw).then(function(id_kel){
-							      		if(id_kel == ''){
+							      		if(typeof id_kel == 'undefined'){
 							      			raw.error = 'Desa / Kelurahan tidak ditemukan';
 							      			resolve(raw);
 							      		}else{
 							      			raw.id_kel = id_kel;
+							      			raw.kodesbl = jQuery('input[name="kodesbl"]').val();
 							      			setKeterangan(raw).then(function(id_ket){
 								      			raw.detil_rincian = {
 								      				jenis_belanja: jenis_belanja,
@@ -573,7 +574,7 @@ function insertRKA(){
 								      				id_keterangan: id_ket
 								      			};
 								      			var skrim = ''
-								      				+'kodesbl='+jQuery('input[name="kodesbl"]').val()
+								      				+'kodesbl='+raw.kodesbl
 								      				+'&idbelanjarinci='
 								      				+'&idakunrinci='
 								      				+'&jenisbl='+jenis_belanja
@@ -590,7 +591,7 @@ function insertRKA(){
 									      			+'&idkomponen='
 									      			+'&spek='
 									      			+'&satuan='+encodeURIComponent(satuantext)
-									      			+'&hargasatuan='+raw.total
+									      			+'&hargasatuan='+(+raw.total.replace(/,/g, ''))
 									      			+'&keterangan='+id_ket
 									      			+'&volum1='+vol
 									      			+'&satuan1='+satuan
@@ -601,19 +602,19 @@ function insertRKA(){
 									      			+'&volum4='
 									      			+'&satuan4=';
 										        raw.skrim = skrim;
-										        resolve(raw); console.log(raw);
-								      			// jQuery.ajax({
-										       //    	url: config.sipd_url+"daerah/main/budget/belanja/"+config.tahun_anggaran+"/rinci/simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
-										       //    	type: "post",
-										       //    	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&skrim='+CR64(skrim),
-										       //    	success: function(data_kel){
-								      			// 		resolve(raw);
-										       //    	},
-										       //    	error: function(jqXHR, textStatus, error){
-										      	// 		raw.error = 'Error ajax simpan rincian';
-										      	// 		resolve(raw);
-										       //    	}
-										       // 	});
+										        // resolve(raw); console.log(raw);
+								      			jQuery.ajax({
+										          	url: config.sipd_url+"daerah/main/budget/belanja/"+config.tahun_anggaran+"/rinci/simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
+										          	type: "post",
+										          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&skrim='+CR64(skrim),
+										          	success: function(data_kel){
+								      					resolve(raw);
+										          	},
+										          	error: function(jqXHR, textStatus, error){
+										      			raw.error = 'Error ajax simpan rincian';
+										      			resolve(raw);
+										          	}
+										       	});
 							      			})
 							      		}
 								    })
@@ -755,7 +756,25 @@ function setKeterangan(raw){
 	return new Promise(function(resolve, reject){
 		var id_keterangan = jQuery('#keterangan-excel').val();
 		if(jQuery('#keterangan-otomatis').is(':checked')){
-			return resolve(id_keterangan);
+			var _id_keterangan = jQuery('#keterangan-excel').find('option').filter(function(){
+      			return jQuery(this).html().toLocaleLowerCase() == raw.keterangan.toLocaleLowerCase();
+      		}).val();
+      		if(typeof _id_keterangan == 'undefined'){
+				jQuery.ajax({
+		          	url: "../../simpan-keterangan/"+config.id_daerah+"/"+raw.id_unit,
+		          	type: "POST",
+		          	data:{"_token": $('meta[name=_token]').attr('content'),"kodesbl":raw.kodesbl,"skrim":CR64('keterangan_add='+raw.keterangan)},
+		          	success: function(data){
+		          		jQuery("select[name=keterangan]").append('<option value ="'+data['id_ket_sub_bl']+'">'+data['ket_bl_teks']+'</option>');
+              			jQuery("select[name=keterangan]").val(data['id_ket_sub_bl']).trigger("change");
+		          		jQuery("#keterangan-excel").append('<option value ="'+data['id_ket_sub_bl']+'">'+data['ket_bl_teks']+'</option>');
+              			jQuery("#keterangan-excel").val(data['id_ket_sub_bl']).trigger("change");
+						return resolve(data['id_ket_sub_bl']);
+		          	}
+		        });
+			}else{
+				return resolve(_id_keterangan);
+			}
 		}else{
 			return resolve(id_keterangan);
 		}
@@ -787,7 +806,6 @@ function filePicked(oEvent) {
 	        ){
 	        	var data = [];
 	        	XL_row_object.map(function(row, i){
-	        		console.log(row);
 	        		data_pasti = {};
 		        	data_pasti.no = row['NO'];
 		        	data_pasti.desa = row['DESA'];
@@ -803,7 +821,7 @@ function filePicked(oEvent) {
 	        	});
 		        var json_object = JSON.stringify(data);
 		        console.log(data);
-		        jQuery("#file_output").html(json_object);
+		        jQuery("#file_output").val(json_object);
 	        }else if(
 	        	type_data == 'dana-bos'
 	        ){
@@ -816,7 +834,7 @@ function filePicked(oEvent) {
 	        	});
 		        var json_object = JSON.stringify(data);
 		        console.log(data);
-		        jQuery("#file_output").html(json_object);
+		        jQuery("#file_output").val(json_object);
 	        }
       	});
 	};
