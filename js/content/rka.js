@@ -643,7 +643,7 @@ function insertRKA(){
 		});
 		Promise.all(sendData)
 		.then(function(all_status){
-			console.log(all_status);
+			console.log('all_status', all_status);
 			jQuery('.close-form').click();
 			jQuery.ajax({
                 url: "../../refresh-belanja/"+config.id_daerah+"/"+id_unit,
@@ -657,7 +657,17 @@ function insertRKA(){
                   	jQuery(".statustotalpagu").html(pagu);
                   	jQuery(".statustotalrincian").html(rinci);
 					jQuery('#wrap-loading').hide();
-					alert('Berhasil simpan data!');
+					var _error = [];
+					all_status.map(function(row, n){
+						if(row.error){
+							_error.push('"'+row.desa+'" error: ('+row.error+')');
+						}
+					});
+					var catatan = '';
+					if(_error.length > 0){
+						catatan = ' Catatan: '+_error.join(', ');
+					}
+					alert('Berhasil simpan data!'+catatan);
                 }
           	});
 
