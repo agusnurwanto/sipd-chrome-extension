@@ -1682,6 +1682,11 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							            data_rka.dataOutput[i].targetoutputteks = d.targetoutputteks;
 									});
 									subkeg.dataHasil.map(function(d, i){
+										data_rka.dataHasil[i] = {};
+										data_rka.dataHasil[i].hasilteks = d.hasilteks;
+										data_rka.dataHasil[i].satuanhasil = d.satuanhasil;
+										data_rka.dataHasil[i].targethasil = d.targethasil;
+										data_rka.dataHasil[i].targethasilteks = d.targethasilteks;
 
 									});
 									subkeg.dataEs3.map(function(d, i){
