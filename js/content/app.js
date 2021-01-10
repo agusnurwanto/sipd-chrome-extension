@@ -1681,7 +1681,14 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							            data_rka.dataOutputGiat[i].targetoutputteks = d.targetoutputteks;
 									});
 									subkeg.dataLokout.map(function(d, i){
-
+										data_rka.dataLokout[i] = {};
+										data_rka.dataLokout[i].camatteks = d.camatteks;
+										data_rka.dataLokout[i].daerahteks = d.daerahteks;
+										data_rka.dataLokout[i].idcamat = d.idcamat;
+										data_rka.dataLokout[i].iddetillokasi = d.iddetillokasi;
+										data_rka.dataLokout[i].idkabkota = d.idkabkota;
+										data_rka.dataLokout[i].idlurah = d.idlurah;
+										data_rka.dataLokout[i].lurahteks = d.lurahteks;
 									});
 									subkeg.dataOutput.map(function(d, i){
 										data_rka.dataOutput[i] = {};
@@ -1718,6 +1725,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							            data_rka.dataDana[i].kodedana = d.kodedana;
 							            data_rka.dataDana[i].iddana = d.iddana;
 							            data_rka.dataDana[i].iddanasubbl = d.iddanasubbl;
+							            data_rka.dataDana[i].pagudana = d.pagudana;
 									});
 									subkeg.dataBl.map(function(d, i){
 										data_rka.dataBl[i] = {};
