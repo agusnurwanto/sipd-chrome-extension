@@ -1922,6 +1922,9 @@ function singkron_rka_ke_lokal(opsi, callback) {
 															}
 													    }
 													};
+													if(!opsi || !opsi.no_return){
+														data.message.content.return = true;
+													}
 													chrome.runtime.sendMessage(data, function(response) {
 													    console.log('responeMessage', response);
 													    return resolve_reduce(nextData);
@@ -1944,11 +1947,11 @@ function singkron_rka_ke_lokal(opsi, callback) {
 						            }, Promise.resolve(_data_all[last]))
 						            .then(function(data_last){
 						            	console.log('opsi', opsi);
-										if(!opsi || !opsi.no_return){
-											alert('Berhasil Singkron RKA ke DB lokal!');
-											jQuery('#wrap-loading').hide();
-											jQuery('#download_data_excel').show();
-										}
+										// if(!opsi || !opsi.no_return){
+										// 	alert('Berhasil Singkron RKA ke DB lokal!');
+										// 	jQuery('#wrap-loading').hide();
+										// 	jQuery('#download_data_excel').show();
+										// }
 						            	if(callback){
 									    	callback();
 									    }
