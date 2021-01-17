@@ -1534,11 +1534,11 @@ function singkron_pendapatan_lokal(){
     });
 }
 
-function singkron_pembiayaan_lokal(){
+function singkron_pembiayaan_lokal(type){
 	jQuery('#wrap-loading').show();
 	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 	jQuery.ajax({
-      	url: config.sipd_url+'daerah/main/budget/pembiayaan/'+config.tahun_anggaran+'/ang/penerimaan/tampil-pembiayaan/'+config.id_daerah+'/'+id_unit,
+      	url: config.sipd_url+'daerah/main/budget/pembiayaan/'+config.tahun_anggaran+'/ang/'+type+'/tampil-pembiayaan/'+config.id_daerah+'/'+id_unit,
       	type: "GET",
       	contentType: 'application/json',
       	success: function(data){
@@ -1562,6 +1562,7 @@ function singkron_pembiayaan_lokal(){
 				data_pembiayaan[i].updatedtime = b.updatedtime;
 				data_pembiayaan[i].uraian = b.uraian;
 				data_pembiayaan[i].urusan_koordinator = b.urusan_koordinator;
+				data_pembiayaan[i].type = type;
 				data_pembiayaan[i].user1 = b.user1;
 				data_pembiayaan[i].user2 = b.user2;
 			});
