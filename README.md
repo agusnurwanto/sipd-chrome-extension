@@ -41,11 +41,13 @@ Semoga bermanfaat
 - Menambahkan tombol detail akun/rekening di halaman analisa belanja > standar harga
 - Setting Nomor, tanggal dan keterangan Perkada
 - Perbaikan fitur import BANKEU (tambah kolom keterangan)
+- Import data RENSTRA
+- Import data Pendapatan
+- Import data Pembiayaan
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki
 - Melengkapi video tutorial di youtube
-- Import data RENSTRA
 
 ### Video tutorial
 - Cara install chrome extension https://www.youtube.com/watch?v=VnySS0RE6zc&t=318s

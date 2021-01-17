@@ -1301,6 +1301,32 @@ jQuery(document).ready(function(){
 	        jQuery('#wrap-loading').show();
 	        singkron_renstra_lokal();
 		});
+	 }else if(current_url.indexOf('/pendapatan/'+config.tahun_anggaran+'/ang/unit/'+config.id_daerah+'/') != -1){
+		console.log('halaman RKA pendapatan');
+		var singkron_lokal = ''
+	        +'<div class="col-xs-9">'
+	            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-pendapatan-lokal" style="margin-left: 30px;">'
+	                    +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
+	            +'</button>'
+	        +'</div>';
+		jQuery('.m-t-0').append(singkron_lokal);
+		jQuery('#singkron-pendapatan-lokal').on('click', function(){
+	        jQuery('#wrap-loading').show();
+	        singkron_pendapatan_lokal();
+		});
+	 }else if(current_url.indexOf('/pembiayaan/'+config.tahun_anggaran+'/ang/penerimaan/unit/'+config.id_daerah+'/') != -1){
+		console.log('halaman RKA pembiayaan');
+		var singkron_lokal = ''
+	        +'<div class="col-xs-9">'
+	            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-pembiayaan-lokal" style="margin-left: 30px;">'
+	                    +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
+	            +'</button>'
+	        +'</div>';
+		jQuery('.m-t-0').append(singkron_lokal);
+		jQuery('#singkron-pembiayaan-lokal').on('click', function(){
+	        jQuery('#wrap-loading').show();
+	        singkron_pembiayaan_lokal();
+		});
 	}
 });
 
