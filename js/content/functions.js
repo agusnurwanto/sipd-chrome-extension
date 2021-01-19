@@ -1577,7 +1577,8 @@ function singkron_pembiayaan_lokal(type){
 		                    action: 'singkron_pembiayaan',
 		                    tahun_anggaran: config.tahun_anggaran,
 		                    api_key: config.api_key,
-		                    data: data_pembiayaan
+		                    data: data_pembiayaan,
+		                    id_skpd: id_unit
 		                },
 		            	return: true
 		            }
