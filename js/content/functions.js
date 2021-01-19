@@ -1521,7 +1521,8 @@ function singkron_pendapatan_lokal(){
 		                    action: 'singkron_pendapatan',
 		                    tahun_anggaran: config.tahun_anggaran,
 		                    api_key: config.api_key,
-		                    data: data_pendapatan
+		                    data: data_pendapatan,
+		                    id_skpd: id_unit
 		                },
 		            	return: true
 		            }

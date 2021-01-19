@@ -1301,7 +1301,10 @@ jQuery(document).ready(function(){
 	        jQuery('#wrap-loading').show();
 	        singkron_renstra_lokal();
 		});
-	 }else if(current_url.indexOf('/pendapatan/'+config.tahun_anggaran+'/ang/unit/'+config.id_daerah+'/') != -1){
+	 }else if(
+	 	current_url.indexOf('/pendapatan/'+config.tahun_anggaran+'/ang/unit/'+config.id_daerah+'/') != -1
+	 	|| current_url.indexOf('/pendapatan/'+config.tahun_anggaran+'/ang/list/'+config.id_daerah+'/') != -1
+	 ){
 		console.log('halaman RKA pendapatan');
 		var singkron_lokal = ''
 	        +'<div class="col-xs-9">'
