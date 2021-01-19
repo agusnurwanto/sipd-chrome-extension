@@ -51,7 +51,9 @@ jQuery(document).ready(function(){
 	        +'<div class="lds-hourglass"></div>'
 	        +'<div id="persen-loading"></div>'
 	    +'</div>';
-	jQuery('body').prepend(loading);
+	if(jQuery('#wrap-loading').length == 0){
+		jQuery('body').prepend(loading);
+	}
 	var current_url = window.location.href;
 
 	 // halaman SSH
