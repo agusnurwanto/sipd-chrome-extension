@@ -1854,17 +1854,19 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										if(rka.satuan){
 											_rka.satuan = rka.satuan;
 										}else{
-											_rka.satuan = '';
+											_rka.satuan = rka.koefisien.split(' ');
+											_rka.satuan.shift();
+											_rka.satuan = _rka.satuan.join(' ');
 										}
-										_rka.sat1 = rka.sat1;
-										_rka.sat2 = rka.sat2;
-										_rka.sat3 = rka.sat3;
-										_rka.sat4 = rka.sat4;
+										_rka.sat1 = rka.sat_1;
+										_rka.sat2 = rka.sat_2;
+										_rka.sat3 = rka.sat_3;
+										_rka.sat4 = rka.sat_4;
 										_rka.spek = rka.spek;
-										_rka.volum1 = rka.volum1;
-										_rka.volum2 = rka.volum2;
-										_rka.volum3 = rka.volum3;
-										_rka.volum4 = rka.volum4;
+										_rka.volum1 = rka.vol_1;
+										_rka.volum2 = rka.vol_2;
+										_rka.volum3 = rka.vol_3;
+										_rka.volum4 = rka.vol_4;
 										_rka.subs_bl_teks = rka.subs_bl_teks;
 										_rka.total_harga = rka.rincian;
 										_rka.rincian = rka.rincian;
