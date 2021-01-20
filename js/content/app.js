@@ -1854,9 +1854,11 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										if(rka.satuan){
 											_rka.satuan = rka.satuan;
 										}else{
-											_rka.satuan = rka.koefisien.split(' ');
-											_rka.satuan.shift();
-											_rka.satuan = _rka.satuan.join(' ');
+											if(_rka.koefisien){
+												_rka.satuan = rka.koefisien.split(' ');
+												_rka.satuan.shift();
+												_rka.satuan = _rka.satuan.join(' ');
+											}
 										}
 										_rka.sat1 = rka.sat_1;
 										_rka.sat2 = rka.sat_2;
