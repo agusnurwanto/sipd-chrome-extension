@@ -44,6 +44,8 @@ Semoga bermanfaat
 - Import data RENSTRA
 - Import data Pendapatan
 - Import data Pembiayaan
+- Integrasi data SIPD ke SIMDA keuangan
+- Nama TAPD lebih dari 8 orang
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki
@@ -60,3 +62,4 @@ Semoga bermanfaat
 - Upload Excel Belanja Bantuan Keuangan Dana Desa https://www.youtube.com/watch?v=F3Db_v40Rh4
 - Release v1.9 perbaikan beberapa bug error dan menampilkan tanda tangan kepala daerah di lampiran APBD https://www.youtube.com/watch?v=UpQheTCkEN4
 - Ganti/update Rekening Multi Komponen di halaman rincian belanja https://www.youtube.com/watch?v=Wo6BdOCPb1g
+- Integrasi data SIPD ke SIMDA keuangan https://youtu.be/vFOsAlnxmTo

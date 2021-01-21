@@ -430,6 +430,7 @@ jQuery(document).ready(function(){
 		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/42/'+config.id_daerah+'/setunit') != -1
 		|| current_url.indexOf('dokumen/'+config.tahun_anggaran+'/rka-penda/cetak/'+config.id_daerah+'/') != -1
 		|| current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/cetak/'+config.id_daerah+'/') != -1
+		|| current_url.indexOf('dokumen/'+config.tahun_anggaran+'/rka-biaya/cetak/'+config.id_daerah+'/') != -1
 	){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'html');
 		if(current_url.indexOf('dokumen/'+config.tahun_anggaran+'/rka-penda/cetak/'+config.id_daerah+'/') == -1){
@@ -440,12 +441,26 @@ jQuery(document).ready(function(){
 			}
 		}
 		if(config.tapd){
-			var tr_tapd = jQuery('table[cellpadding="5"][cellspacing="0"] tr.text_tengah').parent().find('tr');
 			config.tapd.map(function(b, i){
-				var td = jQuery(tr_tapd[i+2]).find('td');
-				td.eq(1).text(b.nama);
-				td.eq(2).text(b.nip);
-				td.eq(3).text(b.jabatan);
+				var tbody_tapd = jQuery('table[cellpadding="5"][cellspacing="0"] tr.text_tengah').parent();
+				var tr_tapd = tbody_tapd.find('tr');
+				tr_tapd.find('td').eq(2).css('min-width', '200px');
+				if(jQuery(tr_tapd[i+2]).length == 0){
+					var tr_html = ''
+						+'<tr>'
+	                        +'<td width="10" class="kiri kanan bawah" style=" border-bottom:1px solid #000; border-left:1px solid #000; border-right:1px solid #000; mso-number-format:\@;">'+(i+1)+'.</td>'
+	                        +'<td class="bawah kanan" style=" border-bottom:1px solid #000; border-right:1px solid #000; mso-number-format:\@;">'+b.nama+'</td>'
+	                        +'<td class="bawah kanan" style="min-width: 200px; border-bottom:1px solid #000; border-right:1px solid #000; mso-number-format:\@;">'+b.nip+'</td>'
+	                        +'<td class="bawah kanan" style=" border-bottom:1px solid #000; border-right:1px solid #000; mso-number-format:\@;">'+b.jabatan+'</td>'
+	                        +'<td class="bawah kanan" style=" border-bottom:1px solid #000; border-right:1px solid #000; mso-number-format:\@;">&nbsp;</td>'
+	                    +'</tr>';
+					tbody_tapd.append(tr_html);
+				}else{
+					var td = jQuery(tr_tapd[i+2]).find('td');
+					td.eq(1).text(b.nama);
+					td.eq(2).text(b.nip);
+					td.eq(3).text(b.jabatan);
+				}
 			});
 		}
 
