@@ -1917,6 +1917,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 									}
 
 									var no_excel = 0;
+									var no_page = 0;
 									var last = _data_all.length-1;
 									_data_all.reduce(function(sequence, nextData){
 						                return sequence.then(function(current_data){
@@ -1973,6 +1974,8 @@ function singkron_rka_ke_lokal(opsi, callback) {
 						                		});
 												Promise.all(sendData)
 									        	.then(function(val_all){
+									        		no_page++;
+									        		data_rka.no_page = no_page;
 													var data = {
 													    message:{
 													        type: "get-url",
