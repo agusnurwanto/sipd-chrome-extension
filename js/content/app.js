@@ -267,7 +267,7 @@ jQuery(document).ready(function(){
 				jQuery('#persen-loading').html('0%');
 				var id_sh = window.location.href.split(config.tahun_anggaran+'/')[1].split('/')[0];
 				jQuery.ajax({
-					url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/'+id_sh+'/tampil-komponen/'+config.id_daerah+'/0',
+					url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/komponen/'+config.tahun_anggaran+'/'+id_sh+'/tampil-komponen/'+config.id_daerah+'/0',
 					contentType: 'application/json',
 					success: function(data){
 
@@ -290,7 +290,7 @@ jQuery(document).ready(function(){
 		                        	var sendData = current_data.map(function(val, n){
 			                            return new Promise(function(resolve, reject){
 			                            	jQuery.ajax({
-												url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/'+id_sh+'/tampil-komponen-akun/'+config.id_daerah+'/0/'+val.id_standar_harga,
+												url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/komponen/'+config.tahun_anggaran+'/'+id_sh+'/tampil-komponen-akun/'+config.id_daerah+'/0/'+val.id_standar_harga,
 												contentType: 'application/json',
 												success: function(ret){
 													val.rek_belanja = ret.data;
@@ -367,7 +367,7 @@ jQuery(document).ready(function(){
 			if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 				jQuery('#wrap-loading').show();
 				jQuery.ajax({
-					url: config.sipd_url+'daerah/main/budget/akun/'+config.tahun_anggaran+'/tampil-akun/'+config.id_daerah+'/0',
+					url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/akun/'+config.tahun_anggaran+'/tampil-akun/'+config.id_daerah+'/0',
 					contentType: 'application/json',
 					success: function(data){
 						var data_akun = { 
@@ -549,7 +549,7 @@ jQuery(document).ready(function(){
 			if(cek_unit == 'all'){
 				if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 					jQuery.ajax({
-						url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-unit/'+config.id_daerah+'/0',
+						url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/giat/tampil-unit/'+config.id_daerah+'/0',
 						type: 'get',
 						success: function(units){
 							jQuery('#persen-loading').attr('persen', 0);
@@ -1368,13 +1368,13 @@ function capitalizeFirstLetter(string) {
 
 function tampil_semua_halaman(){
 	jQuery.ajax({
-		url: config.sipd_url+'daerah/main/budget/lampiran/'+config.tahun_anggaran+'/apbd/tampil-unit/'+config.id_daerah+'/0',
+		url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/lampiran/'+config.tahun_anggaran+'/apbd/tampil-unit/'+config.id_daerah+'/0',
 		type: 'get',
 		success: function(unit){
 			var sendData = unit.data.map(function(b, i){
 				return new Promise(function(resolve, reject){
                 	jQuery.ajax({
-			          	url: config.sipd_url+"daerah/main/budget/jadwal/"+config.tahun_anggaran+"/hist-jadwal/"+config.id_daerah+"/0",
+			          	url: config.sipd_url+"daerah/main/"+get_type_jadwal()+"/jadwal/"+config.tahun_anggaran+"/hist-jadwal/"+config.id_daerah+"/0",
 			          	type: "post",
 			          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&app=budget&cetak=apbd&model=perda&jenis=3'+'&idskpd='+b.id_skpd+'&idbl=0&idsubbl=0',
 			          	success: function(jadwal){
@@ -1427,13 +1427,13 @@ function singkron_skpd_ke_lokal(){
 		jQuery('#wrap-loading').show();
 		var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 		jQuery.ajax({
-			url: config.sipd_url+'daerah/main/budget/skpd/'+config.tahun_anggaran+'/tampil-skpd/'+config.id_daerah+'/'+id_unit,
+			url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/skpd/'+config.tahun_anggaran+'/tampil-skpd/'+config.id_daerah+'/'+id_unit,
 			type: 'get',
 			success: function(unit){
 				var sendData = unit.data.map(function(b, i){
 					return new Promise(function(resolve, reject){
 	                	jQuery.ajax({
-				          	url: config.sipd_url+"daerah/main/budget/skpd/"+config.tahun_anggaran+"/detil-skpd/"+config.id_daerah+"/0",
+				          	url: config.sipd_url+"daerah/main/"+get_type_jadwal()+"/skpd/"+config.tahun_anggaran+"/detil-skpd/"+config.id_daerah+"/0",
 				          	type: "post",
 				          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idskpd='+b.id_skpd,
 				          	success: function(data){
@@ -1569,7 +1569,7 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 			});
 		}
 		jQuery.ajax({
-			url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/tampil-giat/'+config.id_daerah+'/'+id_unit,
+			url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/giat/tampil-giat/'+config.id_daerah+'/'+id_unit,
 			type: 'get',
 			success: function(subkeg){
 				var cat_wp = '';
@@ -1686,21 +1686,21 @@ function singkron_rka_ke_lokal(opsi, callback) {
 		if((idbl && idsubbl) || kode_sbl){
 			// get detail SKPD
 			jQuery.ajax({
-				url: config.sipd_url+'daerah/main/budget/skpd/'+config.tahun_anggaran+'/detil-skpd/'+config.id_daerah+'/'+id_unit,
+				url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/skpd/'+config.tahun_anggaran+'/detil-skpd/'+config.id_daerah+'/'+id_unit,
 				type: 'post',
 				data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idskpd='+id_unit,
 				success: function(data_unit){
 					// get detail indikator kegiatan
 					jQuery.ajax({
-						url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/giat/detil-giat/'+config.id_daerah+'/'+id_unit,
+						url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/giat/detil-giat/'+config.id_daerah+'/'+id_unit,
 						type: 'post',
 						data: "_token="+jQuery('meta[name=_token]').attr('content')+'&kodesbl='+kode_sbl,
 						success: function(subkeg){
 							// subkeg = JSON.parse(subkeg);
 							// get rincian belanja
 							jQuery.ajax({
-								// url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?idbl='+idbl+'&idsubbl='+idsubbl,
-								url: config.sipd_url+'daerah/main/budget/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?kodesbl='+kode_sbl,
+								// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?idbl='+idbl+'&idsubbl='+idsubbl,
+								url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?kodesbl='+kode_sbl,
 								contentType: 'application/json',
 								success: function(data){
 									var data_rka = { 
