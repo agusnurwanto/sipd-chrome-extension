@@ -54,7 +54,7 @@ jQuery(document).ready(function(){
 	if(jQuery('#wrap-loading').length == 0){
 		jQuery('body').prepend(loading);
 	}
-	var current_url = window.location.href;
+	window.current_url = window.location.href;
 
 	 // halaman SSH
 	if(
@@ -544,6 +544,9 @@ jQuery(document).ready(function(){
 		}else{
 			jQuery('.icon-basket').closest('.m-t-0').append('<div class="col-xs-12 col-md-6"><div class="button-box pull-right p-t-20">'+singkron_rka+'</div></div>');
 		}
+		jQuery('#tampil_laporan_renja').on('click', function(){
+			singkron_skpd_ke_lokal(1);
+		});
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			var cek_unit = jQuery('#singkron_rka_ke_lokal').attr('id_unit');
 			if(cek_unit == 'all'){
@@ -613,10 +616,16 @@ jQuery(document).ready(function(){
 		var singkron_skpd = ''
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_skpd_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron SKPD ke DB lokal</span>'
+			+'</button>'
+			+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="tampil_laporan_renja" style="margin-left: 20px;">'
+				+'<i class="fa fa-print m-r-5"></i> <span>Tampilkan Link Print RENJA</span>'
 			+'</button>';
 		jQuery('.button-box.pull-right.p-t-0').parent().prepend(singkron_skpd);
 		jQuery('#singkron_skpd_ke_lokal').on('click', function(){
 			singkron_skpd_ke_lokal();
+		});
+		jQuery('#tampil_laporan_renja').on('click', function(){
+			singkron_skpd_ke_lokal(1);
 		});
 	}else if(current_url.indexOf('belanja/'+config.tahun_anggaran+'/rinci/list/'+config.id_daerah+'') != -1){
 		// harus di inject agar bekerja
@@ -1422,7 +1431,20 @@ function tampil_semua_halaman(){
 	});
 }
 
-function singkron_skpd_ke_lokal(){
+function singkron_skpd_ke_lokal(tampil_renja){
+	if(tampil_renja && typeof data_unit != 'undefined'){
+		if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
+			jQuery('#table_skpd tbody tr').map(function(i, b){
+				var td = jQuery(b).find('td');
+				var id_skpd = td.find('ul.dropdown-menu li').eq(0).find('a').attr('onclick').split("'")[1];
+				id_skpd = id_skpd.split("'")[0];
+				if(td.eq(1).find('a').length == 0){
+					td.eq(1).append(' <a target="_blank" href="'+data_unit[id_skpd]+'?key='+config.api_key+'">Print RENJA</a>');
+				}
+			});
+		}
+		return;
+	}
 	if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 		jQuery('#wrap-loading').show();
 		var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];

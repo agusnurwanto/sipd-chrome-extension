@@ -22,14 +22,28 @@ chrome.runtime.sendMessage(data, function(response) {
 
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 	console.log('sender, request', sender, request);
+	var current_url = window.location.href;
 	if(request.type == 'response-fecth-url'){
 		jQuery('#wrap-loading').hide();
 		jQuery('#persen-loading').html('');
 		jQuery('#persen-loading').attr('persen', '');
 		jQuery('#persen-loading').attr('total', '');
 		var res = request.data;
+		if(res.action == 'singkron_unit'){
+			window.data_unit = res.renja_link;
+			if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
+				jQuery('#table_skpd tbody tr').map(function(i, b){
+					var td = jQuery(b).find('td');
+					var id_skpd = td.find('ul.dropdown-menu li').eq(0).find('a').attr('onclick').split("'")[1];
+					id_skpd = id_skpd.split("'")[0];
+					if(td.eq(1).find('a').length == 0){
+						td.eq(1).append(' <a target="_blank" href="'+data_unit[id_skpd]+'?key='+config.api_key+'">Print RENJA</a>');
+					}
+				});
+			}
+		}
 		alert(res.message);
-		console.log(request.data);
+		// console.log(request.data);
 	}else if(request.type == 'response-actions'){
 		try {
 			var runjob = false;
