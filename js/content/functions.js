@@ -1599,3 +1599,57 @@ function get_type_jadwal(){
 	}
 
 }
+
+function get_kd_sbl(){
+	var kode_sbl = false;
+	jQuery('script').map(function(i, b){
+		var script = jQuery(b).html();
+		script = script.split('?kodesbl=');
+		if(script.length > 1){
+			script = script[1].split("'");
+			kode_sbl = script[0];
+		}
+	});
+	return kode_sbl;
+}
+
+function get_kd_bl(){
+	var kode_sbl = get_kd_sbl();
+	var _kode_bl = kode_sbl.split('.');
+	_kode_bl.pop();
+	kode_bl = _kode_bl.join('.');
+	return kode_bl;
+}
+
+function setLampiran(cetak, model, jenis){
+	jQuery('a.set-lampiran').remove();
+	if(
+		jQuery('a.apbd-penjabaran-lampiran-1').length == 0
+		&& cetak == 'apbd'
+		&& model == 'perkada'
+		&& jenis == '1'
+	){
+		jQuery('#wrap-loading').show();
+		var data = {
+		    message:{
+		        type: "get-url",
+		        content: {
+	                url: config.url_server_lokal,
+	                type: 'post',
+	                data: { 
+	                    action: 'get_link_laporan',
+	                    tahun_anggaran: config.tahun_anggaran,
+	                    api_key: config.api_key,
+	                    jenis: jenis,
+	                    model: model,
+	                    cetak: cetak
+	                },
+	            	return: true
+	            }
+		    }
+		};
+		chrome.runtime.sendMessage(data, function(response) {
+		    console.log('responeMessage', response);
+		});
+	}
+}

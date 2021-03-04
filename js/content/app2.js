@@ -203,4 +203,4 @@ jQuery(document).ready(function () {
             }
         }
     }
-})
+});

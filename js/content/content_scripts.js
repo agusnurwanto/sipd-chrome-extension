@@ -29,6 +29,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		jQuery('#persen-loading').attr('persen', '');
 		jQuery('#persen-loading').attr('total', '');
 		var res = request.data;
+		var _alert = true;
 		if(res.action == 'singkron_unit'){
 			window.data_unit = res.renja_link;
 			if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
@@ -41,8 +42,17 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 					}
 				});
 			}
+		}else if(res.action == 'get_link_laporan'){
+			if(res.link){
+				_alert = false;
+			    var link = ''
+			        +'<a target="_blank" href="'+res.link+'?key='+config.api_key+'" class="set-lampiran apbd-penjabaran-lampiran-1 btn btn-success pull-right" style="margin-right: 10px;">(LOCAL) '+res.text_link+'</a>';
+			    jQuery('#mod-hist-jadwal .modal-header .btn-circle').after(link);
+			}
 		}
-		alert(res.message);
+		if(_alert){
+			alert(res.message);
+		}
 		// console.log(request.data);
 	}else if(request.type == 'response-actions'){
 		try {

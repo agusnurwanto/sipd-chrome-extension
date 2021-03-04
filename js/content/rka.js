@@ -317,7 +317,17 @@ var import_excel = ''
 	+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="hapus_multi_komponen">'
 		+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Hapus Multi komponen</span>'
 	+'</button>';
+if(jQuery('button.tambah-detil').length >= 1 && config.tampil_edit_hapus_rinci){
+    import_excel += ''
+        +'<button class="fcbtn btn btn-warning btn-outline btn-1b" id="tampil_edit_del">'
+            +'<i class="fa fa-eye m-r-5"></i> <span>Tampil Ubah & Hapus</span>'
+        +'</button>';
+}
 jQuery('.tambah-detil').closest('.pull-right.p-t-20').prepend(import_excel);
+
+jQuery('#tampil_edit_del').on('click', function(){
+    tampil_edit_del();
+});
 jQuery('#hapus_multi_komponen').on('click', function(){
 	var selected = [];
 	jQuery('.hapus-multi-komponen').map(function(i, b){
@@ -1102,3 +1112,157 @@ jQuery('#simpan-ganti-rek').on("click", function(){
         });
 	}
 });
+
+function tampil_edit_del(){
+  var kd_sbl = get_kd_sbl();
+  var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+  jQuery('#table_rinci_perubahan').DataTable().destroy();
+  jQuery('#table_rinci_perubahan').DataTable({
+      scrollY:'50vh',
+      autoWidth: true,
+      serverSide: false,
+      responsive: true,
+      processing: true,
+      pagingType: "full_numbers",
+      dom:'prltip',
+      pageLength: 20,
+      lengthMenu: [
+          [20, 50, 100, -1],
+          [20, 50, 100, "All"] // change per page values here
+      ],
+      language: {
+          search: '<span>Filter:</span> _INPUT_',
+          lengthMenu: '<span>Tampil:</span> _MENU_ <span>baris</span>',
+      },
+      ajax: {
+          url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-rincian/'+config.id_daerah+'/'+id_unit+'?kodesbl='+kd_sbl
+      },
+      columns: [
+        {
+            class: "details-control",
+            orderable: false,
+            searchable: false,
+            data: null,
+            defaultContent: "<span class='p-l-10'><i class='fa fa-lg fa-info-circle text-info'></i></span>"
+        },
+        {data: 'subs_bl_teks', name: 'sb.subs_bl_teks', orderable: false,},
+        {data: 'ket_bl_teks', name: 'kt.ket_bl_teks', orderable: false,},
+        {data: 'nama_akun', name: 'ak.nama_akun', orderable: false,},
+        // {data: 'nama_standar_harga', name: 'kk.nama_standar_harga', orderable: false,},
+        {
+            className:"",
+            orderable: false,
+            searchable: true,
+            data: 'nama_standar_harga',
+            name: 'kk.nama_standar_harga',
+            render: function(data,type,full,meta){
+              if(data['spek_komponen']!=null){
+                return "<h5>"+data['nama_komponen']+"</h5><h5>"+data['spek_komponen']+"</h5>"+full['id_rinci_sub_bl'];
+              }
+              else{
+                return "<h5>"+data['nama_komponen']+"</h5>";
+              }
+              
+            }
+        },
+        {data: 'satuan', name: 'kk.satuan', orderable: false,},
+        {data: 'koefisien_murni', name: 'hrd.koefisien_murni', orderable: false, searchable: false,},
+        {data: 'harga_satuan_murni', name: 'hrd.harga_satuan_murni', orderable: false, searchable: false, className: 'text-right', render: $.fn.dataTable.render.number('.',',',0,'')},
+        {data: 'pajak_murni', name: 'pajak_murni', orderable: false, searchable: false, className: 'text-right', render: $.fn.dataTable.render.number('.',',',0,'')},
+        {data: 'rincian_murni', name: 'hrd.rincian_murni', orderable: false, searchable: false, className: 'text-right', render: $.fn.dataTable.render.number('.',',',0,'')},
+        {data: 'koefisien', name: 'rd.koefisien', orderable: false,},
+        {data: 'harga_satuan', name: 'rd.harga_satuan', orderable: false, searchable: false, className: 'text-right', render: $.fn.dataTable.render.number('.',',',0,'')},
+        {data: 'totalpajak', name: 'totalpajak', orderable: false, searchable: false, className: 'text-right', render: $.fn.dataTable.render.number('.',',',0,'')},
+        {data: 'rincian', name: 'rd.rincian', orderable: false, searchable: false, className: 'text-right', render: $.fn.dataTable.render.number('.',',',0,'')},
+        {
+          data: 'action', 
+          name: 'action', 
+          orderable: false, 
+          searchable: false, 
+          className: 'text-center', 
+          render: function(data,type,full,meta){
+            if(!data){
+              return ''
+              +'<a href="javascript:;" onclick="ubahKomponen(\''+kd_sbl+'\',\''+full.id_rinci_sub_bl+'\')" class="btn btn-info btn-outline btn-circle m-r-5"><i class="ti-pencil-alt"></i></a>'
+              +'<a href="javascript:;" onclick="hapusKomponen(\''+kd_sbl+'\',\''+full.id_rinci_sub_bl+'\')" class="btn btn-danger btn-outline btn-circle"><i class="ti-trash"></i></a>';
+            }else{
+              return data;
+            }
+          }
+      },
+      ],
+      columnDefs: [
+        {visible: false,targets: 1},
+        {visible: false,targets: 2},
+        {visible: false,targets: 3},
+      ],
+      order: [
+        [1, 'asc'],
+        [2, 'asc'],
+        [3, 'asc'],
+      ],
+      drawCallback: function(settings) {
+        var api = this.api();
+        var rows = api.rows({ page: 'current' }).nodes();
+        var last = null;
+        var last2 = null;
+        var last3 = null;
+        api.column(1, { page: 'current' }).data().each(function(group, i) {
+          if(group!==null){
+            if (last !== group) {
+                $(rows).eq(i).before('<tr class="group"><td colspan="15" class="font-xbold">' + group + '</td></tr>');
+                last = group;
+            }
+          }
+        });
+        api.column(2, { page: 'current' }).data().each(function(group, i) {
+          if(group!==null){
+            var rowData = api.column(1,{ page: 'current' }).data();
+            var group1 = rowData[i] + "." + group;
+            if (last2 !== group1) {
+                $(rows).eq(i).before('<tr class="group"><td colspan="15" class="font-bold">' + group + '</td></tr>');
+                last2 = group1;
+            }
+          }
+        });
+        api.column(3, { page: 'current' }).data().each(function(group, i) {
+            var rowData = api.column(1,{ page: 'current' }).data();
+            var rowData2 = api.column(2,{ page: 'current' }).data();
+            var group1 = rowData[i] + "." + rowData2[i] + "." + group;
+            if (last3 !== group1) {
+                $(rows).eq(i).before('<tr class="group"><td colspan="15" class="font-medium">' + group + '</td></tr>');
+                last3 = group1;
+            }
+        });
+      }
+    });
+}
+
+function get_kd_sbl(){
+  var kode_sbl = false;
+  jQuery('script').map(function(i, b){
+    var script = jQuery(b).html();
+    script = script.split('?kodesbl=');
+    if(script.length > 1){
+      script = script[1].split("'");
+      kode_sbl = script[0];
+    }
+  });
+  return kode_sbl;
+}
+
+function get_kd_bl(){
+  var kode_sbl = get_kd_sbl();
+  var _kode_bl = kode_sbl.split('.');
+  _kode_bl.pop();
+  kode_bl = _kode_bl.join('.');
+  return kode_bl;
+}
+
+function get_type_jadwal(){
+    if(jQuery('button[onclick="setFase()"]').text().indexOf('Perencanaan') == -1){
+        return 'budget';
+    }else{
+        return 'plan';
+    }
+}

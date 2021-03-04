@@ -23,5 +23,6 @@ var config = {
 	nama_daerah : "Magetan", // akan tampil sebelum tgl_rka
 	kepala_daerah : "Bapak / Ibu xxx xx.xx", // akan tampil di lampiran perda
 	replace_logo : false, // jika nilai true maka akan mengganti logo di SIPD dengan logo di file img/logo.png
-	no_perkada : 'xx/xx/xx/xx' // settingan no_perkada ini untuk edit nomor, tanggal dan keterangan perkada, setting false atau kosongkan value untuk menonaktifkan
+	no_perkada : 'xx/xx/xx/xx', // settingan no_perkada ini untuk edit nomor, tanggal dan keterangan perkada, setting false atau kosongkan value untuk menonaktifkan
+	tampil_edit_hapus_rinci : true // Menampilkan tombol edit dan hapus di halaman Detail Rincian sub kegiatan
 };

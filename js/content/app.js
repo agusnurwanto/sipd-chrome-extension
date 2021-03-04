@@ -1369,6 +1369,21 @@ jQuery(document).ready(function(){
 	        singkron_pembiayaan_lokal(type);
 		});
 	}
+
+	if(jQuery('#mod-hist-jadwal .modal-header .btn-circle').length >= 1){
+		jQuery('ul.nav-third-level > li > a').map(function(i, b){
+			var onclick = jQuery(b).attr('onclick');
+			if(onclick && onclick.indexOf('jadwalCetak') != -1){
+				var _class = onclick.split("'");
+				var n_class = _class[1]+'-'+_class[3]+'-'+_class[5];
+				jQuery(b).addClass(n_class);
+				jQuery('a.'+n_class).on('click', function(){
+					var _class = jQuery(this).attr('onclick').split("'");
+					setLampiran(_class[1], _class[3], _class[5]);
+				});
+			}
+		});
+	}
 });
 
 function capitalizeFirstLetter(string) {
