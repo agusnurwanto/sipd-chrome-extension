@@ -43,11 +43,19 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 				});
 			}
 		}else if(res.action == 'get_link_laporan'){
-			if(res.link){
+			if(
+				res.link 
+				&& res.cetak == 'apbd'
+				&& res.model == 'perkada'
+			){
 				_alert = false;
-			    var link = ''
-			        +'<a target="_blank" href="'+res.link+'?key='+config.api_key+'" class="set-lampiran apbd-penjabaran-lampiran-1 btn btn-success pull-right" style="margin-right: 10px;">(LOCAL) '+res.text_link+'</a>';
-			    jQuery('#mod-hist-jadwal .modal-header .btn-circle').after(link);
+				if(res.jenis == '1'){
+				    var link = ''
+				        +'<a target="_blank" href="'+res.link+'?key='+config.api_key+'" class="set-lampiran apbd-penjabaran-lampiran-1 btn btn-success pull-right" style="margin-right: 10px;">(LOCAL) '+res.text_link+'</a>';
+				    jQuery('#mod-hist-jadwal .modal-header .btn-circle').after(link);
+				}else if(res.jenis == '2'){
+
+				}
 			}
 		}
 		if(_alert){

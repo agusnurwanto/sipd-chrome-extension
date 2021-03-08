@@ -1627,7 +1627,10 @@ function setLampiran(cetak, model, jenis){
 		jQuery('a.apbd-penjabaran-lampiran-1').length == 0
 		&& cetak == 'apbd'
 		&& model == 'perkada'
-		&& jenis == '1'
+		&& (
+			jenis == '1'
+			|| jenis == '2'
+		)
 	){
 		jQuery('#wrap-loading').show();
 		var data = {

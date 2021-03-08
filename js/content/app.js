@@ -1368,6 +1368,16 @@ jQuery(document).ready(function(){
 	        }
 	        singkron_pembiayaan_lokal(type);
 		});
+	}else if(current_url.indexOf('daerah/main/budget/lampiran/'+config.tahun_anggaran+'/apbd/2/'+config.id_daerah+'/') != -1){
+		console.log('Halaman APBD penjabaran lampiran 2');
+		var tampil_apbd_penjabaran = ''
+			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="tampil_apbd_penjabaran">'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Tampilkan URL Lapiran APBD Lokal</span>'
+			+'</button>';
+		jQuery('.p-b-20 .col-md-2').append(tampil_apbd_penjabaran);
+		jQuery('#tampil_apbd_penjabaran').on('click', function(){
+			setLampiran('apbd', 'perkada', '2');
+		});
 	}
 
 	if(jQuery('#mod-hist-jadwal .modal-header .btn-circle').length >= 1){
