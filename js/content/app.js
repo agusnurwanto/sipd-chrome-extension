@@ -1901,6 +1901,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										_rka.createddate = rka.createddate;
 										_rka.createdtime = rka.createdtime;
 										_rka.harga_satuan = rka.harga_satuan;
+										_rka.harga_satuan_murni = rka.harga_satuan_murni;
 										_rka.id_daerah = rka.id_daerah;
 										_rka.id_rinci_sub_bl = rka.id_rinci_sub_bl;
 										_rka.id_standar_nfs = rka.id_standar_nfs;
@@ -1909,6 +1910,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										_rka.ket_bl_teks = rka.ket_bl_teks;
 										_rka.kode_akun = rka.kode_akun;
 										_rka.koefisien = rka.koefisien;
+										_rka.koefisien_murni = rka.koefisien_murni;
 										_rka.lokus_akun_teks = rka.lokus_akun_teks;
 										_rka.nama_akun = rka.nama_akun;
 										if(rka.nama_standar_harga && rka.nama_standar_harga.nama_komponen){
@@ -1936,9 +1938,14 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										_rka.volum2 = rka.vol_2;
 										_rka.volum3 = rka.vol_3;
 										_rka.volum4 = rka.vol_4;
+										_rka.volume = rka.volume;
+										_rka.volume_murni = rka.volume_murni;
 										_rka.subs_bl_teks = rka.subs_bl_teks;
 										_rka.total_harga = rka.rincian;
 										_rka.rincian = rka.rincian;
+										_rka.rincian_murni = rka.rincian_murni;
+										_rka.pajak = rka.pajak;
+										_rka.pajak_murni = rka.pajak_murni;
 										_rka.totalpajak = rka.totalpajak;
 										_rka.updated_user = rka.updated_user;
 										_rka.updateddate = rka.updateddate;
