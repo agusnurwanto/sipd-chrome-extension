@@ -46,6 +46,7 @@ Semoga bermanfaat
 - Import data Pembiayaan
 - Integrasi data SIPD ke SIMDA keuangan
 - Nama TAPD lebih dari 8 orang
+- Get data rincian murni untuk printout APBD Penjabaran di wp-sipd lokal
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki
