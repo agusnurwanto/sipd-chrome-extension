@@ -1515,7 +1515,7 @@ function singkron_skpd_ke_lokal(tampil_renja){
 				          		};
 								return resolve(data_unit);
 							},
-							error: function(argument) {
+							error: function(e) {
 								console.log(e);
 								return resolve({});
 							}

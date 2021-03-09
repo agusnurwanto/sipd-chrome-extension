@@ -1,7 +1,7 @@
 jQuery(document).ready(function () {
     var current_url = window.location.href;
 
-    if (current_url.indexOf('main/budget/subgiat/' + config.tahun_anggaran) != -1) {	//sub_data_program_kegiatan
+    if (current_url.indexOf('main/'+get_type_jadwal()+'/subgiat/' + config.tahun_anggaran) != -1) {	//sub_data_program_kegiatan
         var singkron_data_giat = ''
             + '<button class="fcbtn btn btn-primary btn-outline btn-1b" id="singkron_data_giat_lokal">'
             + '<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron Program Kegiatan ke DB lokal</span>'
@@ -19,7 +19,7 @@ jQuery(document).ready(function () {
                 var id_unit = window.location.href.split('?')[0].split('' + config.id_daerah + '/')[1];
 
                 jQuery.ajax({
-                    url: config.sipd_url + 'daerah/main/budget/subgiat/' + config.tahun_anggaran + '/tampil-sub-giat/' + config.id_daerah + '/' + id_unit + '?filter_program=&filter_giat=&filter_sub_giat=',
+                    url: config.sipd_url + 'daerah/main/'+get_type_jadwal()+'/subgiat/' + config.tahun_anggaran + '/tampil-sub-giat/' + config.id_daerah + '/' + id_unit + '?filter_program=&filter_giat=&filter_sub_giat=',
                     contentType: 'application/json',
                     success: function (data) {
                         var data_prog_keg = {
@@ -66,7 +66,7 @@ jQuery(document).ready(function () {
                 })
             }
         }
-    } else if (current_url.indexOf('main/budget/dana/' + config.tahun_anggaran) != -1) {
+    } else if (current_url.indexOf('main/'+get_type_jadwal()+'/dana/' + config.tahun_anggaran) != -1) {
 
         var singkron_sumber_dana = ''
             + '<button class="fcbtn btn btn-warning btn-outline btn-1b" id="singkron_sumber_dana_lokal">'
@@ -84,7 +84,7 @@ jQuery(document).ready(function () {
                 var id_unit = window.location.href.split('?')[0].split('' + config.id_daerah + '/')[1];
 
                 jQuery.ajax({
-                    url: config.sipd_url + 'daerah/main/budget/dana/' + config.tahun_anggaran + '/tampil-dana/' + config.id_daerah + '/' + id_unit,
+                    url: config.sipd_url + 'daerah/main/'+get_type_jadwal()+'/dana/' + config.tahun_anggaran + '/tampil-dana/' + config.id_daerah + '/' + id_unit,
                     contentType: 'application/json',
                     success: function (data) {
                         var data_sumber_dana = {
@@ -127,7 +127,7 @@ jQuery(document).ready(function () {
                 })
             }
         }
-    } else if (current_url.indexOf('main/budget/rpjmd/' + config.tahun_anggaran) != -1) {      //rpjmd
+    } else if (current_url.indexOf('main/'+get_type_jadwal()+'/rpjmd/' + config.tahun_anggaran) != -1) {      //rpjmd
         var singkron_data_rpjmd = ''
             + '<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_data_rpjmd_lokal">'
             + '<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RPJMD ke DB lokal</span>'
@@ -144,7 +144,7 @@ jQuery(document).ready(function () {
                 var id_unit = window.location.href.split('?')[0].split('' + config.id_daerah + '/')[1];
 
                 jQuery.ajax({
-                    url: config.sipd_url + 'daerah/main/budget/rpjmd/' + config.tahun_anggaran + '/tampil-rpjmd/' + config.id_daerah + '/' + id_unit + '?filter_program=&filter_indi_prog=&filter_skpd=',
+                    url: config.sipd_url + 'daerah/main/'+get_type_jadwal()+'/rpjmd/' + config.tahun_anggaran + '/tampil-rpjmd/' + config.id_daerah + '/' + id_unit + '?filter_program=&filter_indi_prog=&filter_skpd=',
                     contentType: 'application/json',
                     success: function (data) {
                         var data_rpjmd = {
