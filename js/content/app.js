@@ -55,11 +55,22 @@ jQuery(document).ready(function(){
 		jQuery('body').prepend(loading);
 	}
 	window.current_url = window.location.href;
-
-	 // halaman SSH
+	var __script = '';
+	jQuery('script').map(function(i,b){ 
+		var _script = jQuery(b).html();
+		if(
+			_script.indexOf('var remot=') != -1
+			|| _script.indexOf('var kelompok') != -1
+		){
+			__script += ' '+_script;
+		}
+	});
+	eval(__script);
+	// log('__script', __script, lru2);
+	
+	// halaman SSH
 	if(
-		current_url.indexOf('/komponen/'+config.tahun_anggaran+'/') != -1 
-		&& document.getElementById('table_komponen')
+		document.getElementById('table_komponen')
 	){
 		console.log('halaman referensi SSH');
 		var singkron_ssh = ''
@@ -128,10 +139,14 @@ jQuery(document).ready(function(){
 			if(confirm(confirm_dulu)){
 				var sendData = data_ssh.map(function(val, n){
 	                return new Promise(function(resolve, reject){
+	                	jQuery('input[name="idkomp"]').val(val.id);
 	                	jQuery.ajax({
-				          	url: "../../simpan-kompakun/"+config.id_daerah+"/0",
+				          	url: lru2,
 				          	type: "post",
-				          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&'+jQuery('#kompakun').serialize()+'&idkomp='+val.id,
+				          	data: {
+				          		"_token":tokek,
+				          		"skrim":Curut(jQuery('#formtambahkompakun').serialize())
+				          	},
 				          	success: function(data){
 								return resolve(val);
 							},
