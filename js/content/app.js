@@ -280,10 +280,14 @@ jQuery(document).ready(function(){
 				jQuery('#wrap-loading').show();
 				jQuery('#persen-loading').attr('persen', 0);
 				jQuery('#persen-loading').html('0%');
-				var id_sh = window.location.href.split(config.tahun_anggaran+'/')[1].split('/')[0];
+				var formData = new FormData();
+				formData.append('_token', tokek);
 				jQuery.ajax({
-					url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/komponen/'+config.tahun_anggaran+'/'+id_sh+'/tampil-komponen/'+config.id_daerah+'/0',
-					contentType: 'application/json',
+					url: lru1,
+					type: 'POST',
+					data: formData,
+					processData: false,
+  					contentType: false,
 					success: function(data){
 
 						var data_all = [];
@@ -303,10 +307,14 @@ jQuery(document).ready(function(){
 	                        return sequence.then(function(current_data){
                         		return new Promise(function(resolve_redurce, reject_redurce){
 		                        	var sendData = current_data.map(function(val, n){
+		                        		var kode = val.action.split("tampilAkun('")[1].split("'")[0];
 			                            return new Promise(function(resolve, reject){
 			                            	jQuery.ajax({
-												url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/komponen/'+config.tahun_anggaran+'/'+id_sh+'/tampil-komponen-akun/'+config.id_daerah+'/0/'+val.id_standar_harga,
-												contentType: 'application/json',
+												url: endog + '?' + kode,
+												type: 'POST',
+												data: formData,
+												processData: false,
+												contentType: false,
 												success: function(ret){
 													val.rek_belanja = ret.data;
 													return resolve(val);

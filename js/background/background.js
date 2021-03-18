@@ -1,5 +1,14 @@
 console.log('Salam semangat!');
 
+chrome.webRequest.onBeforeRequest.addListener(
+  function() { return {cancel: true}; },
+  {
+    urls: ["https://*.sipd.kemendagri.go.id/assets/js/sanblok.js"],
+    types: ["script"]
+  },
+  ["blocking"]
+);
+
 window.db = openDatabase('SIPD', '1.0', 'sipd database', 50 * 1024 * 1024);
 db.transaction(function (tx) {
 	tx.executeSql('CREATE TABLE IF NOT EXISTS sipd (key, data)', [], function(tx, success){

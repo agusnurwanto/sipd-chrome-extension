@@ -59,6 +59,7 @@
 	],
 	"permissions": [
 		"webRequest",
+		"webRequestBlocking",
 		"https://*/",
 		"http://*/",
 		"activeTab",
