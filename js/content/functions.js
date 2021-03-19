@@ -283,13 +283,16 @@ function getDetailPenerima(kode_sbl, rek, nomor_lampiran){
     });
 }
 
-function getDetailRin(id_unit, kode_sbl, idbelanjarinci, nomor_lampiran){
+function getDetailRin(id_unit, kode_sbl, idbelanjarinci, nomor_lampiran, kode_get_rka){
 	return new Promise(function(resolve, reject){
 		getToken().then(function(_token){
 			jQuery.ajax({
-				url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/cari-rincian/'+config.id_daerah+'/'+id_unit,
-				type: 'post',
-				data: "_token="+_token+'&kodesbl='+kode_sbl+'&idbelanjarinci='+idbelanjarinci,
+				// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/cari-rincian/'+config.id_daerah+'/'+id_unit,
+				url: endog+'?'+kode_get_rka,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
 				success: function(rinci){
 					if(nomor_lampiran == 5){
 						getProv(id_unit).then(function(prov){
@@ -324,6 +327,9 @@ function getDetailRin(id_unit, kode_sbl, idbelanjarinci, nomor_lampiran){
 					}else{
 						return resolve(rinci);
 					}
+				},
+				error: function(e){
+					return resolve(false)
 				}
 			});
 		});
@@ -465,13 +471,13 @@ function getProv(id_unit){
 function getToken(){
 	return new Promise(function(resolve, reject){
 		if(typeof(tokenSCE) == 'undefined'){
-			var token = jQuery('meta[name=_token]').attr('content');
+			var token = tokek;
 			if(!token){
 				jQuery.ajax({
 					url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/dashboard/'+config.tahun_anggaran+'/unit/'+config.id_daerah+'/0',
 					type: 'get',
 					success: function(html){
-						html = html.split('<meta name="_token" content="');
+						html = html.split('tokek="');
 						html = html[1].split('"');
 						window.tokenSCE = html[0];
 						return resolve(tokenSCE);
@@ -1761,4 +1767,76 @@ function Curut(text) {
 
 function Dengkul(text) {
     return (Base64.decode(text));
+}
+
+function go_halaman_detail_rincian(options){
+	return new Promise(function(resolve, reject){
+		if(!options.go_rinci){
+			return resolve(options.kode);
+		}else{
+			jQuery.ajax({
+				url: options.kode,
+				success: function(html){
+					var kode_get_rinci = html.split('lru1="')[1].split('"')[0];
+					return resolve(kode_get_rinci);
+				}
+			});
+		}
+	})
+	.catch(function(e){
+        console.log(e);
+        return Promise.resolve();
+    });
+}
+
+function get_detail_skpd(id_unit){
+	return new Promise(function(resolve, reject){
+		if(typeof detail_skpd == 'undefined'){
+			jQuery.ajax({
+				url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/skpd/'+config.tahun_anggaran+'/detil-skpd/'+config.id_daerah+'/'+id_unit,
+				type: 'post',
+				data: "_token="+tokek+'&idskpd='+id_unit,
+				success: function(data){
+					window.detail_skpd = data;
+					return resolve(data);
+				}
+			});
+		}else{
+			return resolve(detail_skpd);
+		}
+	});
+}
+
+function get_kode_from_rincian_page(opsi, kode_sbl){
+	return new Promise(function(resolve, reject){
+		if(!opsi || !opsi.kode_bl){
+			var url_sub_keg = jQuery('.white-box .p-b-20 .btn-circle').attr('href');
+			jQuery.ajax({
+				url: url_sub_keg,
+				success: function(html){
+					var url_list_sub = html.split('lru8="')[1].split('"')[0];
+					jQuery.ajax({
+						url: url_list_sub,
+						type: 'POST',
+						data: formData,
+						processData: false,
+						contentType: false,
+						success: function(subkeg){
+							subkeg.data.map(function(b, i){
+								if(
+									b.nama_sub_giat.mst_lock != 3
+									&& b.kode_sub_skpd
+									&& b.kode_sbl == kode_sbl
+								){
+									return resolve(b.action.split("detilGiat('")[1].split("'")[0]);
+								}
+							})
+						}
+					});
+				}
+			});
+		}else{
+			return resolve(false);
+		}
+	});
 }
