@@ -1449,7 +1449,7 @@ function tampil_semua_halaman(){
                 	jQuery.ajax({
 			          	url: config.sipd_url+"daerah/main/"+get_type_jadwal()+"/jadwal/"+config.tahun_anggaran+"/hist-jadwal/"+config.id_daerah+"/0",
 			          	type: "post",
-			          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&app=budget&cetak=apbd&model=perda&jenis=3'+'&idskpd='+b.id_skpd+'&idbl=0&idsubbl=0',
+			          	data: "_token="+tokek+'&app=budget&cetak=apbd&model=perda&jenis=3'+'&idskpd='+b.id_skpd+'&idbl=0&idsubbl=0',
 			          	success: function(jadwal){
 			          		var url = jQuery(jadwal.data.filter(function(j, n){
 			          			return j.setstatus == "Aktif";
@@ -1745,7 +1745,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 		if(opsi && opsi.id_unit){
 			id_unit = opsi.id_unit;
 		}
-		var kode_sbl = kodesbl;
+		var kode_sbl = false;
 		var kode_bl = false;
 		var idbl = false;
 		var idsubbl = false;
@@ -1754,6 +1754,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 		var kode_sub_skpd = false;
 		var pagu = 0;
 		if(!opsi || !opsi.kode_bl){
+			kode_sbl = kodesbl;
 			var _kode_bl = kode_sbl.split('.');
 			_kode_bl.pop();
 			kode_bl = _kode_bl.join('.');
