@@ -1521,7 +1521,7 @@ function singkron_skpd_ke_lokal(tampil_renja){
 	                	jQuery.ajax({
 				          	url: config.sipd_url+"daerah/main/"+get_type_jadwal()+"/skpd/"+config.tahun_anggaran+"/detil-skpd/"+config.id_daerah+"/0",
 				          	type: "post",
-				          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idskpd='+b.id_skpd,
+				          	data: "_token="+tokek+'&idskpd='+b.id_skpd,
 				          	success: function(data){
 				          		var data_unit = {
 				          			id_setup_unit : b.id_setup_unit,
