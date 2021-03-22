@@ -1488,11 +1488,13 @@ function singkron_renstra_lokal(){
 
 function singkron_pendapatan_lokal(){
 	jQuery('#wrap-loading').show();
-	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+	var id_unit = idune;
 	jQuery.ajax({
-      	url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/pendapatan/'+config.tahun_anggaran+'/ang/tampil-pendapatan/'+config.id_daerah+'/'+id_unit,
-      	type: "GET",
-      	contentType: 'application/json',
+      	url: lru2,
+      	type: "POST",
+		data: formData,
+		processData: false,
+		contentType: false,
       	success: function(data){
       		var data_pendapatan = [];
       		data.data.map(function(b, i){
@@ -1543,11 +1545,13 @@ function singkron_pendapatan_lokal(){
 
 function singkron_pembiayaan_lokal(type){
 	jQuery('#wrap-loading').show();
-	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+	var id_unit = idune;
 	jQuery.ajax({
-      	url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/pembiayaan/'+config.tahun_anggaran+'/ang/'+type+'/tampil-pembiayaan/'+config.id_daerah+'/'+id_unit,
-      	type: "GET",
-      	contentType: 'application/json',
+      	url: lru2,
+      	type: "POST",
+		data: formData,
+		processData: false,
+		contentType: false,
       	success: function(data){
       		var data_pembiayaan = [];
       		data.data.map(function(b, i){
