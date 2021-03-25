@@ -13,7 +13,9 @@ eval(__script);
 console.log('__script', __script);
 
 window.formData = new FormData();
-formData.append('_token', tokek);
+if(typeof tokek != 'undefined'){
+	formData.append('_token', tokek);
+}
 
 function tableHtmlToExcel(tableID, filename = ''){
     var downloadLink;
@@ -759,6 +761,15 @@ jQuery(document).ready(function(){
 		jQuery('table[cellpadding="3"]').map(function(i, b){
 			table.push(b);
 		});
+
+		var tahapan = 'murni';
+		var n_tahapan = 0;
+		var l_check = jQuery('table[cellpadding="3"]').eq(0).find('tr').eq(2).find('td').length;
+		if(l_check == 6){
+			tahapan = 'pergeseran';
+			n_tahapan = 2;
+		}
+
 		var nomor_lampiran = getNomorLampiran();
 		var last = table.length-1;
 		table.reduce(function(sequence, nextData){
@@ -783,7 +794,7 @@ jQuery(document).ready(function(){
 			            return sequence2.then(function(current_data2){
 			        		return new Promise(function(resolve_reduce2, reject_reduce2){
         						var td = jQuery(current_data2).find('td');
-        						console.log('tr', current_data2);
+        						console.log('tr', current_data2, td.length, n_tahapan);
 								if(td.length == 2){
 									var text = td.eq(1).text().split(' ');
 									var kode = text.shift();
@@ -791,6 +802,7 @@ jQuery(document).ready(function(){
 									if(kode.split('.').length == 8){
 										dinas.kode = kode;
 										dinas.nama = nama;
+										console.log('dinas', dinas);
 										getAllUnit().then(function(unit){
 											unit.map(function(un, m){
 												if(un.kode_skpd == dinas.kode){
@@ -856,7 +868,7 @@ jQuery(document).ready(function(){
 							                resolve_reduce2(nextData2);
 							            });
 									}
-								}else if(td.length == 4){
+								}else if(td.length == (4+n_tahapan)){
 									var kelompok = {
 										nama: td.eq(1).text().trim(),
 										data: []
@@ -921,7 +933,12 @@ jQuery(document).ready(function(){
 									            return sequence3.then(function(current_data3){
 									        		return new Promise(function(resolve_reduce3, reject_reduce3){
 														getDetailPenerima(subkeg.data.kode_sbl, false, nomor_lampiran).then(function(all_penerima){
-															getDetailRin(dinas.data.id_skpd, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl, nomor_lampiran)
+															var kode_get_rka = '';
+															if(current_data3.action != ''){
+							                					var kode_get_rka = current_data3.action.split("ubahKomponen('")[1].split("'")[0];
+															}
+							                				console.log('kode_get_rka', kode_get_rka, current_data3);
+															getDetailRin(dinas.data.id_skpd, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl, nomor_lampiran, kode_get_rka)
 															.then(function(rinci_penerima){
 																var alamat = '';
 																if(nomor_lampiran == 5){
@@ -936,12 +953,19 @@ jQuery(document).ready(function(){
 																		}
 																	});
 																}
+																var html_rinci = '<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian)+'</td>';
+																if(tahapan == 'pergeseran'){
+																	html_rinci = ''
+																		+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian_murni)+'</td>'
+																		+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian)+'</td>'
+																		+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian_murni-current_data3.rincian)+'</td>';
+																}
 																penerimaHTML[current_data3.nomor] = ''
 																	+'<tr class="tambahan">'
 																		+'<td '+_style.td_1+'>'+current_data3.nomor+'</td>'
 																		+'<td '+_style.td_2+'>'+current_data3.lokus_akun_teks+'</td>'
 																		+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+formatRupiah(current_data3.harga_satuan)+')</td>'
-																		+'<td '+_style.td_4+'>'+formatRupiah(current_data3.rincian)+'</td>'
+																		+html_rinci
 																	+'</tr>';
 										                    	return resolve_reduce3(nextData3);
 															});
@@ -972,7 +996,7 @@ jQuery(document).ready(function(){
 							                resolve_reduce2(nextData2);
 							            });
 									});
-								}else if(td.length == 5){
+								}else if(td.length == (5+n_tahapan)){
 									var kelompok = {
 										nama: td.eq(1).text().trim(),
 										bentuk: td.eq(3).text().trim(),
@@ -1049,20 +1073,32 @@ jQuery(document).ready(function(){
 									            return sequence3.then(function(current_data3){
 									        		return new Promise(function(resolve_reduce3, reject_reduce3){
 														getDetailPenerima(subkeg.data.kode_sbl).then(function(all_penerima){
-															getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl).then(function(rinci_penerima){
+															var kode_get_rka = '';
+															if(current_data3.action != ''){
+							                					var kode_get_rka = current_data3.action.split("ubahKomponen('")[1].split("'")[0];
+															}
+							                				console.log('kode_get_rka', kode_get_rka, current_data3);
+															getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl, false, kode_get_rka).then(function(rinci_penerima){
 																var alamat = '';
 																all_penerima.map(function(p, o){
 																	if(p.id_profil == rinci_penerima.id_penerima){
 																		alamat = p.alamat_teks+' - '+p.jenis_penerima;
 																	}
 																});
+																var html_rinci = '<td '+_style.td_5+'>'+formatRupiah(current_data3.rincian)+'</td>';
+																if(tahapan == 'pergeseran'){
+																	html_rinci = ''
+																		+'<td '+_style.td_5+'>'+formatRupiah(current_data3.rincian_murni)+'</td>'
+																		+'<td '+_style.td_5+'>'+formatRupiah(current_data3.rincian)+'</td>'
+																		+'<td '+_style.td_5+'>'+formatRupiah(current_data3.rincian_murni-current_data3.rincian)+'</td>';
+																}
 																penerimaHTML[current_data3.nomor] = ''
 																	+'<tr class="tambahan">'
 																		+'<td '+_style.td_1+'>'+current_data3.nomor+'</td>'
 																		+'<td '+_style.td_2+'>'+current_data3.lokus_akun_teks+'</td>'
 																		+'<td '+_style.td_3+'>'+alamat+' ('+current_data3.koefisien+' x '+current_data3.harga_satuan+')</td>'
 																		+'<td '+_style.td_4+'>'+current_data3.nama_standar_harga.nama_komponen+'<br>'+current_data3.nama_standar_harga.spek_komponen+'</td>'
-																		+'<td '+_style.td_5+'>'+formatRupiah(current_data3.rincian)+'</td>'
+																		+html_rinci
 																	+'</tr>';
 										                    	return resolve_reduce3(nextData3);
 															});
