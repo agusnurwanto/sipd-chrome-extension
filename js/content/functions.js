@@ -1486,6 +1486,172 @@ function singkron_renstra_lokal(){
     });
 }
 
+function singkron_asmas_lokal(){
+	jQuery('#wrap-loading').show();
+	jQuery.ajax({
+      	url: lru6,
+      	type: "POST",
+		data: formData,
+		processData: false,
+		contentType: false,
+      	success: function(data){
+      		var last = data.data.length-1;
+      		data.data.reduce(function(sequence, nextData){
+                return sequence.then(function(current_data){
+            		return new Promise(function(resolve_reduce, reject_reduce){
+            			var data_asmas = {};
+		      			data_asmas.alamat_teks = current_data.alamat_teks;
+						data_asmas.anggaran = current_data.anggaran;
+						data_asmas.batal_teks = current_data.batal_teks;
+						data_asmas.bidang_urusan = current_data.bidang_urusan;
+						data_asmas.created_date = current_data.created_date;
+						data_asmas.created_user = current_data.created_user;
+						data_asmas.file_foto = current_data.file_foto;
+						data_asmas.file_pengantar = current_data.file_pengantar;
+						data_asmas.file_proposal = current_data.file_proposal;
+						data_asmas.file_rab = current_data.file_rab;
+						data_asmas.giat_teks = current_data.giat_teks;
+						data_asmas.id_bidang_urusan = current_data.id_bidang_urusan;
+						data_asmas.id_daerah = current_data.id_daerah;
+						data_asmas.id_jenis_profil = current_data.id_jenis_profil;
+						data_asmas.id_jenis_usul = current_data.id_jenis_usul;
+						data_asmas.id_kab_kota = current_data.id_kab_kota;
+						data_asmas.id_kecamatan = current_data.id_kecamatan;
+						data_asmas.id_kelurahan = current_data.id_kelurahan;
+						data_asmas.id_pengusul = current_data.id_pengusul;
+						data_asmas.id_profil = current_data.id_profil;
+						data_asmas.id_unit = current_data.id_unit;
+						data_asmas.id_usulan = current_data.id_usulan;
+						data_asmas.is_batal = current_data.is_batal;
+						data_asmas.is_tolak = current_data.is_tolak;
+						data_asmas.jenis_belanja = current_data.jenis_belanja;
+						data_asmas.jenis_profil = current_data.jenis_profil;
+						data_asmas.jenis_usul_teks = current_data.jenis_usul_teks;
+						data_asmas.kelompok = current_data.kelompok;
+						data_asmas.kode_skpd = current_data.kode_skpd;
+						data_asmas.koefisien = current_data.koefisien;
+						data_asmas.level_pengusul = current_data.level_pengusul;
+						data_asmas.lokus_usulan = current_data.lokus_usulan;
+						data_asmas.masalah = current_data.masalah;
+						data_asmas.nama_daerah = current_data.nama_daerah;
+						data_asmas.nama_skpd = current_data.nama_skpd;
+						data_asmas.nama_user = current_data.nama_user;
+						data_asmas.nip = current_data.nip;
+						data_asmas.pengusul = current_data.pengusul;
+						data_asmas.rekom_camat_anggaran = current_data.anggaran;
+						data_asmas.rekom_camat_koefisien = current_data.koefisien;
+						data_asmas.rekom_camat_rekomendasi = current_data.rekomendasi;
+						data_asmas.rekom_lurah_anggaran = current_data.anggaran;
+						data_asmas.rekom_lurah_koefisien = current_data.koefisien;
+						data_asmas.rekom_lurah_rekomendasi = current_data.rekomendasi;
+						data_asmas.rekom_mitra_anggaran = current_data.anggaran;
+						data_asmas.rekom_mitra_koefisien = current_data.koefisien;
+						data_asmas.rekom_mitra_rekomendasi = current_data.rekomendasi;
+						data_asmas.rekom_skpd_anggaran = current_data.anggaran;
+						data_asmas.rekom_skpd_koefisien = current_data.koefisien;
+						data_asmas.rekom_skpd_rekomendasi = current_data.rekomendasi;
+						data_asmas.rekom_tapd_anggaran = current_data.anggaran;
+						data_asmas.rekom_tapd_koefisien = current_data.koefisien;
+						data_asmas.rekom_tapd_rekomendasi = current_data.rekomendasi;
+						data_asmas.rev_skpd = current_data.rev_skpd;
+						data_asmas.satuan = current_data.satuan;
+						data_asmas.status_usul = current_data.status_usul;
+						data_asmas.status_usul_teks = current_data.status_usul_teks;
+						data_asmas.tolak_teks = current_data.tolak_teks;
+						data_asmas.tujuan_usul = current_data.tujuan_usul;
+
+						var idusulan = current_data.action.split("detilUsulan('")[1].split("'")[0];
+            			get_detail_asmas(idusulan).then(function(detail){
+							data_asmas.detail_alamatteks = detail.alamatteks;
+							data_asmas.detail_anggaran = detail.anggaran;
+							data_asmas.detail_bidangurusan = detail.bidangurusan;
+							data_asmas.detail_camatteks = detail.camatteks;
+							data_asmas.detail_filefoto = detail.filefoto;
+							data_asmas.detail_filefoto2 = detail.filefoto2;
+							data_asmas.detail_filefoto3 = detail.filefoto3;
+							data_asmas.detail_filepengantar = detail.filepengantar;
+							data_asmas.detail_fileproposal = detail.fileproposal;
+							data_asmas.detail_filerab = detail.filerab;
+							data_asmas.detail_gagasan = detail.gagasan;
+							data_asmas.detail_idcamat = detail.idcamat;
+							data_asmas.detail_idkabkota = detail.idkabkota;
+							data_asmas.detail_idkamus = detail.idkamus;
+							data_asmas.detail_idlurah = detail.idlurah;
+							data_asmas.detail_idskpd = detail.idskpd;
+							data_asmas.detail_jenisbelanja = detail.jenisbelanja;
+							data_asmas.detail_kodeskpd = detail.kodeskpd;
+							data_asmas.detail_langpeta = detail.langpeta;
+							data_asmas.detail_latpeta = detail.latpeta;
+							data_asmas.detail_lurahteks = detail.lurahteks;
+							data_asmas.detail_masalah = detail.masalah;
+							data_asmas.detail_namakabkota = detail.namakabkota;
+							data_asmas.detail_namaskpd = detail.namaskpd;
+							data_asmas.detail_rekomteks = detail.rekomteks;
+							data_asmas.detail_satuan = detail.satuan;
+							data_asmas.detail_setStatusUsul = detail.setStatusUsul;
+							data_asmas.detail_subgiat = detail.subgiat;
+							data_asmas.detail_tujuanusul = detail.tujuanusul;
+							data_asmas.detail_usulanggaran = detail.usulanggaran;
+							data_asmas.detail_usulvolume = detail.usulvolume;
+							data_asmas.detail_volume = detail.volume;
+
+							var data = {
+							    message:{
+							        type: "get-url",
+							        content: {
+						                url: config.url_server_lokal,
+						                type: 'post',
+						                data: { 
+						                    action: 'singkron_asmas',
+						                    tahun_anggaran: config.tahun_anggaran,
+						                    api_key: config.api_key,
+						                    data: data_asmas
+						                },
+						            	return: true
+						            }
+							    }
+							};
+							chrome.runtime.sendMessage(data, function(response) {
+							    console.log('responeMessage', response);
+							});
+							return resolve_reduce(nextData);
+						});
+            		})
+                    .catch(function(e){
+                        console.log(e);
+                        return Promise.resolve(nextData);
+                    });
+                })
+                .catch(function(e){
+                    console.log(e);
+                    return Promise.resolve(nextData);
+                });
+            }, Promise.resolve(data.data[last]))
+            .then(function(data_last){
+            	jQuery('#wrap-loading').hide();
+            })
+            .catch(function(e){
+                console.log(e);
+            });
+      	}
+    });
+}
+
+function get_detail_asmas(idusulan){
+    return new Promise(function(resolve, reject){
+		jQuery.ajax({
+	      	url: endog+'?'+idusulan,
+	      	type: "POST",
+			data: formData,
+			processData: false,
+			contentType: false,
+	      	success: function(data){
+	      		return resolve(data);
+	      	}
+	    });
+    });
+}
+
 function singkron_pendapatan_lokal(){
 	jQuery('#wrap-loading').show();
 	var id_unit = idune;

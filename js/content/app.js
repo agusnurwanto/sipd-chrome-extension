@@ -1406,6 +1406,18 @@ jQuery(document).ready(function(){
 	        }
 	        singkron_pembiayaan_lokal(type);
 		});
+	}else if(
+	 	jQuery('h3.page-title').text().indexOf('Usulan Langsung (Masyarakat / Lembaga)') != -1
+	){
+		console.log('halaman Usulan Langsung (Masyarakat / Lembaga)');
+		var singkron_lokal = ''
+            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-asmas-lokal" style="margin-left: 30px;">'
+                +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
+            +'</button>';
+		jQuery('.panel-heading').append(singkron_lokal);
+		jQuery('#singkron-asmas-lokal').on('click', function(){
+	        singkron_asmas_lokal();
+		});
 	}else if(current_url.indexOf('daerah/main/budget/lampiran/'+config.tahun_anggaran+'/apbd/2/'+config.id_daerah+'/') != -1){
 		console.log('Halaman APBD penjabaran lampiran 2');
 		var tampil_apbd_penjabaran = ''
