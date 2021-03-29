@@ -6,6 +6,7 @@ var config = {
 	pass_admin_ssh : "xxx", // password admin SSH
 	url_server_lokal : "https://xxxxxxxxxx.com/wp-admin/admin-ajax.php", // url server lokal
 	api_key : "xxxxxxxxxxxxxxxxxxx", // api key server lokal disesuaikan dengan api dari WP plugin
+	sipd_private : false, // koneksi ke plugin SIPD private
 	tapd : [{
 		nama: "nama tim tapd 1",
 		nip: "12343464575656",
