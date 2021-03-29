@@ -42,6 +42,9 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 					}
 				});
 			}
+		}else if(res.action == 'base64_encrypt'){
+			resolve_get_url[res.post.idrincisbl](res.data);
+			_alert = false;
 		}else if(res.action == 'get_link_laporan'){
 			if(
 				res.link 
