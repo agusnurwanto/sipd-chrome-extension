@@ -416,13 +416,13 @@ function getDetailRin(id_unit, kode_sbl, idbelanjarinci, nomor_lampiran, kode_ge
 							getProv(id_unit, rincsub[kode_sbl].lru4).then(function(prov){
 								if(prov[rinci.id_prop_penerima]){
 									rinci.nama_prop = prov[rinci.id_prop_penerima].nama;
-									getKab(id_unit, rinci.id_prop_penerima, id_unit, rincsub[kode_sbl].lru5).then(function(kab){
+									getKab(id_unit, rinci.id_prop_penerima, rincsub[kode_sbl].lru5).then(function(kab){
 										if(kab[rinci.id_kokab_penerima]){
 											rinci.nama_kab = kab[rinci.id_kokab_penerima].nama;
-											getKec(id_unit, rinci.id_prop_penerima, rinci.id_kokab_penerima, id_unit, rincsub[kode_sbl].lru6).then(function(kec){
+											getKec(id_unit, rinci.id_prop_penerima, rinci.id_kokab_penerima, rincsub[kode_sbl].lru6).then(function(kec){
 												if(kec[rinci.id_camat_penerima]){
 													rinci.nama_kec = kec[rinci.id_camat_penerima].nama;
-													getKel(id_unit, rinci.id_prop_penerima, rinci.id_kokab_penerima, rinci.id_camat_penerima, id_unit, rincsub[kode_sbl].lru7).then(function(kel){
+													getKel(id_unit, rinci.id_prop_penerima, rinci.id_kokab_penerima, rinci.id_camat_penerima, rincsub[kode_sbl].lru7).then(function(kel){
 														if(kel[rinci.id_lurah_penerima]){
 															rinci.nama_kel = kel[rinci.id_lurah_penerima].nama;
 															return resolve(rinci);
@@ -581,7 +581,7 @@ function getProv(id_unit, url){
 					// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-provinsi/'+config.id_daerah+'/'+id_unit,
 					url: url,
 					type: 'post',
-					data: FormData,
+					data: formData,
 					processData: false,
   					contentType: false,
 					success: function(ret){
