@@ -454,7 +454,8 @@ jQuery(document).ready(function(){
 			}
 		}
 	}else if(
-		current_url.indexOf('rka-bl-rinci/cetak') != -1
+		jQuery('.cetak > table[cellpadding="5"]').length != -1
+		|| current_url.indexOf('rka-bl-rinci/cetak') != -1
 		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1
 		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/42/'+config.id_daerah+'/setunit') != -1
 		|| current_url.indexOf('dokumen/'+config.tahun_anggaran+'/rka-penda/cetak/'+config.id_daerah+'/') != -1

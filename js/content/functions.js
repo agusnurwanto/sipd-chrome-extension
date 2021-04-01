@@ -225,8 +225,10 @@ function getAllUnit(id_unit){
 function getAllSubKeg(id_unit){
 	return new Promise(function(resolve, reject){
 		getAllUnit(id_unit).then(function(unit){
+			var cek_id_unit = false;
 			unit.map(function(b, i){
 				if(b.id_skpd == id_unit){
+					cek_id_unit = true;
 					if(!b.data_sub){
 						jQuery.ajax({
 							url: config.sipd_url+'daerah/main?'+b.nama_skpd.sParam,
@@ -249,10 +251,11 @@ function getAllSubKeg(id_unit){
 					}else{
 						return resolve(b.data_sub);
 					}
-				}else{
-					console.log('id_skpd '+id_unit+' tidak ditemukan!');
 				}
 			});
+			if(!cek_id_unit){
+				console.log('id_skpd '+id_unit+' tidak ditemukan!', unit);
+			}
 		})
 	});
 }

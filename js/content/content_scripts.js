@@ -24,12 +24,9 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 	console.log('sender, request', sender, request);
 	var current_url = window.location.href;
 	if(request.type == 'response-fecth-url'){
-		jQuery('#wrap-loading').hide();
-		jQuery('#persen-loading').html('');
-		jQuery('#persen-loading').attr('persen', '');
-		jQuery('#persen-loading').attr('total', '');
 		var res = request.data;
 		var _alert = true;
+		var hide_loading = true;
 		if(res.action == 'singkron_unit'){
 			window.data_unit = res.renja_link;
 			if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
@@ -45,6 +42,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		}else if(res.action == 'base64_encrypt'){
 			resolve_get_url[res.post.idrincisbl](res.data);
 			_alert = false;
+			hide_loading = false;
 		}else if(res.action == 'get_link_laporan'){
 			if(
 				res.link 
@@ -60,6 +58,12 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 
 				}
 			}
+		}
+		if(hide_loading){
+			jQuery('#wrap-loading').hide();
+			jQuery('#persen-loading').html('');
+			jQuery('#persen-loading').attr('persen', '');
+			jQuery('#persen-loading').attr('total', '');
 		}
 		if(_alert){
 			alert(res.message);
