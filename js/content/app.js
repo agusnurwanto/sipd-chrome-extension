@@ -4,7 +4,9 @@ for(var i=0, l=_s.length; i<l; i++){
 	var _script = _s[i].innerHTML;
 	if(
 		_script.indexOf('remot=') != -1
+		|| _script.indexOf('remot =') != -1
 		|| _script.indexOf('lru1=') != -1
+		|| _script.indexOf('lru1 =') != -1
 	){
 		__script += ' '+_script;
 	}
