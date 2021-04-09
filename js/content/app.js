@@ -19,6 +19,11 @@ if(typeof tokek != 'undefined'){
 	formData.append('_token', tokek);
 }
 
+var tahapan = jQuery('button[onclick="setFase()"]').text().trim();
+if(tahapan != ''){
+	config.tahun_anggaran = tahapan.split(' - ')[1];
+}
+
 function tableHtmlToExcel(tableID, filename = ''){
     var downloadLink;
     var dataType = 'application/vnd.ms-excel';
@@ -1459,6 +1464,18 @@ jQuery(document).ready(function(){
 		jQuery('.panel-heading').append(singkron_lokal);
 		jQuery('#singkron-asmas-lokal').on('click', function(){
 	        singkron_asmas_lokal();
+		});
+	}else if(
+	 	jQuery('h3.page-title').text().indexOf('Usulan Reses / Pokok Pikiran') != -1
+	){
+		console.log('halaman Usulan Reses / Pokok Pikiran');
+		var singkron_lokal = ''
+            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-pokir-lokal" style="margin-left: 30px;">'
+                +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
+            +'</button>';
+		jQuery('.panel-heading').append(singkron_lokal);
+		jQuery('#singkron-pokir-lokal').on('click', function(){
+	        singkron_pokir_lokal();
 		});
 	}else if(current_url.indexOf('daerah/main/budget/lampiran/'+config.tahun_anggaran+'/apbd/2/'+config.id_daerah+'/') != -1){
 		console.log('Halaman APBD penjabaran lampiran 2');
