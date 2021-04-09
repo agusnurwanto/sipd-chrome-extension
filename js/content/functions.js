@@ -1758,7 +1758,7 @@ function singkron_asmas_lokal(){
 						                    api_key: config.api_key,
 						                    data: data_asmas
 						                },
-						            	return: true
+						            	return: false
 						            }
 							    }
 							};
@@ -1780,6 +1780,7 @@ function singkron_asmas_lokal(){
             }, Promise.resolve(data.data[last]))
             .then(function(data_last){
             	jQuery('#wrap-loading').hide();
+            	alert('Berhasil singkron data ASMAS!');
             })
             .catch(function(e){
                 console.log(e);
