@@ -464,6 +464,7 @@ jQuery(document).ready(function(){
 		(
 			jQuery('.cetak').closest('body').attr('onload') == 'window.print()'
 			&& current_url.indexOf('/siap/') == -1
+			&& current_url.indexOf('/apbd/') == -1
 		)
 		|| current_url.indexOf('rka-bl-rinci/cetak') != -1
 		|| current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1
