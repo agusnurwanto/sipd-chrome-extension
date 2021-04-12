@@ -681,6 +681,8 @@ jQuery(document).ready(function(){
 	}else if(
 		jQuery('h3.page-title').text() == 'Rincian Belanja Sub Kegiatan'
 	){
+		console.log('halaman rincian sub kegiatan');
+
 		// harus di inject agar bekerja
 		run_script('window.ext_url = "'+chrome.extension.getURL('')+'"');
 		injectScript( chrome.extension.getURL('/js/content/rka.js'), 'html');
@@ -731,6 +733,25 @@ jQuery(document).ready(function(){
 				+'</table>');
 			singkron_rka_ke_lokal();
 		});
+
+		if(jQuery('button.tambah-detil').length >= 1){
+			var master_html = ''
+            	+'<button onclick="return false;" class="btn btn-primary" id="singkron_master_cse" style="float:right; margin-left: 10px;">Singkron Data Master ke DB Lokal</button>'
+            	+'<select class="form-control" style="width: 300px; float: right;" id="data_master_cse">'
+            		+'<option value="">Pilih Data Master</option>'
+            		+'<option value="penerima_bantuan">Master Data Penerima Bantuan</option>'
+            		+'<option value="alamat">Master Data Provinsi, Kabupaten/Kota, Kecamatan, Desa/Kelurahan</option>'
+            	+'</select>';
+			jQuery('.bg-title .col-lg-6').eq(1).prepend()(master_html);
+			jQuery('#singkron_master_cse').on('click', function(){
+				var val = jQuery('#data_master_cse').val();
+				if(val == ''){
+					alert('Data Master tidak boleh kosong!');
+				}else{
+					singkron_master_cse(val);
+				}
+			});
+		}
 	// SIKRONISASI PROGRAM PRIORITAS NASIONAL DENGAN PROGRAM PRIORITAS DAERAH (APBD perda)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/9/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
@@ -939,6 +960,8 @@ jQuery(document).ready(function(){
 													}
 												});
 											}
+											// console.log('kelompok, nomor_lampiran, penerima', kelompok, nomor_lampiran, penerima);
+
 											var penerimaHTML = [];
 											var lastpenerima = penerima.length-1;
 											penerima.reduce(function(sequence3, nextData3){
@@ -952,6 +975,12 @@ jQuery(document).ready(function(){
 							                				console.log('kode_get_rka', kode_get_rka, current_data3);
 															getDetailRin(dinas.data.id_skpd, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl, nomor_lampiran, kode_get_rka)
 															.then(function(rinci_penerima){
+																if(
+																	rinci_penerima == ''
+																	|| !rinci_penerima
+																){
+																	return resolve_reduce3(nextData3);
+																}
 																var alamat = '';
 																if(nomor_lampiran == 5){
 																	alamat = 'Provinsi '+rinci_penerima.nama_prop
@@ -1091,6 +1120,12 @@ jQuery(document).ready(function(){
 															}
 							                				console.log('kode_get_rka', kode_get_rka, current_data3);
 															getDetailRin(dinas.data.id_unit, subkeg.data.kode_sbl, current_data3.id_rinci_sub_bl, false, kode_get_rka).then(function(rinci_penerima){
+																if(
+																	rinci_penerima == ''
+																	|| !rinci_penerima
+																){
+																	return resolve_reduce3(nextData3);
+																}
 																var alamat = '';
 																all_penerima.map(function(p, o){
 																	if(p.id_profil == rinci_penerima.id_penerima){
@@ -1324,26 +1359,6 @@ jQuery(document).ready(function(){
 		});
 		console.log('all_data', all_data);
 		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
-	}else if(current_url.indexOf('dashboard/'+config.tahun_anggaran+'/unit/'+config.id_daerah+'/') != -1){
-		console.log('halaman dashboard');
-		var master_html = ''
-			+'<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">'
-            	+'<button onclick="return false;" class="btn btn-primary" id="singkron_master_cse" style="float:right; margin-left: 10px;">Singkron Data Master ke DB Lokal</button>'
-            	+'<select class="form-control" style="width: 300px; float: right;" id="data_master_cse">'
-            		+'<option value="">Pilih Data Master</option>'
-            		+'<option value="penerima_bantuan">Master Data Penerima Bantuan</option>'
-            		+'<option value="alamat">Master Data Provinsi, Kabupaten/Kota, Kecamatan, Desa/Kelurahan</option>'
-            	+'</select>'
-        	+'</div>'
-		jQuery('.bg-title').append(master_html);
-		jQuery('#singkron_master_cse').on('click', function(){
-			var val = jQuery('#data_master_cse').val();
-			if(val == ''){
-				alert('Data Master tidak boleh kosong!');
-			}else{
-				singkron_master_cse(val);
-			}
-		});
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/3/'+config.id_daerah+'/0') != -1){
 		console.log('halaman perda lampiran 3');
 		var download_excel = ''

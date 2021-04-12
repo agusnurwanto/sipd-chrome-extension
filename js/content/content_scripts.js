@@ -39,7 +39,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 					}
 				});
 			}
-		}else if(res.action == 'base64_encrypt'){
+		}else if(
+			res.action == 'base64_encrypt'
+			|| res.action == 'get_data_rka'
+		){
 			resolve_get_url[res.post.idrincisbl](res.data);
 			_alert = false;
 			hide_loading = false;

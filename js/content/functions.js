@@ -403,58 +403,83 @@ function getKeyCariRinc(kode_get_rka, id_unit, kode_sbl, idbelanjarinci){
 function getDetailRin(id_unit, kode_sbl, idbelanjarinci, nomor_lampiran, kode_get_rka){
 	return new Promise(function(resolve, reject){
 		if(!kode_get_rka && !config.sipd_private){
-			return resolve(false);
-		}
-		getKeyCariRinc(kode_get_rka, id_unit, kode_sbl, idbelanjarinci).then(function(kode_get_rka){
-			getToken().then(function(_token){
-				jQuery.ajax({
-					// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/cari-rincian/'+config.id_daerah+'/'+id_unit,
-					url: config.sipd_url+'daerah/main?'+kode_get_rka,
-					type: 'POST',
-					data: formData,
-					processData: false,
-					contentType: false,
-					success: function(rinci){
-						if(nomor_lampiran == 5){
-							getProv(id_unit, rincsub[kode_sbl].lru4).then(function(prov){
-								if(prov[rinci.id_prop_penerima]){
-									rinci.nama_prop = prov[rinci.id_prop_penerima].nama;
-									getKab(id_unit, rinci.id_prop_penerima, rincsub[kode_sbl].lru5).then(function(kab){
-										if(kab[rinci.id_kokab_penerima]){
-											rinci.nama_kab = kab[rinci.id_kokab_penerima].nama;
-											getKec(id_unit, rinci.id_prop_penerima, rinci.id_kokab_penerima, rincsub[kode_sbl].lru6).then(function(kec){
-												if(kec[rinci.id_camat_penerima]){
-													rinci.nama_kec = kec[rinci.id_camat_penerima].nama;
-													getKel(id_unit, rinci.id_prop_penerima, rinci.id_kokab_penerima, rinci.id_camat_penerima, rincsub[kode_sbl].lru7).then(function(kel){
-														if(kel[rinci.id_lurah_penerima]){
-															rinci.nama_kel = kel[rinci.id_lurah_penerima].nama;
-															return resolve(rinci);
-														}else{
-															return resolve(rinci);
-														}
-													});
-												}else{
-													return resolve(rinci);
-												}
-											});
-										}else{
-											return resolve(rinci);
-										}
-									});
-								}else{
-									return resolve(rinci);
-								}
-							});
-						}else{
-							return resolve(rinci);
-						}
-					},
-					error: function(e){
-						return resolve(false)
+			if(typeof resolve_get_url == 'undefined'){
+				window.resolve_get_url = {};
+			}
+			resolve_get_url[idbelanjarinci] = resolve;
+			var data_send = { 
+				action: 'get_data_rka',
+				api_key: config.api_key,
+				tahun_anggaran: config.tahun_anggaran,
+				kode_sbl: kode_sbl,
+				idbelanjarinci: idbelanjarinci
+			};
+			var data = {
+			    message:{
+			        type: "get-url",
+			        content: {
+					    url: config.url_server_lokal,
+					    type: 'post',
+					    data: data_send,
+		    			return: true
 					}
+			    }
+			};
+			chrome.runtime.sendMessage(data, function(response) {
+			    console.log('responeMessage', response);
+			});
+		}else{
+			getKeyCariRinc(kode_get_rka, id_unit, kode_sbl, idbelanjarinci).then(function(kode_get_rka){
+				getToken().then(function(_token){
+					jQuery.ajax({
+						// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/cari-rincian/'+config.id_daerah+'/'+id_unit,
+						url: config.sipd_url+'daerah/main?'+kode_get_rka,
+						type: 'POST',
+						data: formData,
+						processData: false,
+						contentType: false,
+						success: function(rinci){
+							if(nomor_lampiran == 5){
+								getProv(id_unit, rincsub[kode_sbl].lru4).then(function(prov){
+									if(prov[rinci.id_prop_penerima]){
+										rinci.nama_prop = prov[rinci.id_prop_penerima].nama;
+										getKab(id_unit, rinci.id_prop_penerima, rincsub[kode_sbl].lru5).then(function(kab){
+											if(kab[rinci.id_kokab_penerima]){
+												rinci.nama_kab = kab[rinci.id_kokab_penerima].nama;
+												getKec(id_unit, rinci.id_prop_penerima, rinci.id_kokab_penerima, rincsub[kode_sbl].lru6).then(function(kec){
+													if(kec[rinci.id_camat_penerima]){
+														rinci.nama_kec = kec[rinci.id_camat_penerima].nama;
+														getKel(id_unit, rinci.id_prop_penerima, rinci.id_kokab_penerima, rinci.id_camat_penerima, rincsub[kode_sbl].lru7).then(function(kel){
+															if(kel[rinci.id_lurah_penerima]){
+																rinci.nama_kel = kel[rinci.id_lurah_penerima].nama;
+																return resolve(rinci);
+															}else{
+																return resolve(rinci);
+															}
+														});
+													}else{
+														return resolve(rinci);
+													}
+												});
+											}else{
+												return resolve(rinci);
+											}
+										});
+									}else{
+										return resolve(rinci);
+									}
+								});
+							}else{
+								return resolve(rinci);
+							}
+						},
+						error: function(e){
+							return resolve(false)
+						}
+					});
 				});
 			});
-		});
+		}
 	});
 }
 
@@ -645,6 +670,7 @@ function formatRupiah(angka, prefix){
 		angka = '0';
 	}
 	try {
+		angka += '';
 		var number_string = angka.replace(/[^,\d]/g, '').toString();
 	}catch(e){
 		console.log('angka', e, angka);
@@ -766,8 +792,20 @@ function getAkunByJenisBl(jenis_bl, id_unit, kode_sbl){
 function singkron_master_cse(val){
 	jQuery('#wrap-loading').show();
 	console.log('val', val);
+	if(typeof rincsub == 'undefined'){
+		window.rincsub = {};
+	}
+	rincsub[kodesbl] = {
+		lru1: lru1,
+		lru3: lru3,
+		lru4: lru4,
+		lru5: lru5,
+		lru6: lru6,
+		lru7: lru7,
+		lru13: lru13
+	};
 	if(val == 'penerima_bantuan'){
-		getDetailPenerima('0', false, 0).then(function(_data){
+		getDetailPenerima(kodesbl, false, 0).then(function(_data){
 			var data_profile = { 
 				action: 'singkron_penerima_bantuan',
 				tahun_anggaran: config.tahun_anggaran,
@@ -840,7 +878,7 @@ function singkron_master_cse(val){
                 return sequence.then(function(current_data){
                 	return new Promise(function(resolve_reduce, reject_reduce){
                 		console.log('current_data', current_data);
-						getKab(id_unit, current_data.id_alamat).then(function(kab){
+						getKab(id_unit, current_data.id_alamat, lru5).then(function(kab){
 							var data_alamat_kab = { 
 								action: 'singkron_alamat',
 								tahun_anggaran: config.tahun_anggaran,
@@ -882,7 +920,7 @@ function singkron_master_cse(val){
 	                			return sequence2.then(function(current_data2){
                 					return new Promise(function(resolve_reduce2, reject_reduce2){
                 						console.log('current_data2', current_data2);
-										getKec(id_unit, current_data2.id_prov, current_data2.id_alamat).then(function(kec){
+										getKec(id_unit, current_data2.id_prov, current_data2.id_alamat, lru6).then(function(kec){
 											var data_alamat_kec = { 
 												action: 'singkron_alamat',
 												tahun_anggaran: config.tahun_anggaran,
@@ -924,7 +962,7 @@ function singkron_master_cse(val){
 					                			return sequence3.then(function(current_data3){
 				                					return new Promise(function(resolve_reduce3, reject_reduce3){
                 										console.log('current_data3', current_data3);
-														getKel(id_unit, current_data3.id_prov, current_data3.id_kab, current_data3.id_alamat).then(function(kel){
+														getKel(id_unit, current_data3.id_prov, current_data3.id_kab, current_data3.id_alamat, lru7).then(function(kel){
 															var data_alamat_kel = { 
 																action: 'singkron_alamat',
 																tahun_anggaran: config.tahun_anggaran,
