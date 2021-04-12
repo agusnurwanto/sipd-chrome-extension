@@ -806,6 +806,9 @@ jQuery(document).ready(function(){
 		var nomor_lampiran = getNomorLampiran();
 		var last = table.length-1;
 		table.reduce(function(sequence, nextData){
+			// fungsi ini didisable karena format lampiran sudah tidak didukung lagi. dilanjutkan dengan pengembangan di sipd lokal
+			return Promise.resolve(nextData);
+
             return sequence.then(function(current_data){
         		return new Promise(function(resolve_reduce, reject_reduce){
         			var dinas = {
