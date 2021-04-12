@@ -2003,8 +2003,8 @@ function singkron_rka_ke_lokal(opsi, callback) {
 								kode: lru1
 							};
 							if(opsi && opsi.action){
-								var aksi = opsi.action.split("href='main?");
-								if(aksi > 2){
+								var aksi = opsi.action.split("main?");
+								if(aksi.length > 2){
 									kode_go_hal_rinci.go_rinci = true;
 									kode_go_hal_rinci.kode = 'main?'+aksi[1].split("'")[0];
 								}else{
