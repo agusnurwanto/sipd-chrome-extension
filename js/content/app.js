@@ -742,7 +742,7 @@ jQuery(document).ready(function(){
             		+'<option value="penerima_bantuan">Master Data Penerima Bantuan</option>'
             		+'<option value="alamat">Master Data Provinsi, Kabupaten/Kota, Kecamatan, Desa/Kelurahan</option>'
             	+'</select>';
-			jQuery('.bg-title .col-lg-6').eq(1).prepend()(master_html);
+			jQuery('.bg-title .col-lg-6').eq(1).prepend(master_html);
 			jQuery('#singkron_master_cse').on('click', function(){
 				var val = jQuery('#data_master_cse').val();
 				if(val == ''){
