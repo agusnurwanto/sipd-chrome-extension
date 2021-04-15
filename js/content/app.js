@@ -107,9 +107,9 @@ jQuery(document).ready(function(){
 			+'</button>';
 		jQuery('#table_komponen').closest('form').prepend(_show_id_ssh);
 		if(document.getElementsByClassName('tambah-komponen').length){ 
-	 		jQuery('#show_id_ssh').attr('style', 'margin-top: -40px; position: absolute; margin-left: 280px;');
+	 		jQuery('#show_id_ssh').attr('style', 'margin-left: 10px;');
 			var acion_all = ''
-				+'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="set_mulit_rek" style="margin-top: -40px; position: absolute;">'
+				+'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="set_mulit_rek">'
 					+'<span>Set Multi Kode SH dan Rek. Belanja</span>'
 				+'</button>';
 			jQuery('#table_komponen').closest('form').prepend(acion_all);
