@@ -1,9 +1,18 @@
 console.log('Salam semangat!');
 
+window.dakron = '';
+loadUnBlock();
+
+function listener(details) {
+	loadUnBlock();
+	return {redirectUrl: "data:text/html,"+dakron+";"};
+}
+
 chrome.webRequest.onBeforeRequest.addListener(
-  function() { return {cancel: true}; },
+  // function() { return {cancel: true}; },
+  listener,
   {
-    urls: ["https://*.sipd.kemendagri.go.id/assets/js/sanblok.js"],
+    urls: ["https://*.sipd.kemendagri.go.id/assets/js/dakron.js"],
     types: ["script"]
   },
   ["blocking"]

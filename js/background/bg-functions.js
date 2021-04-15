@@ -109,3 +109,33 @@ function sendMessageTabActive(data, cb){
         });
     });
 }
+
+function loadUrl(url){
+    return new Promise(function(resolve, reject){
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
+               if (xmlhttp.status == 200) {
+                   resolve(xmlhttp.responseText);
+               }
+               else if (xmlhttp.status == 400) {
+                  console.log(url, 'There was an error 400');
+               }
+               else {
+                   console.log(url, 'something else other than 200 was returned');
+               }
+            }
+        };
+
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+    });
+}
+
+function loadUnBlock(){
+    loadUrl("https://sipd.kemendagri.go.id/assets/js/dakron.js").then(function(js_script){
+        js_script = js_script.split('function Dengkul')[0];
+        dakron = js_script + "function Dengkul(_0x66b776){return Base64['decode'](_0x66b776);}";
+    });
+}
