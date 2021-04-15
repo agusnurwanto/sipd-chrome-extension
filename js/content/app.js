@@ -14,8 +14,13 @@ for(var i=0, l=_s.length; i<l; i++){
 eval(__script);
 console.log('__script', __script);
 
+if(typeof tokek == 'undefined'){
+	tokek = jQuery('input[name="_tawon"]').val();
+}
+
 window.formData = new FormData();
 if(typeof tokek != 'undefined'){
+	console.log('tokek', tokek);
 	formData.append('_token', tokek);
 }
 

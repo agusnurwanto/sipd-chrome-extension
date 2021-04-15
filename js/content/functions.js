@@ -191,7 +191,12 @@ function getAllUnit(id_unit){
 				type: 'get',
 				success: function(html){
 					if(typeof tokek == 'undefined'){
-						window.tokek = html.split('tokek="')[1].split('"')[0];
+						try{
+							window.tokek = html.split('tokek="')[1].split('"')[0];
+						}catch(e){
+							window.tokek = jQuery('input[name="_tawon"]').val();
+						}
+						console.log('tokek', tokek);
 						formData.append('_token', tokek);
 					}
 					html = html.split('<body class="fix-header hide-sidebar">')[1].split('<script')[0];
