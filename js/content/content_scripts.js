@@ -53,9 +53,15 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 				&& res.model == 'perkada'
 			){
 				_alert = false;
-				if(res.jenis == '1'){
+				if(
+					res.jenis == '1'
+					|| res.jenis == '3'
+					|| res.jenis == '4'
+					|| res.jenis == '5'
+					|| res.jenis == '6'
+				){
 				    var link = ''
-				        +'<a target="_blank" href="'+res.link+'?key='+config.api_key+'" class="set-lampiran apbd-penjabaran-lampiran-1 btn btn-success pull-right" style="margin-right: 10px;">(LOCAL) '+res.text_link+'</a>';
+				        +'<a target="_blank" href="'+res.link+'?key='+config.api_key+'" class="set-lampiran apbd-penjabaran-lampiran btn btn-success pull-right" style="margin-right: 10px;">(LOCAL) '+res.text_link+'</a>';
 				    jQuery('#mod-hist-jadwal .modal-header .btn-circle').after(link);
 				}else if(res.jenis == '2'){
 

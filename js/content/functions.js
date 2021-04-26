@@ -2165,6 +2165,10 @@ function setLampiran(cetak, model, jenis){
 		&& (
 			jenis == '1'
 			|| jenis == '2'
+			|| jenis == '3'
+			|| jenis == '4'
+			|| jenis == '5'
+			|| jenis == '6'
 		)
 	){
 		jQuery('#wrap-loading').show();
