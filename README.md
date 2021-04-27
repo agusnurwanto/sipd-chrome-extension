@@ -9,6 +9,12 @@ Semoga bermanfaat
 
 ### Plugin Wordpress WP-SIPD https://github.com/agusnurwanto/wp-sipd
 
+### Pesan Untuk Tim IT SIPD
+- Semoga selalu diberi kesehatan dan aplikasi SIPD lancar digunakan oleh pemda
+- Extension ini dibuat untuk mengoptimasi kinerja aplikasi SIPD
+- Pengembangan script extension akan berhenti setelah aplikasi SIPD siap untuk mengakomodir semua fitur yang diperlukan oleh pemda
+- Demikian dan salam semangat :)
+
 ### Fitur:
 - Export data SSH ke database lokal
 - Export data akun belanja ke database lokal
@@ -50,6 +56,7 @@ Semoga bermanfaat
 - Export data usulan ASMAS
 - Export data usulan POKIR
 - Allow chrome browser for SIPD
+- Menampilkan tombol print lokal APBD Penjabaran lampiran 1,2,3,4,5,6
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki

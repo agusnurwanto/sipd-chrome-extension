@@ -1505,7 +1505,7 @@ jQuery(document).ready(function(){
 		console.log('Halaman APBD penjabaran lampiran 2');
 		var tampil_apbd_penjabaran = ''
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="tampil_apbd_penjabaran">'
-				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Tampilkan URL Lapiran APBD Lokal</span>'
+				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan URL Laporan Lokal</span>'
 			+'</button>';
 		jQuery('.p-b-20 .col-md-2').append(tampil_apbd_penjabaran);
 		jQuery('#tampil_apbd_penjabaran').on('click', function(){

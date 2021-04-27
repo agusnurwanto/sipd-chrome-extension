@@ -2159,8 +2159,7 @@ function get_kd_bl(){
 function setLampiran(cetak, model, jenis){
 	jQuery('a.set-lampiran').remove();
 	if(
-		jQuery('a.apbd-penjabaran-lampiran-1').length == 0
-		&& cetak == 'apbd'
+		cetak == 'apbd'
 		&& model == 'perkada'
 		&& (
 			jenis == '1'
@@ -2171,27 +2170,67 @@ function setLampiran(cetak, model, jenis){
 			|| jenis == '6'
 		)
 	){
-		jQuery('#wrap-loading').show();
-		var data = {
-		    message:{
-		        type: "get-url",
-		        content: {
-	                url: config.url_server_lokal,
-	                type: 'post',
-	                data: { 
-	                    action: 'get_link_laporan',
-	                    tahun_anggaran: config.tahun_anggaran,
-	                    api_key: config.api_key,
-	                    jenis: jenis,
-	                    model: model,
-	                    cetak: cetak
-	                },
-	            	return: true
-	            }
-		    }
-		};
-		chrome.runtime.sendMessage(data, function(response) {
-		    console.log('responeMessage', response);
+		if(typeof link_laporan == 'undefined'){
+			link_laporan = {};
+		}
+		if(typeof link_laporan[cetak] == 'undefined'){
+			link_laporan[cetak] = {};
+		}
+		if(typeof link_laporan[cetak][model] == 'undefined'){
+			link_laporan[cetak][model] = {};
+		}
+		if(typeof link_laporan[cetak][model][jenis] == 'undefined'){
+			link_laporan[cetak][model][jenis] = {};
+		}
+		if(link_laporan[cetak][model][jenis].cetak){
+			set_link_laporan(link_laporan[cetak][model][jenis]);
+		}else{
+			jQuery('#wrap-loading').show();
+			var data = {
+			    message:{
+			        type: "get-url",
+			        content: {
+		                url: config.url_server_lokal,
+		                type: 'post',
+		                data: { 
+		                    action: 'get_link_laporan',
+		                    tahun_anggaran: config.tahun_anggaran,
+		                    api_key: config.api_key,
+		                    jenis: jenis,
+		                    model: model,
+		                    cetak: cetak
+		                },
+		            	return: true
+		            }
+			    }
+			};
+			chrome.runtime.sendMessage(data, function(response) {
+			    console.log('responeMessage', response);
+			});
+		}
+	}
+}
+
+function set_link_laporan(res){
+	if(
+		res.jenis == '1'
+		|| res.jenis == '3'
+		|| res.jenis == '4'
+		|| res.jenis == '5'
+		|| res.jenis == '6'
+	){
+	    var link = ''
+	        +'<a target="_blank" href="'+res.link+'?key='+config.api_key+'" class="set-lampiran apbd-penjabaran-lampiran btn btn-success pull-right" style="margin-right: 10px;">(LOCAL) '+res.text_link+'</a>';
+	    jQuery('#mod-hist-jadwal .modal-header .btn-circle').after(link);
+	}else if(res.jenis == '2'){
+		jQuery('#table_unit tbody tr').map(function(i, b){
+			var tr = jQuery(b);
+			var id_skpd = tr.find('td').eq(1).find('a').attr('onclick').split("'")[7];
+			var data_link = res.link[id_skpd];
+			var local = '<a target="_blank" href="'+data_link.link+'?key='+config.api_key+'" class="set-lampiran apbd-penjabaran-lampiran btn btn-success link" style="margin-left: 10px;"><i class="fa fa-print fa-lg"></i> LOCAL</a>';
+			if(tr.find('.link').length <= 0){
+				tr.find('.sorting_1').append(local);
+			}
 		});
 	}
 }
