@@ -13,7 +13,7 @@ Semoga bermanfaat
 - Semoga selalu diberi kesehatan dan aplikasi SIPD lancar digunakan oleh pemda
 - Extension ini dibuat untuk mengoptimasi kinerja aplikasi SIPD
 - Pengembangan script extension akan berhenti setelah aplikasi SIPD siap untuk mengakomodir semua fitur yang diperlukan oleh pemda
-- Demikian dan salam semangat :)
+- Demikian dan salam semangat :blush:
 
 ### Fitur:
 - Export data SSH ke database lokal
