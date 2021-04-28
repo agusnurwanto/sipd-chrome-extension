@@ -319,6 +319,10 @@ jQuery(document).ready(function(){
 							}
 						});
 
+						if(data_sementara.length > 0){
+							data_all.push(data_sementara);
+						}
+
 						var i = 0;
 						var last = data_all.length-1;
 						data_all.reduce(function(sequence, nextData){
