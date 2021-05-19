@@ -27,7 +27,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		var res = request.data;
 		var _alert = true;
 		var hide_loading = true;
-		if(res.action == 'singkron_unit'){
+		if(res.action == 'get_mandatory_spending_link'){
+			_alert = false;
+			window.mandatory_spending = res.link;
+			window.open(mandatory_spending, '_blank');
+		}else if(res.action == 'singkron_unit'){
 			window.data_unit = res.renja_link;
 			if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
 				jQuery('#table_skpd tbody tr').map(function(i, b){
@@ -35,9 +39,12 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 					var id_skpd = td.find('ul.dropdown-menu li').eq(0).find('a').attr('onclick').split("'")[1];
 					id_skpd = id_skpd.split("'")[0];
 					if(td.eq(1).find('a').length == 0){
-						td.eq(1).append(' <a target="_blank" href="'+data_unit[id_skpd]+'?key='+config.api_key+'">Print RENJA</a>');
+						td.eq(1).append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[id_skpd]+'?key='+config.api_key+'">Print RENJA</a>');
 					}
 				});
+				if(jQuery('.m-l-10').find('a').length == 0){
+					jQuery('.m-l-10').append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[0]+'?key='+config.api_key+'">Print Semua RENJA</a>')
+				}
 			}
 		}else if(
 			res.action == 'base64_encrypt'

@@ -395,6 +395,16 @@ jQuery(document).ready(function(){
 				});
 			}
 		}
+	}else if(jQuery('h3.page-title').text().indexOf('Label (Tag) Sub Kegiatan') != -1){
+		console.log('halaman label tag mandatory spending!');
+		var print_mandatory_spending = ''
+			+'<button onclick="return false;" id="mandatory_spending_link" class="fcbtn btn btn-warning btn-outline btn-1b">'
+				+'<i class="fa fa-print m-r-5"></i> <span>PRINT Mandatory Spending</span>'
+			+'</button>';
+		jQuery('.tambah-kamus').closest('.pull-right').prepend(print_mandatory_spending);
+		jQuery('#mandatory_spending_link').on('click', function(){
+			get_mandatory_spending_link();
+		});
 	}else if(current_url.indexOf('main/budget/akun/'+config.tahun_anggaran) != -1){
 		console.log('halaman akun belanja');
 		var singkron_akun_belanja = ''
@@ -677,10 +687,10 @@ jQuery(document).ready(function(){
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_skpd_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron SKPD ke DB lokal</span>'
 			+'</button>'
-			+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="tampil_laporan_renja" style="margin-left: 20px;">'
+			+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="tampil_laporan_renja" style="margin-left: 3px;">'
 				+'<i class="fa fa-print m-r-5"></i> <span>Tampilkan Link Print RENJA</span>'
 			+'</button>';
-		jQuery('.button-box.pull-right.p-t-0').parent().prepend(singkron_skpd);
+		jQuery('.button-box.pull-right.p-t-0').prepend(singkron_skpd);
 		jQuery('#singkron_skpd_ke_lokal').on('click', function(){
 			singkron_skpd_ke_lokal();
 		});

@@ -2412,3 +2412,29 @@ function get_kode_from_rincian_page(opsi, kode_sbl){
 		}
 	});
 }
+
+function get_mandatory_spending_link(){
+	if(typeof mandatory_spending == 'undefined'){
+		var opsi = { 
+			action: 'get_mandatory_spending_link',
+			api_key: config.api_key,
+			tahun_anggaran : config.tahun_anggaran
+		};
+		var data = {
+		    message:{
+		        type: "get-url",
+		        content: {
+				    url: config.url_server_lokal,
+				    type: 'post',
+				    data: opsi,
+	    			return: true
+				}
+		    }
+		};
+		chrome.runtime.sendMessage(data, function(response) {
+		    console.log('responeMessage', response);
+		});
+	}else{
+		window.open(mandatory_spending, '_blank');
+	}
+}
