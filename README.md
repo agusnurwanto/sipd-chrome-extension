@@ -59,6 +59,7 @@ Semoga bermanfaat
 - Menampilkan tombol print lokal APBD Penjabaran lampiran 1,2,3,4,5,6
 - Print RENJA per OPD dan semua OPD di halaman Pengaturan > Profil > Perangkat Daerah
 - Print mandatory spending di halaman Pengaturan > Data > Label (Tag) Sub Kegiatan
+- Update status non active di database lokal jika ada sub kegiatan yang dihapus di SIPD
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki

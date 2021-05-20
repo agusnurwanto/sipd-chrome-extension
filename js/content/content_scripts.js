@@ -27,7 +27,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		var res = request.data;
 		var _alert = true;
 		var hide_loading = true;
-		if(res.action == 'get_mandatory_spending_link'){
+		if(res.action == 'update_nonactive_sub_bl'){
+			_alert = false;
+			hide_loading = false;
+			promise_nonactive[res.id_unit]();
+		}else if(res.action == 'get_mandatory_spending_link'){
 			_alert = false;
 			window.mandatory_spending = res.link;
 			window.open(mandatory_spending+'?key='+config.api_key, '_blank');

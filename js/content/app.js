@@ -1762,86 +1762,114 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 			    console.log('responeMessage', response);
 			});
 		}
-		var url_get_unit = lru8;
-		if(opsi_unit && opsi_unit.kode_get){
-			url_get_unit = opsi_unit.kode_get;
+
+		if(typeof promise_nonactive == 'undefined'){
+			window.promise_nonactive = {};
 		}
-		jQuery.ajax({
-			url: url_get_unit,
-			type: 'POST',
-			data: formData,
-			processData: false,
-			contentType: false,
-			success: function(subkeg){
-				var cat_wp = '';
-				var last = subkeg.data.length-1;
-				subkeg.data.reduce(function(sequence, nextData){
-                    return sequence.then(function(current_data){
-                		return new Promise(function(resolve_reduce, reject_reduce){
-                        	if(current_data.nama_sub_giat.mst_lock != 3 && current_data.kode_sub_skpd){
-                        		cat_wp = current_data.kode_sub_skpd+' '+current_data.nama_sub_skpd;
-                        		var nama_skpd = current_data.nama_skpd.split(' ');
-                        		nama_skpd.shift();
-                        		nama_skpd = nama_skpd.join(' ');
-								singkron_rka_ke_lokal({
-									id_unit: id_unit,
-									action: current_data.action,
-									kode_bl: current_data.kode_bl,
-									kode_sbl: current_data.kode_sbl,
-									idbl: current_data.id_bl,
-									idsubbl: current_data.id_sub_bl,
-									kode_skpd: current_data.kode_skpd,
-									nama_skpd: nama_skpd,
-									kode_sub_skpd: current_data.kode_sub_skpd,
-									pagu: current_data.pagu,
-									no_return: true
-								}, function(){
-									console.log('next reduce', nextData);
-									resolve_reduce(nextData);
-								});
-							}else{
-								resolve_reduce(nextData);
-							}
-		                })
-                        .catch(function(e){
-                            console.log(e);
-                            return Promise.resolve(nextData);
-                        });
-                    })
-                    .catch(function(e){
-                        console.log(e);
-                        return Promise.resolve(nextData);
-                    });
-                }, Promise.resolve(subkeg.data[last]))
-                .then(function(data_last){
-					if(callback){
-						return callback();
-					}else{
-	                	var opsi = { 
-							action: 'get_cat_url',
+		// ubah status sub_keg_bl jadi tidak aktif semua agar jika ada sub keg yang dihapus, sipd lokal bisa ikut terupdate
+		new Promise(function(resolve_reduce_nonactive, reject_reduce_nonactive){
+			promise_nonactive[id_unit] = resolve_reduce_nonactive;
+			var data = {
+			    message:{
+			        type: "get-url",
+			        content: {
+					    url: config.url_server_lokal,
+					    type: 'post',
+					    data: {
+					    	action: 'update_nonactive_sub_bl',
 							api_key: config.api_key,
-							category : cat_wp
-						};
-						var data = {
-						    message:{
-						        type: "get-url",
-						        content: {
-								    url: config.url_server_lokal,
-								    type: 'post',
-								    data: opsi,
-					    			return: true
-								}
-						    }
-						};
-						chrome.runtime.sendMessage(data, function(response) {
-						    console.log('responeMessage', response);
-						});
+							tahun_anggaran: config.tahun_anggaran,
+							id_unit: id_unit
+					    },
+		    			return: true
 					}
-                })
-                .catch(function(e){
-                    console.log(e);
-                });
+			    }
+			};
+			chrome.runtime.sendMessage(data, function(response) {
+			    console.log('responeMessage', response);
+			});
+		}).then(function(){
+			var url_get_unit = lru8;
+			if(opsi_unit && opsi_unit.kode_get){
+				url_get_unit = opsi_unit.kode_get;
 			}
+			jQuery.ajax({
+				url: url_get_unit,
+				type: 'POST',
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function(subkeg){
+					var cat_wp = '';
+					var last = subkeg.data.length-1;
+					subkeg.data.reduce(function(sequence, nextData){
+	                    return sequence.then(function(current_data){
+	                		return new Promise(function(resolve_reduce, reject_reduce){
+	                        	if(current_data.nama_sub_giat.mst_lock != 3 && current_data.kode_sub_skpd){
+	                        		cat_wp = current_data.kode_sub_skpd+' '+current_data.nama_sub_skpd;
+	                        		var nama_skpd = current_data.nama_skpd.split(' ');
+	                        		nama_skpd.shift();
+	                        		nama_skpd = nama_skpd.join(' ');
+									singkron_rka_ke_lokal({
+										id_unit: id_unit,
+										action: current_data.action,
+										kode_bl: current_data.kode_bl,
+										kode_sbl: current_data.kode_sbl,
+										idbl: current_data.id_bl,
+										idsubbl: current_data.id_sub_bl,
+										kode_skpd: current_data.kode_skpd,
+										nama_skpd: nama_skpd,
+										kode_sub_skpd: current_data.kode_sub_skpd,
+										pagu: current_data.pagu,
+										no_return: true
+									}, function(){
+										console.log('next reduce', nextData);
+										resolve_reduce(nextData);
+									});
+								}else{
+									resolve_reduce(nextData);
+								}
+			                })
+	                        .catch(function(e){
+	                            console.log(e);
+	                            return Promise.resolve(nextData);
+	                        });
+	                    })
+	                    .catch(function(e){
+	                        console.log(e);
+	                        return Promise.resolve(nextData);
+	                    });
+	                }, Promise.resolve(subkeg.data[last]))
+	                .then(function(data_last){
+						if(callback){
+							return callback();
+						}else{
+		                	var opsi = { 
+								action: 'get_cat_url',
+								api_key: config.api_key,
+								category : cat_wp
+							};
+							var data = {
+							    message:{
+							        type: "get-url",
+							        content: {
+									    url: config.url_server_lokal,
+									    type: 'post',
+									    data: opsi,
+						    			return: true
+									}
+							    }
+							};
+							chrome.runtime.sendMessage(data, function(response) {
+							    console.log('responeMessage', response);
+							});
+						}
+	                })
+	                .catch(function(e){
+	                    console.log(e);
+	                });
+				}
+			});
 		});
 	}
 }
