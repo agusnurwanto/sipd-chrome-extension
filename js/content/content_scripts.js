@@ -30,7 +30,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		if(res.action == 'get_mandatory_spending_link'){
 			_alert = false;
 			window.mandatory_spending = res.link;
-			window.open(mandatory_spending, '_blank');
+			window.open(mandatory_spending+'?key='+config.api_key, '_blank');
 		}else if(res.action == 'singkron_unit'){
 			window.data_unit = res.renja_link;
 			if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){

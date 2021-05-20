@@ -2435,6 +2435,6 @@ function get_mandatory_spending_link(){
 		    console.log('responeMessage', response);
 		});
 	}else{
-		window.open(mandatory_spending, '_blank');
+		window.open(mandatory_spending+'?key='+config.api_key, '_blank');
 	}
 }
