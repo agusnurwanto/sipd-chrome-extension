@@ -1611,7 +1611,7 @@ function singkron_skpd_ke_lokal(tampil_renja){
 				var id_skpd = td.find('ul.dropdown-menu li').eq(0).find('a').attr('onclick').split("'")[1];
 				id_skpd = id_skpd.split("'")[0];
 				if(td.eq(1).find('a').length == 0){
-					td.eq(1).append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[id_skpd]+'?key='+config.api_key+'">Print RENJA</a>');
+					td.eq(1).append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[id_skpd]+'?key='+config.api_key+'&rkpd=1">Print RENJA</a>');
 				}
 			});
 		}
