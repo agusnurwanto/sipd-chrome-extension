@@ -2198,10 +2198,14 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							                		// console.log('current_data', current_data);
 					                				var sendData = current_data.map(function(rka, i){
 														data_rka.rka[i] = rka;
-							                			if(rka.action == ''){
+							                			if(rka.action == '' && !config.sipd_private){
 							                				return Promise.resolve();
 							                			}else{
-							                				var kode_get_rka = rka.action.split("ubahKomponen('")[1].split("'")[0];
+							                				try{
+							                					var kode_get_rka = rka.action.split("ubahKomponen('")[1].split("'")[0];
+							                				}catch(e){
+							                					var kode_get_rka = false;
+							                				}
 															return getDetailRin(id_unit, kode_sbl, rka.id_rinci_sub_bl, 0, kode_get_rka).then(function(detail_rin){
 																if(detail_rin){
 																	data_rka.rka[i].id_prop_penerima = detail_rin.id_prop_penerima;
