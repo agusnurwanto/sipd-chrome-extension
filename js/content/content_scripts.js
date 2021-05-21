@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		}else if(res.action == 'get_mandatory_spending_link'){
 			_alert = false;
 			window.mandatory_spending = res.link;
-			window.open(mandatory_spending+'?key='+config.api_key, '_blank');
+			window.open(mandatory_spending+'?key='+get_key(), '_blank');
 		}else if(res.action == 'singkron_unit'){
 			window.data_unit = res.renja_link;
 			if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
@@ -43,11 +43,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 					var id_skpd = td.find('ul.dropdown-menu li').eq(0).find('a').attr('onclick').split("'")[1];
 					id_skpd = id_skpd.split("'")[0];
 					if(td.eq(1).find('a').length == 0){
-						td.eq(1).append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[id_skpd]+'?key='+config.api_key+'&rkpd=1">Print RENJA</a>');
+						td.eq(1).append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[id_skpd]+'?key='+get_key()+'&rkpd=1">Print RENJA</a>');
 					}
 				});
 				if(jQuery('.m-l-10').find('a').length == 0){
-					jQuery('.m-l-10').append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[0]+'?key='+config.api_key+'&rkpd=1">Print Semua RENJA</a>')
+					jQuery('.m-l-10').append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[0]+'?key='+get_key()+'&rkpd=1">Print Semua RENJA</a>')
 				}
 			}
 		}else if(

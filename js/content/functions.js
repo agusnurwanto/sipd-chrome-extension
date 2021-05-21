@@ -2220,14 +2220,14 @@ function set_link_laporan(res){
 		|| res.jenis == '6'
 	){
 	    var link = ''
-	        +'<a target="_blank" href="'+res.link+'?key='+config.api_key+'" class="set-lampiran apbd-penjabaran-lampiran btn btn-success pull-right" style="margin-right: 10px;">(LOCAL) '+res.text_link+'</a>';
+	        +'<a target="_blank" href="'+res.link+'?key='+get_key()+'" class="set-lampiran apbd-penjabaran-lampiran btn btn-success pull-right" style="margin-right: 10px;">(LOCAL) '+res.text_link+'</a>';
 	    jQuery('#mod-hist-jadwal .modal-header .btn-circle').after(link);
 	}else if(res.jenis == '2'){
 		jQuery('#table_unit tbody tr').map(function(i, b){
 			var tr = jQuery(b);
 			var id_skpd = tr.find('td').eq(1).find('a').attr('onclick').split("'")[7];
 			var data_link = res.link[id_skpd];
-			var local = '<a target="_blank" href="'+data_link.link+'?key='+config.api_key+'" class="set-lampiran apbd-penjabaran-lampiran btn btn-success link" style="margin-left: 10px;"><i class="fa fa-print fa-lg"></i> LOCAL</a>';
+			var local = '<a target="_blank" href="'+data_link.link+'?key='+get_key()+'" class="set-lampiran apbd-penjabaran-lampiran btn btn-success link" style="margin-left: 10px;"><i class="fa fa-print fa-lg"></i> LOCAL</a>';
 			if(tr.find('.link').length <= 0){
 				tr.find('.sorting_1').append(local);
 			}
@@ -2435,6 +2435,12 @@ function get_mandatory_spending_link(){
 		    console.log('responeMessage', response);
 		});
 	}else{
-		window.open(mandatory_spending+'?key='+config.api_key, '_blank');
+		window.open(mandatory_spending+'?key='+get_key(), '_blank');
 	}
+}
+
+function get_key(){
+	var now = new Date().getTime();
+	var key = btoa(now+config.api_key+now);
+	return key;
 }
