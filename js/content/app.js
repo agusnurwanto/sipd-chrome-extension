@@ -1427,7 +1427,9 @@ jQuery(document).ready(function(){
 			jQuery('#wrap-loading').show();
 			singkron_user_dewan_lokal();
 		});
-	 }else if(current_url.indexOf('/sipd/'+config.tahun_anggaran+'/setup/'+config.id_daerah+'/0') != -1){
+	}else if(
+	 	jQuery('.panel-heading').eq(0).text() == "Pengaturan SIPD"
+	){
 		console.log('halaman setup sipd');
 		var singkron_lokal = ''
 	        +'<div class="col-xs-9">'
