@@ -2435,7 +2435,7 @@ function get_mandatory_spending_link(){
 		    console.log('responeMessage', response);
 		});
 	}else{
-		window.open(mandatory_spending+'?key='+get_key(), '_blank');
+		window.open(mandatory_spending+'?key='+get_key()+'&rkpd=1', '_blank');
 	}
 }
 

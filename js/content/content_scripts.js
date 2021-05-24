@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		}else if(res.action == 'get_mandatory_spending_link'){
 			_alert = false;
 			window.mandatory_spending = res.link;
-			window.open(mandatory_spending+'?key='+get_key(), '_blank');
+			window.open(mandatory_spending+'?key='+get_key()+'&rkpd=1', '_blank');
 		}else if(res.action == 'singkron_unit'){
 			window.data_unit = res.renja_link;
 			if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
