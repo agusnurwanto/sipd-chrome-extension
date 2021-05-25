@@ -2200,7 +2200,14 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							                		// console.log('current_data', current_data);
 					                				var sendData = current_data.map(function(rka, i){
 														data_rka.rka[i] = rka;
-							                			if(rka.action == '' && !config.sipd_private){
+							                			if(
+							                				(
+							                					rka.id_rinci_sub_bl == null 
+							                					|| rka.id_rinci_sub_bl == '' 
+							                				) || (
+							                					rka.action == '' && !config.sipd_private
+							                				)
+							                			){
 							                				return Promise.resolve();
 							                			}else{
 							                				try{
