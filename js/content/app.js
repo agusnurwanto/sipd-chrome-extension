@@ -11,11 +11,15 @@ for(var i=0, l=_s.length; i<l; i++){
 		__script += ' '+_script;
 	}
 }
+__script = __script.replace(/let /g, '');
 eval(__script);
 console.log('__script', __script);
 
 if(typeof tokek == 'undefined'){
 	tokek = jQuery('input[name="_tawon"]').val();
+}
+if(typeof v1bnA1m == 'undefined'){
+	v1bnA1m = jQuery('.logos input[type="hidden"]').val();
 }
 
 window.formData = new FormData();
@@ -682,7 +686,9 @@ jQuery(document).ready(function(){
 				singkron_rka_ke_lokal_all();
 			}
 		});
-	}else if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
+	}else if(
+		jQuery('h3.page-title').text() == 'Pengaturan Perangkat Daerah'
+	){
 		var singkron_skpd = ''
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_skpd_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron SKPD ke DB lokal</span>'
@@ -1623,15 +1629,17 @@ function singkron_skpd_ke_lokal(tampil_renja){
 		jQuery('#wrap-loading').show();
 		var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 		jQuery.ajax({
-			url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/skpd/'+config.tahun_anggaran+'/tampil-skpd/'+config.id_daerah+'/'+id_unit,
-			type: 'get',
+			url: lru1,
+			type: 'post',
+			data: "_token="+tokek+"&v1bnA1m="+v1bnA1m,
 			success: function(unit){
 				var sendData = unit.data.map(function(b, i){
 					return new Promise(function(resolve, reject){
+						var url_detail = b.action.split("onclick=ubahSkpd('")[1].split("'")[0];
 	                	jQuery.ajax({
-				          	url: config.sipd_url+"daerah/main/"+get_type_jadwal()+"/skpd/"+config.tahun_anggaran+"/detil-skpd/"+config.id_daerah+"/0",
+				          	url: config.sipd_url+"daerah/main/?"+url_detail,
 				          	type: "post",
-				          	data: "_token="+tokek+'&idskpd='+b.id_skpd,
+				          	data: "_token="+tokek+"&v1bnA1m="+v1bnA1m,
 				          	success: function(data){
 				          		var data_unit = {
 				          			id_setup_unit : b.id_setup_unit,
