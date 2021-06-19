@@ -133,9 +133,89 @@ function loadUrl(url){
     });
 }
 
-function loadUnBlock(){
-    loadUrl("https://sipd.kemendagri.go.id/assets/js/dakron.js").then(function(js_script){
-        js_script = js_script.split('function Dengkul')[0];
-        dakron = js_script + "function Dengkul(_0x66b776){return Base64['decode'](_0x66b776);}";
+function loadUnBlock(url){
+    loadUrl(url).then(function(js_script){
+        js_script = js_script.replace(/#/g,'%23').replace(/console/g, 'donsole');
+        if(url.indexOf('dakron.js') != -1){
+            dakron = js_script;
+        }else if(url.indexOf('custom.min.js') != -1){
+            custom = js_script.replace(/contextmen/g, 'bontextmen');
+        }else if(url.indexOf('jquery.style2.js') != -1){
+            style2 = js_script;
+        }else if(url.indexOf('jquery.style3.js') != -1){
+            style3 = js_script;
+        }else if(url.indexOf('jquery.style4.js') != -1){
+            style4 = js_script;
+        }else if(url.indexOf('jquery.style5.js') != -1){
+            style5 = js_script;
+        }else if(url.indexOf('jquery.style6.js') != -1){
+            style6 = js_script;
+        }else if(url.indexOf('jquery.style7.js') != -1){
+            style7 = js_script;
+        }else if(url.indexOf('jquery.style8.js') != -1){
+            style8 = js_script;
+        }else if(url.indexOf('jquery.style9.js') != -1){
+            style9 = js_script;
+        }else if(url.indexOf('jquery.style10.js') != -1){
+            style10 = js_script;
+        }else if(url.indexOf('jquery.style11.js') != -1){
+            style11 = js_script;
+        }else if(url.indexOf('jquery.style12.js') != -1){
+            style12 = js_script;
+        }else if(url.indexOf('jquery.style13.js') != -1){
+            style13 = js_script;
+        }else if(url.indexOf('jquery.style14.js') != -1){
+            style14 = js_script;
+        }else if(url.indexOf('jquery.style15.js') != -1){
+            style15 = js_script;
+        }else if(url.indexOf('jquery.style16.js') != -1){
+            style16 = js_script;
+        }else if(url.indexOf('jquery.style17.js') != -1){
+            style17 = js_script;
+        }else if(url.indexOf('jquery.style18.js') != -1){
+            style18 = js_script;
+        }else if(url.indexOf('jquery.style19.js') != -1){
+            style19 = js_script;
+        }else if(url.indexOf('jquery.style20.js') != -1){
+            style20 = js_script;
+        }else if(url.indexOf('jquery.style21.js') != -1){
+            style21 = js_script;
+        }else if(url.indexOf('jquery.style22.js') != -1){
+            style22 = js_script;
+        }else if(url.indexOf('jquery.style23.js') != -1){
+            style23 = js_script;
+        }else if(url.indexOf('jquery.style24.js') != -1){
+            style24 = js_script;
+        }else if(url.indexOf('jquery.style25.js') != -1){
+            style25 = js_script;
+        }else if(url.indexOf('jquery.style26.js') != -1){
+            style26 = js_script;
+        }else if(url.indexOf('jquery.style27.js') != -1){
+            style27 = js_script;
+        }else if(url.indexOf('jquery.style28.js') != -1){
+            style28 = js_script;
+        }else if(url.indexOf('jquery.style29.js') != -1){
+            style29 = js_script;
+        }else if(url.indexOf('jquery.style30.js') != -1){
+            style30 = js_script;
+        }else if(url.indexOf('jquery.style31.js') != -1){
+            style31 = js_script;
+        }else if(url.indexOf('jquery.style32.js') != -1){
+            style32 = js_script;
+        }else if(url.indexOf('jquery.style33.js') != -1){
+            style33 = js_script;
+        }else if(url.indexOf('jquery.style34.js') != -1){
+            style34 = js_script;
+        }else if(url.indexOf('jquery.style35.js') != -1){
+            style35 = js_script;
+        }else if(url.indexOf('jquery.style36.js') != -1){
+            style36 = js_script;
+        }else if(url.indexOf('jquery.style37.js') != -1){
+            style37 = js_script;
+        }else if(url.indexOf('jquery.style38.js') != -1){
+            style38 = js_script;
+        }else if(url.indexOf('jquery.style39.js') != -1){
+            style39 = js_script;
+        }
     });
 }

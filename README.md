@@ -60,6 +60,7 @@ Semoga bermanfaat
 - Print RENJA per OPD dan semua OPD di halaman Pengaturan > Profil > Perangkat Daerah
 - Print mandatory spending di halaman Pengaturan > Data > Label (Tag) Sub Kegiatan
 - Update status non active di database lokal jika ada sub kegiatan yang dihapus di SIPD
+- Allow right click
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki
