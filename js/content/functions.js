@@ -2468,3 +2468,68 @@ function get_key(){
 	var key = btoa(now+config.api_key+now);
 	return key;
 }
+
+function singkron_akun_ke_lokal(){
+	if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+		jQuery('#wrap-loading').show();
+		jQuery.ajax({
+			url: lru1,
+			type: 'post',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function(data){
+				var data_akun = { 
+					action: 'singkron_akun_belanja',
+					tahun_anggaran: config.tahun_anggaran,
+					api_key: config.api_key,
+					akun : {}
+				};
+				data.data.map(function(akun, i){
+					// if(i<5){
+						data_akun.akun[i] = {};
+						data_akun.akun[i].belanja = akun.belanja;
+						data_akun.akun[i].id_akun = akun.id_akun;
+						data_akun.akun[i].is_bagi_hasil = akun.is_bagi_hasil;
+						data_akun.akun[i].is_bankeu_khusus = akun.is_bankeu_khusus;
+						data_akun.akun[i].is_bankeu_umum = akun.is_bankeu_umum;
+						data_akun.akun[i].is_barjas = akun.is_barjas;
+						data_akun.akun[i].is_bl = akun.is_bl;
+						data_akun.akun[i].is_bos = akun.is_bos;
+						data_akun.akun[i].is_btt = akun.is_btt;
+						data_akun.akun[i].is_bunga = akun.is_bunga;
+						data_akun.akun[i].is_gaji_asn = akun.is_gaji_asn;
+						data_akun.akun[i].is_hibah_brg = akun.is_hibah_brg;
+						data_akun.akun[i].is_hibah_uang = akun.is_hibah_uang;
+						data_akun.akun[i].is_locked = akun.is_locked;
+						data_akun.akun[i].is_modal_tanah = akun.is_modal_tanah;
+						data_akun.akun[i].is_pembiayaan = akun.is_pembiayaan;
+						data_akun.akun[i].is_pendapatan = akun.is_pendapatan;
+						data_akun.akun[i].is_sosial_brg = akun.is_sosial_brg;
+						data_akun.akun[i].is_sosial_uang = akun.is_sosial_uang;
+						data_akun.akun[i].is_subsidi = akun.is_subsidi;
+						data_akun.akun[i].kode_akun = akun.kode_akun;
+						data_akun.akun[i].nama_akun = akun.nama_akun;
+						data_akun.akun[i].set_input = akun.set_input;
+						data_akun.akun[i].set_lokus = akun.set_lokus;
+						data_akun.akun[i].status = akun.status;
+					// }
+				});
+				var data = {
+				    message:{
+				        type: "get-url",
+				        content: {
+						    url: config.url_server_lokal,
+						    type: 'post',
+						    data: data_akun,
+			    			return: true
+						}
+				    }
+				};
+				chrome.runtime.sendMessage(data, function(response) {
+				    console.log('responeMessage', response);
+				});
+			}
+		});
+	}
+}
