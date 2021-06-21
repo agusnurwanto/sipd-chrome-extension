@@ -25,7 +25,9 @@ if(typeof v1bnA1m == 'undefined'){
 window.formData = new FormData();
 if(typeof tokek != 'undefined'){
 	console.log('tokek', tokek);
+	console.log('v1bnA1m', v1bnA1m);
 	formData.append('_token', tokek);
+	formData.append('v1bnA1m', v1bnA1m);
 }
 
 var tahapan = jQuery('button[onclick="setFase()"]').text().trim();

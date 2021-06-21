@@ -2364,13 +2364,34 @@ function go_halaman_detail_rincian(options){
 function get_detail_skpd(id_unit){
 	return new Promise(function(resolve, reject){
 		if(typeof detail_skpd == 'undefined'){
+			var url_profile = jQuery('span.hide-menu:contains("Perangkat Daerah")').closest('a').attr('href');
+			console.log('url_profile', url_profile);
 			jQuery.ajax({
-				url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/skpd/'+config.tahun_anggaran+'/detil-skpd/'+config.id_daerah+'/'+id_unit,
-				type: 'post',
-				data: "_token="+tokek+'&idskpd='+id_unit,
-				success: function(data){
-					window.detail_skpd = data;
-					return resolve(data);
+				url: url_profile,
+				success: function(hal_profile){
+					var get_all_skpd = hal_profile.split('lru1="')[1].split('"')[0];
+					console.log('get_all_skpd', get_all_skpd);
+					jQuery.ajax({
+						url: get_all_skpd,
+						type: 'post',
+						data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
+						success: function(data_all_skpd){
+							data_all_skpd.data.map(function(b, i){
+								if(id_unit == b.id_skpd){
+									var url_detail_skpd = b.action.split("ubahSkpd('")[1].split("'")[0];
+									jQuery.ajax({
+										url: config.sipd_url+'daerah/main?'+url_detail_skpd,
+										type: 'post',
+										data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
+										success: function(data){
+											window.detail_skpd = data;
+											return resolve(data);
+										}
+									});
+								}
+							});
+						}
+					});
 				}
 			});
 		}else{
