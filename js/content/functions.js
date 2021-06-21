@@ -2366,6 +2366,9 @@ function get_detail_skpd(id_unit){
 		if(typeof detail_skpd == 'undefined'){
 			var url_profile = jQuery('span.hide-menu:contains("Perangkat Daerah")').closest('a').attr('href');
 			console.log('url_profile', url_profile);
+			if(typeof url_profile == 'undefined'){
+				return resolve(false);
+			}
 			jQuery.ajax({
 				url: url_profile,
 				success: function(hal_profile){
@@ -2421,7 +2424,7 @@ function get_kode_from_rincian_page(opsi, kode_sbl){
 									&& b.kode_sub_skpd
 									&& b.kode_sbl == kode_sbl
 								){
-									return resolve(b.action.split("detilGiat('")[1].split("'")[0]);
+									return resolve({ url: b.action.split("detilGiat('")[1].split("'")[0], data: b });
 								}
 							})
 						}

@@ -1921,9 +1921,17 @@ function singkron_rka_ke_lokal(opsi, callback) {
 		if((idbl && idsubbl) || kode_sbl){
 			// get detail SKPD
 			get_detail_skpd(id_unit).then(function(data_unit){
-				get_kode_from_rincian_page(opsi, kode_sbl).then(function(kode_get){
+				get_kode_from_rincian_page(opsi, kode_sbl).then(function(data_sbl){
 					if(opsi && opsi.action){
 						kode_get = opsi.action.split("detilGiat('")[1].split("'")[0];
+						data_sbl = { 
+							data: {
+								kode_sub_skpd : opsi.kode_sub_skpd,
+								nama_sub_skpd : opsi.nama_sub_skpd
+							}
+						}
+					}else{
+						kode_get = data_sbl.url;
 					}
 					// get detail indikator kegiatan
 					jQuery.ajax({
@@ -1958,9 +1966,15 @@ function singkron_rka_ke_lokal(opsi, callback) {
 								dataLokout: {},
 								dataOutputGiat: {},
 							};
-							for(var j in data_unit){
-								data_rka.data_unit[j] = data_unit[j];
+							if(!data_unit){
+								data_rka.data_unit.kodeunit = data_sbl.data.kode_sub_skpd;
+								data_rka.data_unit.namaunit = data_sbl.data.nama_sub_skpd;
+							}else{
+								for(var j in data_unit){
+									data_rka.data_unit[j] = data_unit[j];
+								}
 							}
+							console.log('data_unit', data_unit, data_rka.data_unit);
 							subkeg.dataOutputGiat.map(function(d, i){
 								data_rka.dataOutputGiat[i] = {};
 					            data_rka.dataOutputGiat[i].outputteks = d.outputteks;
