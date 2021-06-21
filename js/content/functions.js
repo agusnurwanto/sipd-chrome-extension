@@ -186,7 +186,7 @@ function getAllUnit(id_unit){
 				id_unit = 0;
 			};
 			var halumum = config.sipd_url+'daerah/main/budget/skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'/'+id_unit;
-			jQuery.ajax({
+			relayAjax({
 				url: halumum,
 				type: 'get',
 				success: function(html){
@@ -201,12 +201,12 @@ function getAllUnit(id_unit){
 					}
 					html = html.split('<body class="fix-header hide-sidebar">')[1].split('<script')[0];
 					var url_sub_keg = jQuery(html).find("span:contains('Sub Kegiatan Belanja')").closest('a').attr('href');
-					jQuery.ajax({
+					relayAjax({
 						url: url_sub_keg,
 						type: 'get',
 						success: function(html){
 							var tamu = html.split('tamu="')[1].split('"')[0];
-							jQuery.ajax({
+							relayAjax({
 								url: tamu,
 								type: 'post',
 								data: formData,
@@ -235,12 +235,12 @@ function getAllSubKeg(id_unit){
 				if(b.id_skpd == id_unit){
 					cek_id_unit = true;
 					if(!b.data_sub){
-						jQuery.ajax({
+						relayAjax({
 							url: config.sipd_url+'daerah/main?'+b.nama_skpd.sParam,
 							type: 'get',
 							success: function(html){
 								var url_sub_keg = html.split('lru8="')[1].split('"')[0];
-								jQuery.ajax({
+								relayAjax({
 									url: url_sub_keg,
 									type: 'post',
 									data: formData,
@@ -272,7 +272,7 @@ function getRincSubKeg(id_unit, kode_sbl){
 				if(b.kode_sbl == kode_sbl){
 					if(!b.data_rinc){
 						var url_sub_keg = b.action.split("href='main?")[1].split("'")[0];
-						jQuery.ajax({
+						relayAjax({
 							url: config.sipd_url+'daerah/main?'+url_sub_keg,
 							type: 'get',
 							success: function(html){
@@ -291,7 +291,7 @@ function getRincSubKeg(id_unit, kode_sbl){
 									lru13: html.split('lru13="')[1].split('"')[0]
 								};
 
-								jQuery.ajax({
+								relayAjax({
 									url: kode_get_rinci,
 									type: 'post',
 									data: formData,
@@ -331,7 +331,7 @@ function getDetailPenerima(kode_sbl, rek, nomor_lampiran){
 					var formDataCustom = new FormData();
 					formDataCustom.append('_token', tokek);
 					formDataCustom.append('skrim', Curut("rekening="+_rek));
-					jQuery.ajax({
+					relayAjax({
 						url: rincsub[kode_sbl].lru13,
 						type: 'post',
 						data: formDataCustom,
@@ -436,7 +436,7 @@ function getDetailRin(id_unit, kode_sbl, idbelanjarinci, nomor_lampiran, kode_ge
 		}else{
 			getKeyCariRinc(kode_get_rka, id_unit, kode_sbl, idbelanjarinci).then(function(kode_get_rka){
 				getToken().then(function(_token){
-					jQuery.ajax({
+					relayAjax({
 						// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/cari-rincian/'+config.id_daerah+'/'+id_unit,
 						url: config.sipd_url+'daerah/main?'+kode_get_rka,
 						type: 'POST',
@@ -495,7 +495,7 @@ function getKel(id_unit, id_prov, id_kab, id_kec, url){
 				var formDataCustom = new FormData();
 				formDataCustom.append('_token', tokek);
 				formDataCustom.append('skrim', Curut('idprop='+id_prov+'&idkokab='+id_kab+'&idcamat='+id_kec));
-				jQuery.ajax({
+				relayAjax({
 					// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-lurah/'+config.id_daerah+'/'+id_unit,
 					url: url,
 					type: 'post',
@@ -533,7 +533,7 @@ function getKec(id_unit, id_prov, id_kab, url){
 			formDataCustom.append('_token', tokek);
 			formDataCustom.append('skrim', Curut('idprop='+id_prov+'&idkokab='+id_kab));
 			getToken().then(function(_token){
-				jQuery.ajax({
+				relayAjax({
 					// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-camat/'+config.id_daerah+'/'+id_unit,
 					url: url,
 					type: 'post',
@@ -573,7 +573,7 @@ function getKab(id_unit, id_prov, url){
 			formDataCustom.append('_token', tokek);
 			formDataCustom.append('skrim', Curut('idprop='+id_prov));
 			getToken().then(function(_token){
-				jQuery.ajax({
+				relayAjax({
 					// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-kab-kota/'+config.id_daerah+'/'+id_unit,
 					url: url,
 					type: 'post',
@@ -610,7 +610,7 @@ function getProv(id_unit, url){
 	return new Promise(function(resolve, reject){
 		if(typeof(alamat) == 'undefined'){
 			getToken().then(function(_token){
-				jQuery.ajax({
+				relayAjax({
 					// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-provinsi/'+config.id_daerah+'/'+id_unit,
 					url: url,
 					type: 'post',
@@ -646,7 +646,7 @@ function getToken(){
 		if(typeof(tokenSCE) == 'undefined'){
 			var token = tokek;
 			if(!token){
-				jQuery.ajax({
+				relayAjax({
 					url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/dashboard/'+config.tahun_anggaran+'/unit/'+config.id_daerah+'/0',
 					type: 'get',
 					success: function(html){
@@ -725,7 +725,7 @@ function getMultiAkunByJenisBl(jenis_bls, id_unit, kode_sbl, jenis_akun){
 			});
 			new Promise(function(resolve2, reject2){
 				if(!akunBl['all-akun']){
-					jQuery.ajax({
+					relayAjax({
 						url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/akun/'+config.tahun_anggaran+'/tampil-akun/'+config.id_daerah+'/0',
 						type: 'get',
 						success: function(ret){
@@ -762,7 +762,7 @@ function getAkunByJenisBl(jenis_bl, id_unit, kode_sbl){
 				var formDataCustom = new FormData();
 				formDataCustom.append('_token', tokek);
 				formDataCustom.append('skrim', Curut('komponenkel='+jenis_bl));
-				jQuery.ajax({
+				relayAjax({
 					url: rincsub[kode_sbl].lru3,
 					type: 'post',
 					data: formDataCustom,
@@ -1059,7 +1059,7 @@ function tampil_alamat_rka(kode_sub, tr_all, callback){
 	if(!kode_sub){
 		kode_sub = jQuery('table[cellpadding="2"]').eq(0).find('tr').eq(5).find('td').eq(2).html().split('&nbsp;')[0];
 	}
-	jQuery.ajax({
+	relayAjax({
 		url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/giat/tampil-giat/'+config.id_daerah+'/'+id_unit,
 		type: 'get',
 		success: function(subkeg){
@@ -1224,7 +1224,7 @@ function tampil_alamat_rka(kode_sub, tr_all, callback){
 
 function hapusKomponen(kodesbl,idblrinci){
 	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
-    jQuery.ajax({
+    relayAjax({
       	url: '../../hapus-rincian/'+config.id_daerah+'/'+id_unit,
       	type: "POST",
       	data:{
@@ -1232,7 +1232,7 @@ function hapusKomponen(kodesbl,idblrinci){
       		"skrim":CR64('kodesbl='+kodesbl+'&idbelanjarinci='+idblrinci+'&jeniskk=0')
       	},
       	success: function(data){
-          	jQuery.ajax({
+          	relayAjax({
 	            url: "../../refresh-belanja/"+config.id_daerah+"/"+id_unit,
 	            type: "post",
 	            data:{"_token":tokek,"kodesbl":kodesbl},
@@ -1255,7 +1255,7 @@ function hapusKomponen(kodesbl,idblrinci){
 }
 
 function singkron_user_deskel_lokal(){
-	jQuery.ajax({
+	relayAjax({
       	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/kel-desa/tampil/'+config.id_daerah+'/0',
       	type: "GET",
       	success: function(desa){
@@ -1339,7 +1339,7 @@ function singkron_user_deskel_lokal(){
 							    resolve_reduce(nextData);
 							});
             			}else{
-            				jQuery.ajax({
+            				relayAjax({
 						      	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/kel-desa/detil/'+config.id_daerah+'/0',
 						      	type: "POST",
 	            				data:{"_token":tokek,"idxuser":current_data.id_user},
@@ -1419,7 +1419,7 @@ function singkron_user_deskel_lokal(){
 }
 
 function singkron_user_dewan_lokal(){
-	jQuery.ajax({
+	relayAjax({
       	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/anggota-dewan/tampil/'+config.id_daerah+'/0',
       	type: "GET",
       	success: function(dewan){
@@ -1427,7 +1427,7 @@ function singkron_user_dewan_lokal(){
       		dewan.data.reduce(function(sequence, nextData){
                 return sequence.then(function(current_data){
             		return new Promise(function(resolve_reduce, reject_reduce){
-            			jQuery.ajax({
+            			relayAjax({
 					      	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/kel-desa/detil/'+config.id_daerah+'/0',
 					      	type: "POST",
             				data:{"_token":tokek,"idxuser":current_data.id_user},
@@ -1530,12 +1530,12 @@ function detil_analisis_belanja(){
 	data_link_akun.reduce(function(sequence, nextData){
         return sequence.then(function(current_data){
     		return new Promise(function(resolve_reduce, reject_reduce){
-				jQuery.ajax({
+				relayAjax({
 			      	url: current_data.url,
 			      	type: "GET",
 			      	success: function(html){
 			      		var link = html.split("budget/analisis/"+config.tahun_anggaran+"/bl/tampil-akun/"+config.id_daerah+"/0")[1].split("'");
-			      		jQuery.ajax({
+			      		relayAjax({
 					      	url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/analisis/'+config.tahun_anggaran+'/bl/tampil-akun/'+config.id_daerah+'/0'+link,
 					      	type: "GET",
 					      	success: function(akun){
@@ -1604,7 +1604,7 @@ function singkron_pengaturan_sipd_lokal(){
 function singkron_renstra_lokal(){
 	jQuery('#wrap-loading').show();
 	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
-	jQuery.ajax({
+	relayAjax({
       	url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/renstra/'+config.tahun_anggaran+'/tampil-renstra/'+config.id_daerah+'/'+id_unit+'?filter_program=&filter_indi_prog=&filter_giat=&filter_skpd=',
       	type: "GET",
       	contentType: 'application/json',
@@ -1687,7 +1687,7 @@ function singkron_renstra_lokal(){
 
 function singkron_asmas_lokal(){
 	jQuery('#wrap-loading').show();
-	jQuery.ajax({
+	relayAjax({
       	url: lru6,
       	type: "POST",
 		data: formData,
@@ -1839,7 +1839,7 @@ function singkron_asmas_lokal(){
 
 function get_detail_asmas(idusulan){
     return new Promise(function(resolve, reject){
-		jQuery.ajax({
+		relayAjax({
 	      	url: endog+'?'+idusulan,
 	      	type: "POST",
 			data: formData,
@@ -1854,7 +1854,7 @@ function get_detail_asmas(idusulan){
 
 function singkron_pokir_lokal(){
 	jQuery('#wrap-loading').show();
-	jQuery.ajax({
+	relayAjax({
       	url: window.location.href.replace(config.tahun_anggaran+'/', config.tahun_anggaran+'/tampil-monitor/'),
       	type: "GET",
 		processData: false,
@@ -1998,7 +1998,7 @@ function get_detail_pokir(idusulan){
     	var formDataCustom = new FormData();
 		formDataCustom.append('_token', tokek);
 		formDataCustom.append('idusulan', idusulan);
-		jQuery.ajax({
+		relayAjax({
 	      	url: window.location.href.replace(config.tahun_anggaran+'/', config.tahun_anggaran+'/detil-usulan/'),
 	      	type: "POST",
 			data: formDataCustom,
@@ -2014,7 +2014,7 @@ function get_detail_pokir(idusulan){
 function singkron_pendapatan_lokal(){
 	jQuery('#wrap-loading').show();
 	var id_unit = idune;
-	jQuery.ajax({
+	relayAjax({
       	url: lru2,
       	type: "POST",
 		data: formData,
@@ -2071,7 +2071,7 @@ function singkron_pendapatan_lokal(){
 function singkron_pembiayaan_lokal(type){
 	jQuery('#wrap-loading').show();
 	var id_unit = idune;
-	jQuery.ajax({
+	relayAjax({
       	url: lru2,
       	type: "POST",
 		data: formData,
@@ -2346,7 +2346,7 @@ function go_halaman_detail_rincian(options){
 		if(!options.go_rinci){
 			return resolve(options.kode);
 		}else{
-			jQuery.ajax({
+			relayAjax({
 				url: options.kode,
 				success: function(html){
 					var kode_get_rinci = html.split('lru1="')[1].split('"')[0];
@@ -2369,12 +2369,12 @@ function get_detail_skpd(id_unit){
 			if(typeof url_profile == 'undefined'){
 				return resolve(false);
 			}
-			jQuery.ajax({
+			relayAjax({
 				url: url_profile,
 				success: function(hal_profile){
 					var get_all_skpd = hal_profile.split('lru1="')[1].split('"')[0];
 					console.log('get_all_skpd', get_all_skpd);
-					jQuery.ajax({
+					relayAjax({
 						url: get_all_skpd,
 						type: 'post',
 						data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
@@ -2382,7 +2382,7 @@ function get_detail_skpd(id_unit){
 							data_all_skpd.data.map(function(b, i){
 								if(id_unit == b.id_skpd){
 									var url_detail_skpd = b.action.split("ubahSkpd('")[1].split("'")[0];
-									jQuery.ajax({
+									relayAjax({
 										url: config.sipd_url+'daerah/main?'+url_detail_skpd,
 										type: 'post',
 										data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
@@ -2407,11 +2407,11 @@ function get_kode_from_rincian_page(opsi, kode_sbl){
 	return new Promise(function(resolve, reject){
 		if(!opsi || !opsi.kode_bl){
 			var url_sub_keg = jQuery('.white-box .p-b-20 .btn-circle').attr('href');
-			jQuery.ajax({
+			relayAjax({
 				url: url_sub_keg,
 				success: function(html){
 					var url_list_sub = html.split('lru8="')[1].split('"')[0];
-					jQuery.ajax({
+					relayAjax({
 						url: url_list_sub,
 						type: 'POST',
 						data: formData,
@@ -2469,10 +2469,25 @@ function get_key(){
 	return key;
 }
 
+function relayAjax(options, retries=20, delay=30000, timeout=90000){
+	options.timeout = timeout;
+    jQuery.ajax(options)
+    .fail(function(){
+        if (retries > 0) {
+            console.log('Koneksi error. Coba lagi '+retries);
+            setTimeout(function(){ 
+                relayAjax(options, --retries, delay, timeout);
+            },delay);
+        } else {
+            alert('Capek. Sudah dicoba berkali-kali error terus. Maaf, berhenti mencoba.');
+        }
+    });
+}
+
 function singkron_akun_ke_lokal(){
 	if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
 		jQuery('#wrap-loading').show();
-		jQuery.ajax({
+		relayAjax({
 			url: lru1,
 			type: 'post',
 			data: formData,
