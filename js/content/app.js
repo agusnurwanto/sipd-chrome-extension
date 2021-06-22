@@ -109,7 +109,7 @@ jQuery(document).ready(function(){
 		jQuery('button.arsip-komponen').parent().prepend(singkron_ssh);
 		var _show_id_ssh = ''
 			+'<button onclick="return false;" class="fcbtn btn btn-warning btn-outline btn-1b" id="show_id_ssh">'
-				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan ID Standar Harga</span>'
+				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan Link Akun Standar Harga</span>'
 			+'</button>';
 		jQuery('#table_komponen').closest('form').prepend(_show_id_ssh);
 		if(document.getElementsByClassName('tambah-komponen').length){ 
@@ -171,7 +171,8 @@ jQuery(document).ready(function(){
 				          	type: "post",
 				          	data: {
 				          		"_token":tokek,
-				          		"skrim":Curut(jQuery('#formtambahkompakun').serialize())
+				          		"v1bnA1m": v1bnA1m,
+				          		"DsK121m":C3rYDq(jQuery('#formtambahkompakun').serialize())
 				          	},
 				          	success: function(data){
 								return resolve(val);
@@ -234,14 +235,18 @@ jQuery(document).ready(function(){
 				 	if(id){
 					 	id = id.split("'")[1];
 					 	var nama = jQuery(b).find('td').eq(2);
-					 	nama.html('( '+id+' ) '+nama.html());
+					 	if(nama.find('.link-detail-ssh').length == 0){
+					 		nama.html('( <span class="link-detail-ssh">'+id+'</span> ) '+nama.html());
+					 	}
 					 }
 				}else{
 			 		var id = jQuery(b).find('td').eq(6).find('a').attr('onclick');
 				 	if(id){
 					 	id = id.split("'")[1];
 					 	var nama = jQuery(b).find('td').eq(1);
-					 	nama.html('( '+id+' ) '+nama.html());
+					 	if(nama.find('.link-detail-ssh').length == 0){
+					 		nama.html('( <span class="link-detail-ssh">'+id+'</span> ) '+nama.html());
+					 	}
 					 }
 				}
 			});
@@ -401,7 +406,9 @@ jQuery(document).ready(function(){
 				});
 			}
 		}
-	}else if(jQuery('h3.page-title').text().indexOf('Label (Tag) Sub Kegiatan') != -1){
+	}else if(
+		jQuery('h3.page-title').text().indexOf('Label (Tag) Sub Kegiatan') != -1
+	){
 		console.log('halaman label tag mandatory spending!');
 		var print_mandatory_spending = ''
 			+'<button onclick="return false;" id="mandatory_spending_link" class="fcbtn btn btn-warning btn-outline btn-1b">'
