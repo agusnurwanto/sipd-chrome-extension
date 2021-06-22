@@ -2548,3 +2548,110 @@ function singkron_akun_ke_lokal(){
 		});
 	}
 }
+
+function singkron_data_giat_lokal() {
+    if (confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')) {
+        jQuery('#wrap-loading').show();
+        relayAjax({
+            url: lru1,
+            type: 'post',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                var data_prog_keg = {
+                    action: 'singkron_data_giat',
+                    tahun_anggaran: config.tahun_anggaran,
+                    api_key: config.api_key,
+                    subgiat: {}
+                };
+                data.data.map(function (subgiat, i) {
+                    data_prog_keg.subgiat[i] = {};
+                    data_prog_keg.subgiat[i].id_bidang_urusan = subgiat.id_bidang_urusan;
+                    data_prog_keg.subgiat[i].id_program = subgiat.id_program;
+                    data_prog_keg.subgiat[i].id_sub_giat = subgiat.id_sub_giat
+                    data_prog_keg.subgiat[i].id_urusan = subgiat.id_urusan
+                    data_prog_keg.subgiat[i].is_locked = subgiat.is_locked
+                    data_prog_keg.subgiat[i].kode_bidang_urusan = subgiat.kode_bidang_urusan
+                    data_prog_keg.subgiat[i].kode_giat = subgiat.kode_giat
+                    data_prog_keg.subgiat[i].kode_program = subgiat.kode_program
+                    data_prog_keg.subgiat[i].kode_sub_giat = subgiat.kode_sub_giat
+                    data_prog_keg.subgiat[i].kode_urusan = subgiat.kode_urusan
+                    data_prog_keg.subgiat[i].nama_bidang_urusan = subgiat.nama_bidang_urusan
+                    data_prog_keg.subgiat[i].nama_giat = subgiat.nama_giat
+                    data_prog_keg.subgiat[i].nama_program = subgiat.nama_program
+                    data_prog_keg.subgiat[i].nama_sub_giat = subgiat.nama_sub_giat
+                    data_prog_keg.subgiat[i].nama_urusan = subgiat.nama_urusan
+                    data_prog_keg.subgiat[i].status = subgiat.status
+
+                })
+                var data = {
+                    message: {
+                        type: "get-url",
+                        content: {
+                            url: config.url_server_lokal,
+                            type: 'post',
+                            data: data_prog_keg,
+                            return: true
+                        }
+                    }
+                };
+                chrome.runtime.sendMessage(data, function (response) {
+                    console.log('responeMessage', response);
+                });
+            }
+        })
+    }
+}
+
+function singkron_sumber_dana_lokal() {
+    if (confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')) {
+        jQuery('#wrap-loading').show();
+        var id_unit = window.location.href.split('?')[0].split('' + config.id_daerah + '/')[1];
+        relayAjax({
+            url: lru1,
+            type: 'post',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                var data_sumber_dana = {
+                    action: 'singkron_sumber_dana',
+                    tahun_anggaran: config.tahun_anggaran,
+                    api_key: config.api_key,
+                    dana: {}
+                };
+                data.data.map(function (dana, i) {
+                    data_sumber_dana.dana[i] = {};
+                    data_sumber_dana.dana[i].created_at = dana.created_at
+                    data_sumber_dana.dana[i].created_user = dana.created_user
+                    data_sumber_dana.dana[i].id_daerah = dana.id_daerah
+                    data_sumber_dana.dana[i].id_dana = dana.id_dana
+                    data_sumber_dana.dana[i].id_unik = dana.id_unik
+                    data_sumber_dana.dana[i].is_locked = dana.is_locked
+                    data_sumber_dana.dana[i].kode_dana = dana.kode_dana
+                    data_sumber_dana.dana[i].nama_dana = dana.nama_dana
+                    data_sumber_dana.dana[i].set_input = dana.set_input
+                    data_sumber_dana.dana[i].status = dana.status
+                    data_sumber_dana.dana[i].tahun = dana.tahun
+                    data_sumber_dana.dana[i].updated_at = dana.updated_at
+                    data_sumber_dana.dana[i].updated_user = dana.updated_user
+                })
+                var data = {
+                    message: {
+                        type: "get-url",
+                        content: {
+                            url: config.url_server_lokal,
+                            type: 'post',
+                            data: data_sumber_dana,
+                            return: true
+                        }
+                    }
+                };
+                chrome.runtime.sendMessage(data, function (response) {
+                    console.log('responeMessage', response);
+                });
+            }
+        })
+    }
+}
