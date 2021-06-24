@@ -1779,6 +1779,8 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 										kode_skpd: current_data.kode_skpd,
 										nama_skpd: nama_skpd,
 										kode_sub_skpd: current_data.kode_sub_skpd,
+										nama_sub_skpd: current_data.nama_sub_skpd,
+										pagumurni: current_data.pagumurni,
 										pagu: current_data.pagu,
 										no_return: true
 									}, function(){
@@ -1873,6 +1875,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 						kode_get = opsi.action.split("detilGiat('")[1].split("'")[0];
 						data_sbl = { 
 							data: {
+								pagumurni : opsi.pagumurni,
 								kode_sub_skpd : opsi.kode_sub_skpd,
 								nama_sub_skpd : opsi.nama_sub_skpd
 							}
@@ -1880,6 +1883,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 					}else{
 						kode_get = data_sbl.url;
 					}
+					
 					// get detail indikator kegiatan
 					relayAjax({
 						url: endog+'?'+kode_get,
@@ -2006,6 +2010,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 					            data_rka.dataBl[i].no_giat = d.no_giat;
 					            data_rka.dataBl[i].id_label_prov = d.id_label_prov;
 					            data_rka.dataBl[i].waktu_awal = d.waktu_awal;
+					            data_rka.dataBl[i].pagumurni = data_sbl.data.pagumurni;
 					            data_rka.dataBl[i].pagu = d.pagu;
 					            data_rka.dataBl[i].output_sub_giat = d.output_sub_giat;
 					            data_rka.dataBl[i].sasaran = d.sasaran;
