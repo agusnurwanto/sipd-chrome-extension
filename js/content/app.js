@@ -1190,100 +1190,123 @@ jQuery(document).ready(function(){
 	// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD penjabaran)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/2/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
-		var bidang_urusan = {};
-		var skpd = {};
-		jQuery('table[cellpadding="3"]>tbody tr').map(function(i, b){
-			var td = jQuery(b).find('td');
-			var urusan = td.eq(0).text().trim();
-			if(isNaN(urusan)){
-				return;
-			}
-			var bidang = td.eq(1).text().trim();
-			var nama = td.eq(3).text().trim();
-			if(!bidang_urusan[urusan]){
-				bidang_urusan = {};
-				bidang_urusan[urusan] = {
-					nama: nama
-				};
-			}
-			if(bidang && !bidang_urusan[urusan][bidang]){
-				bidang_urusan[urusan] = {
-					nama: bidang_urusan[urusan].nama
-				};
-				bidang_urusan[urusan][bidang] = {
-					nama: nama
-				};
-			}
-			var kode_unit = td.eq(2).text().trim();
-			if(kode_unit){
-				var kodes = kode_unit.split('.');
-				var cek = false;
-				if(bidang_urusan[kodes[0]] && bidang_urusan[kodes[0]][kodes[1]]){
-					cek = true;
-				}else if(bidang_urusan[kodes[2]] && bidang_urusan[kodes[2]][kodes[3]]){
-					cek = true;
-				}else if(bidang_urusan[kodes[4]] && bidang_urusan[kodes[4]][kodes[5]]){
-					cek = true;
+		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+		if(jQuery('td[colspan="17"]').eq(1).text().indexOf('PENJABARAN') != -1){
+			console.log('Lampiran 2 APBD penjabaran');
+			jQuery('td[colspan="17"]').eq(0).attr('contenteditable', true);
+			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
+			var hapus_header = ''
+				+'<div class="text_tengah" style="margin-top: 20px">'
+					+'<label><input type="checkbox" id="hilang_header"> Hilangkan header & TTD</label>'
+				+'</div>';
+			jQuery('#action-sipd').append(hapus_header);
+			jQuery('#hilang_header').on('click', function(){
+				if(jQuery(this).is(':checked') == true){
+					jQuery('td[colspan="17"]').eq(0).hide();
+					jQuery('td[colspan="17"]').eq(1).hide();
+					jQuery('td.text_tengah.text_15').closest('table').hide();
+				}else{
+					jQuery('td[colspan="17"]').eq(0).show();
+					jQuery('td[colspan="17"]').eq(1).show();
+					jQuery('td.text_tengah.text_15').closest('table').show();
 				}
-				if(!cek){
-					console.log('bidang_urusan', bidang_urusan);
-					if(!skpd[kode_unit]){
-						skpd[kode_unit] = {
-							nama: nama
-						};
+			});
+		}else{
+			console.log('Lampiran 2 APBD perda');
+			var bidang_urusan = {};
+			var skpd = {};
+			jQuery('table[cellpadding="3"]>tbody tr').map(function(i, b){
+				var td = jQuery(b).find('td');
+				var urusan = td.eq(0).text().trim();
+				if(isNaN(urusan)){
+					return;
+				}
+				var bidang = td.eq(1).text().trim();
+				var nama = td.eq(3).text().trim();
+				if(!bidang_urusan[urusan]){
+					bidang_urusan = {};
+					bidang_urusan[urusan] = {
+						nama: nama
+					};
+				}
+				if(bidang && !bidang_urusan[urusan][bidang]){
+					bidang_urusan[urusan] = {
+						nama: bidang_urusan[urusan].nama
+					};
+					bidang_urusan[urusan][bidang] = {
+						nama: nama
+					};
+				}
+				var kode_unit = td.eq(2).text().trim();
+				if(kode_unit){
+					var kodes = kode_unit.split('.');
+					var cek = false;
+					if(bidang_urusan[kodes[0]] && bidang_urusan[kodes[0]][kodes[1]]){
+						cek = true;
+					}else if(bidang_urusan[kodes[2]] && bidang_urusan[kodes[2]][kodes[3]]){
+						cek = true;
+					}else if(bidang_urusan[kodes[4]] && bidang_urusan[kodes[4]][kodes[5]]){
+						cek = true;
 					}
-					if(!skpd[kode_unit][urusan]){
-						skpd[kode_unit][urusan] = {
-							nama: bidang_urusan[urusan].nama
-						};
-					}
-					if(!skpd[kode_unit][urusan][bidang]){
-						skpd[kode_unit][urusan][bidang] = {
-							nama: bidang_urusan[urusan][bidang].nama
+					if(!cek){
+						console.log('bidang_urusan', bidang_urusan);
+						if(!skpd[kode_unit]){
+							skpd[kode_unit] = {
+								nama: nama
+							};
+						}
+						if(!skpd[kode_unit][urusan]){
+							skpd[kode_unit][urusan] = {
+								nama: bidang_urusan[urusan].nama
+							};
+						}
+						if(!skpd[kode_unit][urusan][bidang]){
+							skpd[kode_unit][urusan][bidang] = {
+								nama: bidang_urusan[urusan][bidang].nama
+							}
 						}
 					}
 				}
-			}
-		});
-		// console.log('skpd', skpd);
-		var lintas_urusan = '';
-		var no = 0;
-		for(var i in skpd){
-			if(i=='nama'){ continue; }
-			for(var j in skpd[i]){
-				if(j=='nama'){ continue; }
-				for(var k in skpd[i][j]){
-					if(k=='nama'){ continue; }
-					no++;
-					lintas_urusan += ''
-						+'<tr>'
-							+'<td>'+no+'</td>'
-							+'<td class="text_kiri">'+skpd[i].nama+'</td>'
-							+'<td class="text_kiri">'+skpd[i][j].nama+'</td>'
-							+'<td class="text_kiri">'+skpd[i][j][k].nama+'</td>'
-						+'</tr>';
+			});
+			// console.log('skpd', skpd);
+			var lintas_urusan = '';
+			var no = 0;
+			for(var i in skpd){
+				if(i=='nama'){ continue; }
+				for(var j in skpd[i]){
+					if(j=='nama'){ continue; }
+					for(var k in skpd[i][j]){
+						if(k=='nama'){ continue; }
+						no++;
+						lintas_urusan += ''
+							+'<tr>'
+								+'<td>'+no+'</td>'
+								+'<td class="text_kiri">'+skpd[i].nama+'</td>'
+								+'<td class="text_kiri">'+skpd[i][j].nama+'</td>'
+								+'<td class="text_kiri">'+skpd[i][j][k].nama+'</td>'
+							+'</tr>';
+					}
 				}
-			}
-		};
-		var skpd_lintas_urusan = ''
-			+'<table class="border-table-sce">'
-				+'<thead>'
-					+'<tr>'
-						+'<th colspan="4">Data SKPD Lintas Urusan</th>'
-					+'</tr>'
-					+'<tr>'
-						+'<th>No</th>'
-						+'<th>SKPD</th>'
-						+'<th>Urusan</th>'
-						+'<th>Bidang</th>'
-					+'</tr>'
-				+'</thead>'
-				+'<tbody>'
-					+lintas_urusan
-				+'</tbody>'
-			+'</table>';
-		jQuery('#action-sipd').prepend(skpd_lintas_urusan);
-		ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
+			};
+			var skpd_lintas_urusan = ''
+				+'<table class="border-table-sce">'
+					+'<thead>'
+						+'<tr>'
+							+'<th colspan="4">Data SKPD Lintas Urusan</th>'
+						+'</tr>'
+						+'<tr>'
+							+'<th>No</th>'
+							+'<th>SKPD</th>'
+							+'<th>Urusan</th>'
+							+'<th>Bidang</th>'
+						+'</tr>'
+					+'</thead>'
+					+'<tbody>'
+						+lintas_urusan
+					+'</tbody>'
+				+'</table>';
+			jQuery('#action-sipd').prepend(skpd_lintas_urusan);
+		}
 	// RINGKASAN APBD YANG DIKLASIFIKASI MENURUT KELOMPOK DAN JENIS PENDAPATAN, BELANJA, DAN PEMBIAYAAN (APBD perda)
 	// RINGKASAN PENJABARAN APBD YANG DIKLASIFIKASI MENURUT KELOMPOK DAN JENIS PENDAPATAN, BELANJA, DAN PEMBIAYAAN (APBD penjabaran)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/1/'+config.id_daerah+'/setunit') != -1){
@@ -1478,7 +1501,7 @@ jQuery(document).ready(function(){
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="tampil_apbd_penjabaran">'
 				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan URL Laporan Lokal</span>'
 			+'</button>';
-		jQuery('.p-b-20 .col-md-2').append(tampil_apbd_penjabaran);
+		jQuery('.p-b-20 .col-md-10').append(tampil_apbd_penjabaran);
 		jQuery('#tampil_apbd_penjabaran').on('click', function(){
 			setLampiran('apbd', 'perkada', '2');
 		});

@@ -20,7 +20,7 @@ var config = {
 		nip: "12343464575653",
 		jabatan: "Kepala BPPKAD",
 	}], // nama tim TAPD dalam bentuk array dan object maksimal 8 orang sesuai format SIPD
-	tgl_rka : "auto", // pilihan nilai default "auto"=auto generate, false=fitur dimatikan, "isi tanggal sendiri"=tanggal ini akan muncul sebagai nilai default dan bisa diedit
+	tgl_rka : "false", // pilihan nilai default "auto"=auto generate, false=fitur dimatikan, "isi tanggal sendiri"=tanggal ini akan muncul sebagai nilai default dan bisa diedit
 	nama_daerah : "Magetan", // akan tampil sebelum tgl_rka
 	kepala_daerah : "Bapak / Ibu xxx xx.xx", // akan tampil di lampiran perda
 	replace_logo : false, // jika nilai true maka akan mengganti logo di SIPD dengan logo di file img/logo.png
