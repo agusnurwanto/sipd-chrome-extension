@@ -1195,12 +1195,18 @@ jQuery(document).ready(function(){
 			console.log('Lampiran 2 APBD penjabaran');
 			jQuery('td[colspan="17"]').eq(0).attr('contenteditable', true);
 			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
+			jQuery('td[colspan="17"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+			jQuery('td[colspan="17"]').parent().appendTo('#custom tbody');
 			var hapus_header = ''
 				+'<div class="text_tengah" style="margin-top: 20px">'
 					+'<label><input type="checkbox" id="hilang_header"> Hilangkan header & TTD</label>'
+					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_header_aja"> Hilangkan header</label>'
+					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_ttd"> Hilangkan TTD</label>'
 				+'</div>';
 			jQuery('#action-sipd').append(hapus_header);
 			jQuery('#hilang_header').on('click', function(){
+				jQuery('#hilang_header_aja').prop('checked', false);
+				jQuery('#hilang_ttd').prop('checked', false);
 				if(jQuery(this).is(':checked') == true){
 					jQuery('td[colspan="17"]').eq(0).hide();
 					jQuery('td[colspan="17"]').eq(1).hide();
@@ -1208,6 +1214,24 @@ jQuery(document).ready(function(){
 				}else{
 					jQuery('td[colspan="17"]').eq(0).show();
 					jQuery('td[colspan="17"]').eq(1).show();
+					jQuery('td.text_tengah.text_15').closest('table').show();
+				}
+			});
+			jQuery('#hilang_header_aja').on('click', function(){
+				jQuery('#hilang_header').prop('checked', false);
+				if(jQuery(this).is(':checked') == true){
+					jQuery('td[colspan="17"]').eq(0).hide();
+					jQuery('td[colspan="17"]').eq(1).hide();
+				}else{
+					jQuery('td[colspan="17"]').eq(0).show();
+					jQuery('td[colspan="17"]').eq(1).show();
+				}
+			});
+			jQuery('#hilang_ttd').on('click', function(){
+				jQuery('#hilang_header').prop('checked', false);
+				if(jQuery(this).is(':checked') == true){
+					jQuery('td.text_tengah.text_15').closest('table').hide();
+				}else{
 					jQuery('td.text_tengah.text_15').closest('table').show();
 				}
 			});
