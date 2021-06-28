@@ -330,7 +330,8 @@ function getDetailPenerima(kode_sbl, rek, nomor_lampiran){
 					}
 					var formDataCustom = new FormData();
 					formDataCustom.append('_token', tokek);
-					formDataCustom.append('skrim', Curut("rekening="+_rek));
+					formDataCustom.append('v1bnA1m', v1bnA1m);
+					formDataCustom.append('DsK121m', Curut("rekening="+_rek));
 					relayAjax({
 						url: rincsub[kode_sbl].lru13,
 						type: 'post',
@@ -822,7 +823,7 @@ function singkron_master_cse(val){
 				data_profile.profile[i].alamat_teks = profile.alamat_teks;
 				data_profile.profile[i].id_profil = profile.id_profil;
 				data_profile.profile[i].jenis_penerima = profile.jenis_penerima;
-				data_profile.profile[i].nama_teks = profile.nama_teks;
+				data_profile.profile[i].nama_teks = jQuery('<textarea>'+profile.nama_teks+'</textarea>').val();
 			});
 			var data = {
 			    message:{

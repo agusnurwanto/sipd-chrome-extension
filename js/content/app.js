@@ -542,6 +542,7 @@ jQuery(document).ready(function(){
 	){
 		console.log('halaman sub kegiatan');
 		var singkron_rka = ''
+			+'<label><input type="checkbox" id="only_pagu"> Hanya Pagu SKPD</label>'
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_rka_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RKA ke DB lokal</span>'
 			+'</button>';
@@ -1767,6 +1768,9 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 			chrome.runtime.sendMessage(data, function(response) {
 			    console.log('responeMessage', response);
 			});
+			if(jQuery('#only_pagu').is(':checked')){
+				return callback();
+			}
 		}
 
 		if(typeof promise_nonactive == 'undefined'){
