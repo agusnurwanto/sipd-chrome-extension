@@ -1,3 +1,6 @@
+window._token = jQuery('input[name="_tawon"]').val();
+window.v1bnA1m = jQuery('.logos input[type="hidden"]').val();
+
 var current_url = window.location.href;
 // fitur mempercepat pencarian SSH di sipd
 // tampilkan ID ssh pada tabel referensi SSH
@@ -75,7 +78,6 @@ jQuery('#set-ssh-sipd').on('click', function(){
 
 // 4069518 contoh id ssh
 function tampilAkun(id, jenis_ssh){
-	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 	jQuery('#idkomp').html('');
 	jQuery('#hargakomp').html('');
 	jQuery('#namakomp').html('');
@@ -85,81 +87,110 @@ function tampilAkun(id, jenis_ssh){
   	jQuery('#table_komponen_akun').DataTable().clear();
   	jQuery('#table_komponen_akun').DataTable().destroy();
 
-  	jQuery.ajax({
-        url: config.sipd_url+"daerah/main/budget/komponen/"+config.tahun_anggaran+"/"+jenis_ssh+"/detil-komp/"+config.id_daerah+"/"+id_unit,
-        type: "post",
-        data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idkomponen='+id,
-        success: function(data){
-        	console.log('data', data);
-        	window.data_ssh = data;
-        	if(!data){
-        		jQuery('#mod-komponen-akun').modal('hide');
-        		jQuery('#wrap-loading').hide();
-        		alert('ID Standar Harga '+id+' tidak ditemukan!');
-        	}else{
-	          	jQuery('#idkomp').html(data['id_standar_harga']);
-	          	jQuery('#hargakomp').html(jQuery.fn.dataTable.render.number('.',',',0,'').display(data['harga']));
-	          	jQuery('#namakomp').html(data['kode_standar_harga']+' '+data['nama_standar_harga']);
-	          	jQuery('#spekkomp').html(data['spek']);
-	          	jQuery('#satkomp').html(data['satuan']);
-		      	jQuery('#table_komponen_akun').DataTable({
-			        pagingType: "full_numbers",
-			        dom:'tip',
-			        displayLength:20,
-			        ajax: {
-			            url: config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/'+jenis_ssh+'/tampil-komponen-akun/'+config.id_daerah+'/'+id_unit+"/" + id +'?app=budget',
-			            "dataSrc": function ( json ) {
-			                jQuery('#wrap-loading').hide();
-			                return json.data;
-			            }       
-			        },
-			        columns: [
-			          {data: 'id_akun', name: 'id_akun'},
-			          {data: 'nama_akun', name: 'nama_akun'},
-			          {data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-right'},
-			        ],
-		      	});
-		      	jQuery('#table_komponen_akun tbody').on('click', 'tr', function () {
-		            var id_akun = jQuery(this).find('td').eq(0).text();
-		            var cek = jQuery('select[name="akun"]').find('option[value="'+id_akun+'||"]').text();
-		            if(!cek){
-		            	var jenis_bel = jQuery('select[name="jenisbl"] option:selected').text();
-		            	return alert('Akun Rekening belanja ini tidak masuk dalam jenis belanja '+jenis_bel);
-		            }
-		            var current_rekbel = jQuery('select[name="akun"]').val();
-	        		jQuery('#mod-komponen-akun').modal('hide');
-	        		jQuery('#wrap-loading').hide();
-		            
-		            jQuery('select[name="akun"]').val(id_akun+'||').trigger('change');
+    var url_hal_item = '';
+    if(jenis_ssh == 1){
+      url_hal_item = url_ssh;
+    }else if(jenis_ssh == 2){
+      url_hal_item = url_sbu;
+    }else if(jenis_ssh == 3){
+      url_hal_item = url_hspk;
+    }else if(jenis_ssh == 4){
+      url_hal_item = url_asb;
+    }
+    jQuery.ajax({
+        url: url_hal_item,
+        success: function(data_html){
+          var url_get_item = data_html.split('lru6="')[1].split('"')[0];
+        	jQuery.ajax({
+              url: url_get_item,
+              type: "post",
+              data: {
+                _token: _token,
+                v1bnA1m: v1bnA1m,
+                DsK121m: id
+              },
+              success: function(data){
+              	console.log('data', data);
+              	window.data_ssh = data;
+              	if(!data){
+              		jQuery('#mod-komponen-akun').modal('hide');
+              		jQuery('#wrap-loading').hide();
+              		alert('ID Standar Harga '+id+' tidak ditemukan!');
+              	}else{
+      	          	jQuery('#idkomp').html(data['id_standar_harga']);
+      	          	jQuery('#hargakomp').html(jQuery.fn.dataTable.render.number('.',',',0,'').display(data['harga']));
+      	          	jQuery('#namakomp').html(data['kode_standar_harga']+' '+data['nama_standar_harga']);
+      	          	jQuery('#spekkomp').html(data['spek']);
+      	          	jQuery('#satkomp').html(data['satuan']);
+      		      	jQuery('#table_komponen_akun').DataTable({
+      			        pagingType: "full_numbers",
+      			        dom:'tip',
+      			        displayLength:20,
+      			        ajax: {
+      			            url: config.sipd_url+'daerah/main/?'+id,
+                        type: 'post',
+                        data: {
+                          _token: _token,
+                          v1bnA1m: v1bnA1m
+                        },
+      			            "dataSrc": function ( json ) {
+      			                jQuery('#wrap-loading').hide();
+      			                return json.data;
+      			            }       
+      			        },
+      			        columns: [
+      			          {data: 'id_akun', name: 'id_akun'},
+      			          {data: 'nama_akun', name: 'nama_akun'},
+      			          {data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-right'},
+      			        ],
+      		      	});
+      		      	jQuery('#table_komponen_akun tbody').on('click', 'tr', function () {
+      		            var id_akun = jQuery(this).find('td').eq(0).text();
+      		            var cek = jQuery('select[name="akun"]').find('option[value="'+id_akun+'||"]').text();
+      		            if(!cek){
+      		            	var jenis_bel = jQuery('select[name="jenisbl"] option:selected').text();
+      		            	return alert('Akun Rekening belanja ini tidak masuk dalam jenis belanja '+jenis_bel);
+      		            }
+      		            var current_rekbel = jQuery('select[name="akun"]').val();
+      	        		jQuery('#mod-komponen-akun').modal('hide');
+      	        		jQuery('#wrap-loading').hide();
+      		            
+      		            jQuery('select[name="akun"]').val(id_akun+'||').trigger('change');
 
-		            jQuery("input[name=idkomponen]").val(data['id_standar_harga']);
-		            jQuery("input[name=komponen]").val(data['nama_standar_harga']);
-		            jQuery("input[name=spek]").val(data['spek']);
-		            jQuery("input[name=satuan]").val(data['satuan']);
-		            jQuery("input[name=hargasatuan]").val(data['harga']);
-	          	});
+      		            jQuery("input[name=idkomponen]").val(data['id_standar_harga']);
+      		            jQuery("input[name=komponen]").val(data['nama_standar_harga']);
+      		            jQuery("input[name=spek]").val(data['spek']);
+      		            jQuery("input[name=satuan]").val(data['satuan']);
+      		            jQuery("input[name=hargasatuan]").val(data['harga']);
+      	          	});
 
-		      	jQuery('.dttable2-filter').keyup(function(e){
-		        	jQuery('#table_komponen_akun').DataTable().search(jQuery(this).val()).draw();
-		      	});
-		    }
-        },
-        error: function(e){
-        	console.log('data', e);
-    		jQuery('#mod-komponen-akun').modal('hide');
-    		jQuery('#wrap-loading').hide();
-    		return alert('ID Standar Harga '+id+' tidak ditemukan!');
+      		      	jQuery('.dttable2-filter').keyup(function(e){
+      		        	jQuery('#table_komponen_akun').DataTable().search(jQuery(this).val()).draw();
+      		      	});
+      		    }
+              },
+              error: function(e){
+              	console.log('data', e);
+          		jQuery('#mod-komponen-akun').modal('hide');
+          		jQuery('#wrap-loading').hide();
+          		return alert('ID Standar Harga '+id+' tidak ditemukan!');
+              }
+        	});
         }
-  	});
+    });
 }
 
 var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
+window.url_ssh = jQuery('span.hide-menu:contains("SSH")').closest('a').attr('href');
+window.url_sbu = jQuery('span.hide-menu:contains("SBU")').closest('a').attr('href');
+window.url_hspk = jQuery('span.hide-menu:contains("HSPK")').closest('a').attr('href');
+window.url_asb = jQuery('span.hide-menu:contains("ASB")').closest('a').attr('href');
 var komponen = ''
-	+'<label class="col-xs-12 font-bold" style="margin-top: 20px;">Cari Komponen dengan <a href="'+config.sipd_url+'daerah/main/budget/komponen/'+config.tahun_anggaran+'/1/list/'+config.id_daerah+'/'+id_unit+'" target="_blank">ID Standar Harga</a></label>'
-    +'<div class="col-xs-11">'
+	+'<label class="col-xs-12 font-bold" style="margin-top: 20px;">Cari Komponen dengan <a href="'+url_ssh+'" target="_blank">ID Encrypte Standar Harga</a></label>'
+    +'<div class="col-xs-10">'
       	+'<input class="form-control" type="text" placeholder="ID Standar Harga" id="komponen-id-sipd">'
     +'</div>'
-    +'<div class="col-xs-1">'
+    +'<div class="col-xs-2">'
       	+'<button class="fcbtn btn btn-danger btn-1b pull-right" id="cari-ssh-sipd" type="button" style="display: block;"><i class="fa fa-search"></i></button>'
     +'</div>';
 jQuery('.group-nama-komponen').append(komponen);

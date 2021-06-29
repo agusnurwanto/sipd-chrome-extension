@@ -236,7 +236,7 @@ jQuery(document).ready(function(){
 					 	id = id.split("'")[1];
 					 	var nama = jQuery(b).find('td').eq(2);
 					 	if(nama.find('.link-detail-ssh').length == 0){
-					 		nama.html('( <span class="link-detail-ssh">'+id+'</span> ) '+nama.html());
+					 		nama.html('( <span class="link-detail-ssh"><textarea>'+id+'</textarea></span> ) '+nama.html());
 					 	}
 					 }
 				}else{
@@ -245,7 +245,7 @@ jQuery(document).ready(function(){
 					 	id = id.split("'")[1];
 					 	var nama = jQuery(b).find('td').eq(1);
 					 	if(nama.find('.link-detail-ssh').length == 0){
-					 		nama.html('( <span class="link-detail-ssh">'+id+'</span> ) '+nama.html());
+					 		nama.html('( <span class="link-detail-ssh"><textarea>'+id+'</textarea></span> ) '+nama.html());
 					 	}
 					 }
 				}
