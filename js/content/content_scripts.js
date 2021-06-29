@@ -37,7 +37,9 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			window.open(mandatory_spending+'?key='+get_key()+'&rkpd=1', '_blank');
 		}else if(res.action == 'singkron_unit'){
 			window.data_unit = res.renja_link;
-			if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
+			if(
+				jQuery('h3.page-title').text().indexOf('Pengaturan Perangkat Daerah') != -1
+			){
 				jQuery('#table_skpd tbody tr').map(function(i, b){
 					var td = jQuery(b).find('td');
 					var id_skpd = td.find('ul.dropdown-menu li').eq(0).find('a').attr('onclick').split("'")[1];
