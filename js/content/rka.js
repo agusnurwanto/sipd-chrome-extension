@@ -376,12 +376,18 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 		}
 		var rekening = '';
 		var kelompok = '';
-		var keterangan = '';
-		jQuery('#table_rinci tbody tr').map(function(i, b){
+    var keterangan = '';
+    var table_rinci = 'table_rinci';
+    var td_action = 7;
+    if(jQuery('#table_rinci').length == 0){
+      table_rinci = 'table_rinci_perubahan';
+      var td_action = 11;
+    }
+		jQuery('#'+table_rinci+' tbody tr').map(function(i, b){
 			var td = jQuery(b).find('td');
-			var val = td.eq(7).find('.btn-danger').attr('onclick');
+			var val = td.eq(td_action).find('.btn-danger').attr('onclick');
 			if(val){
-				val = val.split("'")[3];
+				val = val.split("'")[1];
 			}
 			if(td.eq(0).find('.hapus-multi-komponen').length == 0){
 				var onclick = '';
@@ -426,9 +432,12 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 	            return sequence3.then(function(current_data3){
 	        		return new Promise(function(resolve_reduce3, reject_reduce3){
 						jQuery.ajax({
-			              	url: '../../hapus-rincian/'+config.id_daerah+'/'+id_unit,
+			              	url: config.sipd_url+'daerah/main/?'+current_data3,
 			              	type: "POST",
-			              	data:{"_token": $('meta[name=_token]').attr('content'),"skrim":CR64('kodesbl='+kodesbl+'&idbelanjarinci='+current_data3+'&jeniskk=0')},
+			              	data:{
+                        _token: _token,
+                        v1bnA1m: v1bnA1m
+                      },
 			              	success: function(data){
 			              		resolve_reduce3(nextData3);
 			              	}
