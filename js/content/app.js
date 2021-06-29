@@ -542,12 +542,12 @@ jQuery(document).ready(function(){
 	){
 		console.log('halaman sub kegiatan');
 		var singkron_rka = ''
-			+'<label><input type="checkbox" id="only_pagu"> Hanya Pagu SKPD</label>'
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_rka_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RKA ke DB lokal</span>'
 			+'</button>';
 		// halaman list SKPD oleh admin TAPD
 		if(jQuery('.icon-basket').closest('.m-t-0').length == 0){
+			singkron_rka = '<label><input type="checkbox" id="only_pagu"> Hanya Pagu SKPD</label>'+singkron_rka;
 			jQuery('.m-l-10').closest('.p-b-20').find('.col-md-2').append('<div class="button-box pull-right p-t-20">'+singkron_rka+'</div>');
 			jQuery('#singkron_rka_ke_lokal').attr('id_unit', 'all');
 		// halaman list sub kegiatan oleh kepala PD
