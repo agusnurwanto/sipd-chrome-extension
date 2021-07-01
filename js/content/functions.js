@@ -2407,7 +2407,7 @@ function get_detail_skpd(id_unit){
 function get_kode_from_rincian_page(opsi, kode_sbl){
 	return new Promise(function(resolve, reject){
 		if(!opsi || !opsi.kode_bl){
-			var url_sub_keg = jQuery('.white-box .p-b-20 .btn-circle').attr('href');
+			var url_sub_keg = jQuery('.white-box .p-b-20 a.btn-circle').attr('href');
 			relayAjax({
 				url: url_sub_keg,
 				success: function(html){
