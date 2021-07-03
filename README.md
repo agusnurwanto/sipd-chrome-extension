@@ -62,7 +62,7 @@ Semoga bermanfaat
 - Update status non active di database lokal jika ada sub kegiatan yang dihapus di SIPD
 - Allow right click
 - Perbaikan bug error ubahSkpd saat singkron user tapd
-- Perbaikan singkron master penerima bantuan
+- Perbaikan singkron master penerima bantuan dan pilih ssh by id encrypted
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki
