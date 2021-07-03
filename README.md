@@ -61,6 +61,8 @@ Semoga bermanfaat
 - Print mandatory spending di halaman Pengaturan > Data > Label (Tag) Sub Kegiatan
 - Update status non active di database lokal jika ada sub kegiatan yang dihapus di SIPD
 - Allow right click
+- Perbaikan bug error ubahSkpd saat singkron user tapd
+- Perbaikan singkron master penerima bantuan
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki
