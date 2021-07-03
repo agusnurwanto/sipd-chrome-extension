@@ -2382,16 +2382,20 @@ function get_detail_skpd(id_unit){
 						success: function(data_all_skpd){
 							data_all_skpd.data.map(function(b, i){
 								if(id_unit == b.id_skpd){
-									var url_detail_skpd = b.action.split("ubahSkpd('")[1].split("'")[0];
-									relayAjax({
-										url: config.sipd_url+'daerah/main?'+url_detail_skpd,
-										type: 'post',
-										data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
-										success: function(data){
-											window.detail_skpd = data;
-											return resolve(data);
-										}
-									});
+									if(b.action.indexOf("ubahSkpd(") != -1){
+										var url_detail_skpd = b.action.split("ubahSkpd('")[1].split("'")[0];
+										relayAjax({
+											url: config.sipd_url+'daerah/main?'+url_detail_skpd,
+											type: 'post',
+											data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
+											success: function(data){
+												window.detail_skpd = data;
+												return resolve(data);
+											}
+										});
+									}else{
+										return resolve(false);
+									}
 								}
 							});
 						}

@@ -1632,48 +1632,81 @@ function singkron_skpd_ke_lokal(tampil_renja){
 			success: function(unit){
 				var sendData = unit.data.map(function(b, i){
 					return new Promise(function(resolve, reject){
-						var url_detail = b.action.split("onclick=ubahSkpd('")[1].split("'")[0];
-	                	relayAjax({
-				          	url: config.sipd_url+"daerah/main/?"+url_detail,
-				          	type: "post",
-				          	data: "_token="+tokek+"&v1bnA1m="+v1bnA1m,
-				          	success: function(data){
-				          		var data_unit = {
-				          			id_setup_unit : b.id_setup_unit,
-									id_skpd : b.id_skpd,
-									id_unit : b.id_unit,
-									is_skpd : b.is_skpd,
-									kode_skpd : b.kode_skpd,
-									kunci_skpd : b.kunci_skpd,
-									nama_skpd : b.nama_skpd,
-									posisi : b.posisi,
-									status : b.status,
-									bidur_1 : data.bidur_1,
-									bidur_2 : data.bidur_2,
-									bidur_3 : data.bidur_3,
-									idinduk : data.idinduk,
-									ispendapatan : data.ispendapatan,
-									isskpd : data.isskpd,
-									kode_skpd_1 : data.kode_skpd_1,
-									kode_skpd_2 : data.kode_skpd_2,
-									kodeunit : data.kodeunit,
-									komisi : data.komisi,
-									namabendahara : data.namabendahara,
-									namakepala : data.namakepala,
-									namaunit : data.namaunit,
-									nipbendahara : data.nipbendahara,
-									nipkepala : data.nipkepala,
-									pangkatkepala : data.pangkatkepala,
-									setupunit : data.setupunit,
-									statuskepala : data.statuskepala,
-				          		};
-								return resolve(data_unit);
-							},
-							error: function(e) {
-								console.log(e);
-								return resolve({});
-							}
-				        });
+						if(b.action.indexOf("ubahSkpd(") != -1){
+							var url_detail = b.action.split("onclick=ubahSkpd('")[1].split("'")[0];
+		                	relayAjax({
+					          	url: config.sipd_url+"daerah/main/?"+url_detail,
+					          	type: "post",
+					          	data: "_token="+tokek+"&v1bnA1m="+v1bnA1m,
+					          	success: function(data){
+					          		var data_unit = {
+					          			id_setup_unit : b.id_setup_unit,
+										id_skpd : b.id_skpd,
+										id_unit : b.id_unit,
+										is_skpd : b.is_skpd,
+										kode_skpd : b.kode_skpd,
+										kunci_skpd : b.kunci_skpd,
+										nama_skpd : b.nama_skpd,
+										posisi : b.posisi,
+										status : b.status,
+										bidur_1 : data.bidur_1,
+										bidur_2 : data.bidur_2,
+										bidur_3 : data.bidur_3,
+										idinduk : data.idinduk,
+										ispendapatan : data.ispendapatan,
+										isskpd : data.isskpd,
+										kode_skpd_1 : data.kode_skpd_1,
+										kode_skpd_2 : data.kode_skpd_2,
+										kodeunit : data.kodeunit,
+										komisi : data.komisi,
+										namabendahara : data.namabendahara,
+										namakepala : data.namakepala,
+										namaunit : data.namaunit,
+										nipbendahara : data.nipbendahara,
+										nipkepala : data.nipkepala,
+										pangkatkepala : data.pangkatkepala,
+										setupunit : data.setupunit,
+										statuskepala : data.statuskepala,
+					          		};
+									return resolve(data_unit);
+								},
+								error: function(e) {
+									console.log(e);
+									return resolve({});
+								}
+					        });
+		                }else{
+		                	var data_unit = {
+			          			id_setup_unit : b.id_setup_unit,
+								id_skpd : b.id_skpd,
+								id_unit : b.id_unit,
+								is_skpd : b.is_skpd,
+								kode_skpd : b.kode_skpd,
+								kunci_skpd : b.kunci_skpd,
+								nama_skpd : b.nama_skpd,
+								posisi : b.posisi,
+								status : b.status,
+								bidur_1 : null,
+								bidur_2 : null,
+								bidur_3 : null,
+								idinduk : null,
+								ispendapatan : null,
+								isskpd : null,
+								kode_skpd_1 : null,
+								kode_skpd_2 : null,
+								kodeunit : null,
+								komisi : null,
+								namabendahara : null,
+								namakepala : null,
+								namaunit : null,
+								nipbendahara : null,
+								nipkepala : null,
+								pangkatkepala : null,
+								setupunit : null,
+								statuskepala : null,
+			          		};
+							return resolve(data_unit);
+		                }
 	                })
 	                .catch(function(e){
 	                    console.log(e);
@@ -2118,7 +2151,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 									}
 									chrome.runtime.sendMessage(data, function(response) {
 									    // console.log('responeMessage', response);
-									    return resolve_reduce(nextData);
+									    // return resolve_reduce(nextData);
 									});
 									if(callback){
 								    	callback();
