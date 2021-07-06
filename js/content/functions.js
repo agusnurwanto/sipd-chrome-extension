@@ -82,6 +82,9 @@ function get_tanggal(){
 }
 
 function run_download_excel(){
+	if(jQuery('#action-sipd').length >= 1){
+		return true;
+	}
 	var current_url = window.location.href;
 	var download_excel = ''
 		+'<div id="action-sipd" class="hide-print">'
@@ -94,74 +97,74 @@ function run_download_excel(){
 
 	var style = '';
 
-	style = jQuery('.cetak').attr('style');
-	if (typeof style == 'undefined'){ style = ''; };
-	jQuery('.cetak').attr('style', style+" font-family:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; padding:0; margin:0; font-size:13px;");
+	// style = jQuery('.cetak').attr('style');
+	// if (typeof style == 'undefined'){ style = ''; };
+	// jQuery('.cetak').attr('style', style+"; font-family:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; padding:0; margin:0; font-size:13px;");
 	
 	jQuery('.bawah').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" border-bottom:1px solid #000;");
+		jQuery(b).attr('style', style+"; border-bottom:1px solid #000;");
 	});
 	
 	jQuery('.kiri').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" border-left:1px solid #000;");
+		jQuery(b).attr('style', style+"; border-left:1px solid #000;");
 	});
 
 	jQuery('.kanan').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" border-right:1px solid #000;");
+		jQuery(b).attr('style', style+"; border-right:1px solid #000;");
 	});
 
 	jQuery('.atas').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" border-top:1px solid #000;");
+		jQuery(b).attr('style', style+"; border-top:1px solid #000;");
 	});
 
 	jQuery('.text_tengah').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" text-align: center;");
+		jQuery(b).attr('style', style+"; text-align: center;");
 	});
 
 	jQuery('.text_kiri').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" text-align: left;");
+		jQuery(b).attr('style', style+"; text-align: left;");
 	});
 
 	jQuery('.text_kanan').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" text-align: right;");
+		jQuery(b).attr('style', style+"; text-align: right;");
 	});
 
 	jQuery('.text_block').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" font-weight: bold;");
+		jQuery(b).attr('style', style+"; font-weight: bold;");
 	});
 
 	jQuery('.text_15').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" font-size: 15px;");
+		jQuery(b).attr('style', style+"; font-size: 15px;");
 	});
 
 	jQuery('.text_20').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+" font-size: 20px;");
+		jQuery(b).attr('style', style+"; font-size: 20px;");
 	});
 
 	jQuery('td').map(function(i, b){
 		style = jQuery(b).attr('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+' mso-number-format:\\@;');
+		jQuery(b).attr('style', style+'; mso-number-format:\\@;');
 	});
 
 	jQuery('#excel').on('click', function(){
@@ -174,6 +177,8 @@ function run_download_excel(){
 			name = document.querySelectorAll('.cetak > table table')[1].querySelectorAll('tbody > tr')[7].querySelectorAll('td')[2].innerText;
 		}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd') != -1){
 			name = jQuery('table[cellpadding="3"]>thead>tr').eq(1).text().trim();
+		}else if(document.querySelectorAll('td[colspan="20"]').length >= 1){
+			name = document.querySelectorAll('td[colspan="20"]')[0].innerText;
 		}
 		tableHtmlToExcel('rka', name);
 	});

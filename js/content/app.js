@@ -1520,6 +1520,10 @@ jQuery(document).ready(function(){
 		jQuery('#singkron-pokir-lokal').on('click', function(){
 	        singkron_pokir_lokal();
 		});
+	}else if(document.querySelectorAll('.cetak').length >= 1){
+		console.log('Halaman Print Laporan SIPD Merah');
+		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+		run_download_excel();
 	}else if(current_url.indexOf('daerah/main/budget/lampiran/'+config.tahun_anggaran+'/apbd/2/'+config.id_daerah+'/') != -1){
 		console.log('Halaman APBD penjabaran lampiran 2');
 		var tampil_apbd_penjabaran = ''
