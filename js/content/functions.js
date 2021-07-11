@@ -2428,15 +2428,25 @@ function get_kode_from_rincian_page(opsi, kode_sbl){
 						processData: false,
 						contentType: false,
 						success: function(subkeg){
+							var cek = false;
+							// ganti menjadi true jika ingin mengsingkronkan sub keg yang tergembok / nomenklatur lama
+							var allow_lock_subkeg = false;
 							subkeg.data.map(function(b, i){
 								if(
-									b.nama_sub_giat.mst_lock != 3
+									(
+										allow_lock_subkeg 
+										|| b.nama_sub_giat.mst_lock != 3
+									)
 									&& b.kode_sub_skpd
 									&& b.kode_sbl == kode_sbl
 								){
+									cek = true;
 									return resolve({ url: b.action.split("detilGiat('")[1].split("'")[0], data: b });
 								}
-							})
+							});
+							if(!cek){
+								alert('Sub kegiatan ini tidak ditemukan di SIPD. (Sub kegiatan tergembok / sudah dihapus)');
+							}
 						}
 					});
 				}
