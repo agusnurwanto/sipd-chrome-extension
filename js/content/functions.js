@@ -2734,7 +2734,7 @@ function cek_duplikat_ssh(){
 			run_script("jQuery('#table_duplikat').DataTable().clear();");
 			run_script("jQuery('#table_duplikat').DataTable().destroy();");
 			jQuery('#table_duplikat tbody').html(html_duplikat);
-			run_script("jQuery('#table_duplikat').DataTable({'columnDefs': [{ orderable: false, targets: 1 }]});");
+			run_script("jQuery('#table_duplikat').DataTable({'columnDefs': [{ orderable: false, targets: 1 }], lengthMenu: [ [10, 250, 500, -1], [10, 250, 500, 'All'] ]});");
 			run_script("jQuery('#duplikat-komponen-akun').modal('show');");
 		}
 	});
