@@ -117,6 +117,9 @@ jQuery(document).ready(function(){
 			var acion_all = ''
 				+'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="set_mulit_rek">'
 					+'<span>Set Multi Kode SH dan Rek. Belanja</span>'
+				+'</button>'
+				+'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="cek_duplikat_ssh" style="margin-left: 10px;">'
+					+'<span>Cek Duplikat Standar Harga</span>'
 				+'</button>';
 			jQuery('#table_komponen').closest('form').prepend(acion_all);
 			var simpan_multiaddkompakun = ''
@@ -134,6 +137,9 @@ jQuery(document).ready(function(){
 		});
 		jQuery('#set_mulit_rek').on('click', function(){
 			set_mulit_rek();
+		});
+		jQuery('#cek_duplikat_ssh').on('click', function(){
+			cek_duplikat_ssh();
 		});
 		jQuery('#simpan_multiaddkompakun').on('click', function(){
 			jQuery('#wrap-loading').hide();
@@ -208,6 +214,133 @@ jQuery(document).ready(function(){
 		});
 		jQuery('#singkron_ssh_dari_lokal').on('click', function(){
 			singkron_ssh_dari_lokal();
+		});
+
+		var modal = ''
+			+'<div class="modal fade" id="duplikat-komponen-akun" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
+		        +'<div class="modal-dialog modal-lg" role="document">'
+		            +'<div class="modal-content">'
+		                +'<div class="modal-header bgpanel-theme">'
+		                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
+		                    +'<h4 class="modal-title text-white" id="">Duplikat Standar Harga <span class="info-title"></span></h4>'
+		                +'</div>'
+		                +'<div class="modal-body">'
+		                  	+'<table class="table table-hover table-striped" id="table_duplikat">'
+		                      	+'<thead>'
+		                        	+'<tr class="bg-grey-600">'
+		                          		+'<th class="text-white">No</th>'
+		                          		+'<th class="text-white"><input type="checkbox" id="select-all-hapus-ssh" checked> ID Akun</th>'
+		                          		+'<th class="text-white">Nama</th>'
+		                          		+'<th class="text-white">Spesifikasi</th>'
+		                          		+'<th class="text-white">Satuan</th>'
+		                          		+'<th class="text-white">Harga</th>'
+		                        	+'</tr>'
+		                      	+'</thead>'
+		                      	+'<tbody></tbody>'
+		                  	+'</table>'
+		                +'</div>'
+		                +'<div class="modal-footer">'
+		                    +'<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>'
+		                    +'<button type="button" class="btn btn-danger" id="hapus-ssh-sipd">Hapus Komponen</button>'
+		                +'</div>'
+		            +'</div>'
+		        +'</div>'
+		    +'</div>';
+		jQuery('body').append(modal);
+		jQuery('#select-all-hapus-ssh').on('click', function(){
+			if(jQuery(this).is(':checked')){
+				jQuery('#table_duplikat tbody .list-ssh-duplikat').prop('checked', true);
+			}else{
+				jQuery('#table_duplikat tbody .list-ssh-duplikat').prop('checked', false);
+			}
+		});
+		jQuery('#hapus-ssh-sipd').on('click', function(){
+			var list_ssh = [];
+			var list_url_hapus = [];
+			jQuery('#table_duplikat tbody .list-ssh-duplikat').map(function(i, b){
+				if(jQuery(b).is(':checked')){
+					list_ssh.push(jQuery(b).attr('data-nama'));
+					list_url_hapus.push(jQuery(b).attr('data-url').split(';'));
+				}
+			});
+			if(list_ssh.length == 0){
+				alert('Pilih dulu item SSH yang akan dihapus!');
+			}else{
+				if (confirm('Apakah anda yakin menghapus data ini? '+list_ssh.join(','))) {
+					jQuery('#wrap-loading').show();
+					var data_all = [];
+					var data_sementara = [];
+					list_url_hapus.map(function(b, i){
+						b.map(function(bb, ii){
+							data_sementara.push(bb);
+							if(data_sementara.length%50 == 0){
+								data_all.push(data_sementara);
+								data_sementara = [];
+							}
+						})
+					});
+
+					if(data_sementara.length > 0){
+						data_all.push(data_sementara);
+					}
+
+					var i = 0;
+					var last = data_all.length-1;
+					data_all.reduce(function(sequence, nextData){
+                        return sequence.then(function(current_data){
+                    		return new Promise(function(resolve_redurce, reject_redurce){
+	                        	var sendData = current_data.map(function(val, n){
+		                            return new Promise(function(resolve, reject){
+		                            	relayAjax({
+											url: endog + '?' + val,
+											type: 'POST',
+											data: formData,
+											processData: false,
+											contentType: false,
+											success: function(ret){
+												return resolve(val);
+											},
+											error: function(e) {
+												console.log(e);
+												return resolve(val);
+											}
+										});
+		                            })
+		                            .catch(function(e){
+		                                console.log(e);
+		                                return Promise.resolve(val);
+		                            });
+	                        	});
+
+	                            Promise.all(sendData)
+                            	.then(function(val_all){
+                            		return resolve_redurce(nextData);
+			                    })
+			                    .catch(function(err){
+			                        console.log('err', err);
+                            		return resolve_redurce(nextData);
+			                    });
+			                })
+                            .catch(function(e){
+                                console.log(e);
+                                return Promise.resolve(nextData);
+                            });
+                        })
+                        .catch(function(e){
+                            console.log(e);
+                            return Promise.resolve(nextData);
+                        });
+                    }, Promise.resolve(data_all[last]))
+                    .then(function(){
+						jQuery('#wrap-loading').hide();
+						alert('Data berhasil dihapus!');
+						run_script("jQuery('#duplikat-komponen-akun').modal('hide')");
+                    })
+                    .catch(function(e){
+                        console.log(e);
+                    });
+				}
+			}
 		});
 
 		function set_mulit_rek(){

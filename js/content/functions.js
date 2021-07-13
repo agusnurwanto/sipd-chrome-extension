@@ -2627,7 +2627,6 @@ function singkron_data_giat_lokal() {
 function singkron_sumber_dana_lokal() {
     if (confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')) {
         jQuery('#wrap-loading').show();
-        var id_unit = window.location.href.split('?')[0].split('' + config.id_daerah + '/')[1];
         relayAjax({
             url: lru1,
             type: 'post',
@@ -2674,4 +2673,69 @@ function singkron_sumber_dana_lokal() {
             }
         })
     }
+}
+
+function cek_duplikat_ssh(){
+    jQuery('#wrap-loading').show();
+    relayAjax({
+		url: lru1,
+		type: 'POST',
+		data: formData,
+		processData: false,
+		contentType: false,
+		success: function(data_ssh){
+			window.data_all_ssh = {};
+			window.duplikat_ssh = {};
+			var l1=0;
+			var l2=0;
+			var html_duplikat = '';
+			data_ssh.data.map(function(b, i){
+				var id_duplikat = b.nama_standar_harga+''+b.spek+''+b.satuan+''+b.harga;
+				if(typeof data_all_ssh[id_duplikat] == 'undefined'){
+					data_all_ssh[id_duplikat] = {
+						detail: []
+					};
+				}else{
+					if(typeof duplikat_ssh[id_duplikat] == 'undefined'){
+						duplikat_ssh[id_duplikat] = {
+							detail: []
+						};
+					}
+					duplikat_ssh[id_duplikat].detail.push(b);
+					l2++;
+				}
+				data_all_ssh[id_duplikat].detail.push(b);
+				l1++;
+			});
+			var no = 0;
+			for(var i in duplikat_ssh){
+				var id = [];
+				var url_hapus = [];
+				var ssh = duplikat_ssh[i].detail;
+				ssh.map(function(b, n){
+					id.push(b.id_standar_harga);
+					var url = b.action.split("hapusKomp('")[1].split("'")[0];
+					url_hapus.push(url);
+				});
+				no++;
+				html_duplikat += ''
+					+'<tr>'
+						+'<td>'+no+'</td>'
+						+'<td><input type="checkbox" class="list-ssh-duplikat" checked data-nama="'+ssh[0].nama_standar_harga +'('+id.join(', ')+')'+'" data-url="'+url_hapus.join(';')+'"> '+id.join(', ')+'</td>'
+						+'<td>'+ssh[0].nama_standar_harga+'</td>'
+						+'<td>'+ssh[0].spek+'</td>'
+						+'<td>'+ssh[0].satuan+'</td>'
+						+'<td>'+ssh[0].harga+'</td>'
+					+'</tr>';
+			}
+			console.log('data_all_ssh = '+l1, 'duplikat_ssh = '+l2);
+			jQuery('#wrap-loading').hide();
+			jQuery('#duplikat-komponen-akun .modal-title .info-title').html('( Jumlah Semua Data: '+l1+', Jumlah Duplikat: '+l2+' )');
+			run_script("jQuery('#table_duplikat').DataTable().clear();");
+			run_script("jQuery('#table_duplikat').DataTable().destroy();");
+			jQuery('#table_duplikat tbody').html(html_duplikat);
+			run_script("jQuery('#table_duplikat').DataTable({'columnDefs': [{ orderable: false, targets: 1 }]});");
+			run_script("jQuery('#duplikat-komponen-akun').modal('show');");
+		}
+	});
 }

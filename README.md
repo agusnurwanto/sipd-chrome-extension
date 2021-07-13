@@ -63,6 +63,7 @@ Semoga bermanfaat
 - Allow right click
 - Perbaikan bug error ubahSkpd saat singkron user tapd
 - Perbaikan singkron master penerima bantuan dan pilih ssh by id encrypted
+- Hapus duplikat item SSH & SBU
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki
