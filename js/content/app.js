@@ -1552,11 +1552,13 @@ jQuery(document).ready(function(){
 				detil_analisis_belanja();
 			});
 		}
-	}else if(current_url.indexOf('setup-user/'+config.tahun_anggaran+'/anggota-dewan/'+config.id_daerah+'/0') != -1){
-		console.log('halaman user anggota-dewan');
+	}else if(
+		jQuery('h3.page-title').text().indexOf('Pengaturan User') != -1
+	){
+		console.log('halaman pengaturan user');
 		var singkron_lokal = ''
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-user-dewan-lokal" style="float: right">'
-				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron User Anggota Dewan ke DB Lokal</span>'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron User ke DB Lokal</span>'
 			+'</button>';
 		jQuery('.p-b-10 .pull-right').append(singkron_lokal);
 		jQuery('#singkron-user-dewan-lokal').on('click', function(){

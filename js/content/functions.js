@@ -1426,17 +1426,24 @@ function singkron_user_deskel_lokal(){
 
 function singkron_user_dewan_lokal(){
 	relayAjax({
-      	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/anggota-dewan/tampil/'+config.id_daerah+'/0',
-      	type: "GET",
+      	url: lru1,
+      	type: "POST",
+		data: formData,
+		processData: false,
+		contentType: false,
       	success: function(dewan){
       		var last = dewan.data.length-1;
+      		var first = true;
       		dewan.data.reduce(function(sequence, nextData){
                 return sequence.then(function(current_data){
             		return new Promise(function(resolve_reduce, reject_reduce){
+            			var url_detail = current_data.action.split("ubahUser('")[1].split("'")[0];
             			relayAjax({
-					      	url: config.sipd_url+'daerah/main/plan/setup-user/'+config.tahun_anggaran+'/kel-desa/detil/'+config.id_daerah+'/0',
+					      	url: endog+'?'+url_detail,
 					      	type: "POST",
-            				data:{"_token":tokek,"idxuser":current_data.id_user},
+							data: formData,
+							processData: false,
+							contentType: false,
 					      	success: function(detil){
 		            			var data_dewan = { 
 									action: 'singkron_user_dewan',
@@ -1481,21 +1488,67 @@ function singkron_user_dewan_lokal(){
 								data_dewan.data.nip = detil.nip;
 								data_dewan.data.notelp = detil.notelp;
 								data_dewan.data.npwp = detil.npwp;
-					      		var data = {
-								    message:{
-								        type: "get-url",
-								        content: {
-										    url: config.url_server_lokal,
-										    type: 'post',
-										    data: data_dewan,
-							    			return: false
-										}
-								    }
-								};
-								chrome.runtime.sendMessage(data, function(response) {
-								    console.log('responeMessage', response);
-						    		resolve_reduce(nextData);
-								});
+								data_dewan.data.id_sub_skpd = idune;
+					      		if(first){
+					      			first = false;
+									new Promise(function(resolve_reduce2, reject_reduce2){
+						      			var data_non_active_user = { 
+											action: 'non_active_user',
+											tahun_anggaran: config.tahun_anggaran,
+											api_key: config.api_key,
+											id_level: detil.idlevel,
+											id_sub_skpd: idune
+										};
+										var data_nonactive = {
+										    message:{
+										        type: "get-url",
+										        content: {
+												    url: config.url_server_lokal,
+												    type: 'post',
+												    data: data_non_active_user,
+									    			return: true
+												}
+										    }
+										};
+										chrome.runtime.sendMessage(data_nonactive, function(response) {
+										    console.log('responeMessage', response);
+								    		window.resolve_non_active_user = resolve_reduce2;
+										});
+									})
+									.then(function(){
+										var data = {
+										    message:{
+										        type: "get-url",
+										        content: {
+												    url: config.url_server_lokal,
+												    type: 'post',
+												    data: data_dewan,
+									    			return: false
+												}
+										    }
+										};
+										chrome.runtime.sendMessage(data, function(response) {
+										    console.log('responeMessage', response);
+								    		resolve_reduce(nextData);
+										});
+									});
+					      		}else{
+						      		var data = {
+									    message:{
+									        type: "get-url",
+									        content: {
+											    url: config.url_server_lokal,
+											    type: 'post',
+											    data: data_dewan,
+								    			return: false
+											}
+									    }
+									};
+									chrome.runtime.sendMessage(data, function(response) {
+									    console.log('responeMessage', response);
+							    		resolve_reduce(nextData);
+									});
+					      		}
 					      	}
 					    });
             		})
@@ -1510,7 +1563,7 @@ function singkron_user_dewan_lokal(){
                 });
             }, Promise.resolve(dewan.data[last]))
             .then(function(data_last){
-            	alert('Berhasil singkron data User Anggota Dewan!');
+            	alert('Berhasil singkron data User!');
             	jQuery('#wrap-loading').hide();
             });
       	}

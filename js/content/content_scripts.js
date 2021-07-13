@@ -27,7 +27,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		var res = request.data;
 		var _alert = true;
 		var hide_loading = true;
-		if(res.action == 'update_nonactive_sub_bl'){
+		if(res.action == 'non_active_user'){
+			_alert = false;
+			hide_loading = false;
+			resolve_non_active_user();
+		}else if(res.action == 'update_nonactive_sub_bl'){
 			_alert = false;
 			hide_loading = false;
 			promise_nonactive[res.id_unit]();
