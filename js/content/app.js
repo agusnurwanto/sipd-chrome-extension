@@ -178,7 +178,7 @@ jQuery(document).ready(function(){
 				          	data: {
 				          		"_token":tokek,
 				          		"v1bnA1m": v1bnA1m,
-				          		"DsK121m":C3rYDq(jQuery('#formtambahkompakun').serialize())
+				          		"DsK121m":Curut(jQuery('#formtambahkompakun').serialize())
 				          	},
 				          	success: function(data){
 								return resolve(val);

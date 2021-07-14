@@ -71,7 +71,10 @@ Semoga bermanfaat
 
 ### Video tutorial
 - Cara install chrome extension https://www.youtube.com/watch?v=VnySS0RE6zc&t=318s
-- Mencari Komponen SSH dengan ID Standar Harga di halaman input rincian belanja https://www.youtube.com/watch?v=ixiwcs7xz8g
+- Mencari Komponen SSH dengan ID Standar Harga di halaman input rincian belanja 
+    - v1 = https://www.youtube.com/watch?v=ixiwcs7xz8g
+	- v2 = https://youtu.be/2MgCu5J_jcs
+- Ganti/update Rekening Multi Komponen di halaman rincian belanja https://www.youtube.com/watch?v=Wo6BdOCPb1g
 - Export SSH SIPD ke Database Server Lokal https://www.youtube.com/watch?v=lcLXBwSq9Ng
 - Export RKA Kegiatan ke Database Server Lokal https://www.youtube.com/watch?v=t84n2jZUfFo
 - Setting Tanggal RKA dan Nama TAPD https://www.youtube.com/watch?v=3z9zn506oTw
@@ -79,5 +82,4 @@ Semoga bermanfaat
 - Print Laporan APBD Lampiran III Semua Perangkat Daerah https://www.youtube.com/watch?v=QZKb8LrHcpg
 - Upload Excel Belanja Bantuan Keuangan Dana Desa https://www.youtube.com/watch?v=F3Db_v40Rh4
 - Release v1.9 perbaikan beberapa bug error dan menampilkan tanda tangan kepala daerah di lampiran APBD https://www.youtube.com/watch?v=UpQheTCkEN4
-- Ganti/update Rekening Multi Komponen di halaman rincian belanja https://www.youtube.com/watch?v=Wo6BdOCPb1g
 - Integrasi data SIPD ke SIMDA keuangan https://youtu.be/vFOsAlnxmTo
