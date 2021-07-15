@@ -1,6 +1,21 @@
 window._token = jQuery('input[name="_tawon"]').val();
 window.v1bnA1m = jQuery('.logos input[type="hidden"]').val();
 
+if(typeof tokek == 'undefined'){
+  tokek = jQuery('input[name="_tawon"]').val();
+}
+if(typeof v1bnA1m == 'undefined'){
+  v1bnA1m = jQuery('.logos input[type="hidden"]').val();
+}
+
+window.formData = new FormData();
+if(typeof tokek != 'undefined'){
+  console.log('tokek', tokek);
+  console.log('v1bnA1m', v1bnA1m);
+  formData.append('_token', tokek);
+  formData.append('v1bnA1m', v1bnA1m);
+}
+
 var current_url = window.location.href;
 // fitur mempercepat pencarian SSH di sipd
 // tampilkan ID ssh pada tabel referensi SSH
@@ -536,13 +551,17 @@ jQuery('#jenis-bel-excel').on('change', function(){
 	jQuery('#rek-excel').html('');
 	var jenisbl = jQuery(this).val();
 	if(jenisbl != ''){
+    var customFormData = formData;
+    customFormData.append('DsK121m', C3rYDq("komponenkel="+jenisbl));
 		jQuery.ajax({
-		    url: "../../cari-rekening/"+config.id_daerah+"/"+id_unit,
-		    type: "post",
-		    data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idbl=0&idsubbl=0'+'&komponenkel='+jenisbl,
+		    url: lru3,
+        type: "post",
+        data: customFormData,
+        processData: false,
+        contentType: false,
 		    success: function(data){
 		      	jQuery("#rek-excel").html(data);
-				jQuery('#wrap-loading').hide();
+				    jQuery('#wrap-loading').hide();
 		    },
 		    error: function(jqXHR, textStatus, error){
 				jQuery('#wrap-loading').hide();
@@ -742,25 +761,31 @@ function insertRKA(){
 function getIdProv(id_unit){
 	return new Promise(function(resolve, reject){
   		jQuery.ajax({
-	      	url: '../../tampil-provinsi/'+config.id_daerah+'/'+id_unit,
+	      	url: lru4,
 	      	type: "post",
-	      	data: "_token="+$('meta[name=_token]').attr('content')+'&id_unit='+id_unit,
+            data: formData,
+            processData: false,
+            contentType: false,
 	      	success: function(data_prov){
 	      		resolve(data_prov);
-          	},
-          	error: function(jqXHR, textStatus, error){
+        	},
+        	error: function(jqXHR, textStatus, error){
       			reject();
-          	}
+        	}
         });
 	});
 }
 
 function getIdKab(raw){
 	return new Promise(function(resolve, reject){
+        var customFormData = formData;
+        customFormData.append('DsK121m', C3rYDq('idprop='+raw.id_prov));
   		jQuery.ajax({
-        	url: "../../tampil-kab-kota/"+config.id_daerah+"/"+raw.id_unit,
+        	url: lru5,
         	type: "post",
-        	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idprop='+raw.id_prov,
+            data: customFormData,
+            processData: false,
+            contentType: false,
             success: function(data_kab){
 	      		var id_kab = jQuery('<select>'+data_kab+'</select>').find('option').filter(function(){
 	      			return jQuery(this).html().toLocaleLowerCase().replace('kab. ', '') == raw.kab.toLocaleLowerCase();
@@ -776,10 +801,14 @@ function getIdKab(raw){
 
 function getIdKec(raw){
 	return new Promise(function(resolve, reject){
+        var customFormData = formData;
+        customFormData.append('DsK121m', C3rYDq('idprop='+raw.id_prov+'&idkokab='+raw.id_kab));
   		jQuery.ajax({
-          	url: "../../tampil-camat/"+config.id_daerah+"/"+raw.id_unit,
+          	url: lru6,
           	type: "post",
-          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idprop='+raw.id_prov+'&idkokab='+raw.id_kab,
+            data: customFormData,
+            processData: false,
+            contentType: false,
           	success: function(data_kec){
             	var id_kec = jQuery('<select>'+data_kec+'</select>').find('option').filter(function(){
 	      			return jQuery(this).html().toLocaleLowerCase() == raw.kec.toLocaleLowerCase();
@@ -795,10 +824,14 @@ function getIdKec(raw){
 
 function getIdKel(raw){
 	return new Promise(function(resolve, reject){
+        var customFormData = formData;
+        customFormData.append('DsK121m', C3rYDq('idprop='+raw.id_prov+'&idkokab='+raw.id_kab+'&idcamat='+raw.id_kec));
 		jQuery.ajax({
-	      	url: "../../tampil-lurah/"+config.id_daerah+"/"+raw.id_unit,
+	      	url: lru7,
 	      	type: "post",
-	      	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idprop='+raw.id_prov+'&idkokab='+raw.id_kab+'&idcamat='+raw.id_kec,
+            data: customFormData,
+            processData: false,
+            contentType: false,
 	      	success: function(data_kel){
 	        	var id_kel = jQuery('<select>'+data_kel+'</select>').find('option').filter(function(){
 	      			return jQuery(this).html().toLocaleLowerCase() == raw.desa.toLocaleLowerCase();
@@ -976,14 +1009,18 @@ function gantiRekKomponen(type, selected){
 		var rek_asal = jQuery('select[name="akun"]').val();
 		jQuery('#ganti-rek-asal').html(jQuery('select[name="akun"]').html());
 		jQuery('#ganti-rek-asal').val(rek_asal);
-		jQuery.ajax({
-		    url: "../../cari-rekening/"+config.id_daerah+"/"+id_unit,
-		    type: "post",
-		    data: "_token="+jQuery('meta[name=_token]').attr('content')+'&idbl=0&idsubbl=0'+'&komponenkel='+jenisbl,
+    var customFormData = formData;
+    customFormData.append('DsK121m', C3rYDq("komponenkel="+jenisbl));
+    jQuery.ajax({
+        url: lru3,
+        type: "post",
+        data: customFormData,
+        processData: false,
+        contentType: false,
 		    success: function(data){
 		      	jQuery("#pilih-ganti-rek").html(data);
 		      	jQuery("#pilih-ganti-rek").val(rek_asal);
-				jQuery('#wrap-loading').hide();
+				    jQuery('#wrap-loading').hide();
 		    }
 		});
 	} else if(type == 'kelompok' || type == 'keterangan'){
