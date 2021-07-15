@@ -112,11 +112,11 @@ function tampilAkun(id, jenis_ssh){
     }else if(jenis_ssh == 4){
       url_hal_item = url_asb;
     }
-    jQuery.ajax({
+    relayAjax({
         url: url_hal_item,
         success: function(data_html){
           var url_get_item = data_html.split('lru6="')[1].split('"')[0];
-        	jQuery.ajax({
+        	relayAjax({
               url: url_get_item,
               type: "post",
               data: {
@@ -446,7 +446,7 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 			selected.reduce(function(sequence3, nextData3){
 	            return sequence3.then(function(current_data3){
 	        		return new Promise(function(resolve_reduce3, reject_reduce3){
-						jQuery.ajax({
+						relayAjax({
 			              	url: config.sipd_url+'daerah/main/?'+current_data3,
 			              	type: "POST",
 			              	data:{
@@ -469,7 +469,7 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 	            });
 	        }, Promise.resolve(selected[last]))
 	        .then(function(){
-				jQuery.ajax({
+				relayAjax({
                     url: "../../refresh-belanja/"+config.id_daerah+'/'+id_unit,
                     type: "post",
                     data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl":kodesbl},
@@ -534,7 +534,7 @@ jQuery('#jenis_data').on('change', function(){
 		jQuery('#satuan-excel').select2();
 		jQuery('.group-dana-desa').show();
 	}else if(jenis == 'dana-bos'){
-		jQuery('#label-excel').attr('href', ext_url+'excel/ADD-2021.xlsx');
+		jQuery('#label-excel').attr('href', ext_url+'excel/BOS-HIBAH.xlsx');
 		jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
 		jQuery('#jenis-bel-excel').val('BOS').trigger('change');
 		jQuery('#jenis-bel-excel').attr('disabled', true);
@@ -551,14 +551,16 @@ jQuery('#jenis-bel-excel').on('change', function(){
 	jQuery('#rek-excel').html('');
 	var jenisbl = jQuery(this).val();
 	if(jenisbl != ''){
-    var customFormData = formData;
-    customFormData.append('DsK121m', C3rYDq("komponenkel="+jenisbl));
-		jQuery.ajax({
-		    url: lru3,
-        type: "post",
-        data: customFormData,
-        processData: false,
-        contentType: false,
+        var customFormData = new FormData();
+        customFormData.append('_token', tokek);
+        customFormData.append('v1bnA1m', v1bnA1m);
+        customFormData.append('DsK121m', C3rYDq("komponenkel="+jenisbl));
+		relayAjax({
+    		url: lru3,
+            type: "post",
+            data: customFormData,
+            processData: false,
+            contentType: false,
 		    success: function(data){
 		      	jQuery("#rek-excel").html(data);
 				    jQuery('#wrap-loading').hide();
@@ -603,164 +605,341 @@ function insertRKA(){
 	var satuantext = jQuery('#satuan-excel option:selected').text();
 	var satuan = jQuery('#satuan-excel').val();
 	jQuery('.tambah-detil').click();
-	getIdProv(id_unit).then(function(data_prov){
-		var sendData = excel.map(function(raw, i){
-			return new Promise(function(resolve, reject){
-				raw.id_unit = id_unit;
-	      		var id_prov = jQuery('<select>'+data_prov+'</select>').find('option').filter(function(){
-	      			return jQuery(this).html().toLocaleLowerCase().replace('provinsi ', '') == raw.prov.toLocaleLowerCase();
-	      		}).val();
-				// console.log('id_prov', id_prov, data_prov, raw.prov);
-	      		if(typeof id_prov == 'undefined'){
-	      			raw.error = 'Provinsi tidak ditemukan';
-	      			resolve(raw);
-	      		}else{
-					raw.id_prov = id_prov;
-					getIdKab(raw).then(function(id_kab){
-			      		if(typeof id_kab == 'undefined'){
-			      			raw.error = 'Kabupaten / Kota tidak ditemukan';
-			      			resolve(raw);
-			      		}else{
-							raw.id_kab = id_kab;
-							getIdKec(raw).then(function(id_kec){
-					      		if(typeof id_kec == 'undefined'){
-					      			raw.error = 'Kecamatan tidak ditemukan';
-					      			resolve(raw);
-					      		}else{
-							      	raw.id_kec = id_kec;
-					      			getIdKel(raw).then(function(id_kel){
-							      		if(typeof id_kel == 'undefined'){
-							      			raw.error = 'Desa / Kelurahan tidak ditemukan';
-							      			resolve(raw);
-							      		}else{
-							      			raw.id_kel = id_kel;
-							      			raw.kodesbl = jQuery('input[name="kodesbl"]').val();
-							      			setKeterangan(raw).then(function(id_ket){
-								      			raw.detil_rincian = {
-								      				jenis_belanja: jenis_belanja,
-								      				id_rek_akun: id_rek_akun,
-								      				id_pengelompokan: id_pengelompokan,
-								      				id_keterangan: id_ket
-								      			};
-								      			var skrim = ''
-								      				+'kodesbl='+raw.kodesbl
-								      				+'&idbelanjarinci='
-								      				+'&idakunrinci='
-								      				+'&jenisbl='+jenis_belanja
-									      			+'&akun='+encodeURIComponent(id_rek_akun)
-									      			+'&subtitle='+id_pengelompokan
-									      			+'&uraian_penerima='
-									      			+'&id_penerima='
-									      			+'&prop='+raw.id_prov
-									      			+'&kab_kota='+raw.id_kab
-									      			+'&kecamatan='+raw.id_kec
-									      			+'&kelurahan='+raw.id_kel
-									      			+'&komponenkel='
-									      			+'&komponen='
-									      			+'&idkomponen='
-									      			+'&spek='
-									      			+'&satuan='+encodeURIComponent(satuantext)
-									      			+'&hargasatuan='+(+raw.total.replace(/,/g, ''))
-									      			+'&keterangan='+id_ket
-									      			+'&volum1='+vol
-									      			+'&satuan1='+satuan
-									      			+'&volum2='
-									      			+'&satuan2='
-									      			+'&volum3='
-									      			+'&satuan3='
-									      			+'&volum4='
-									      			+'&satuan4=';
-										        raw.skrim = skrim;
-										        // resolve(raw); console.log(raw);
-								      			jQuery.ajax({
-										          	url: config.sipd_url+"daerah/main/budget/belanja/"+config.tahun_anggaran+"/rinci/simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
-										          	type: "post",
-										          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&skrim='+CR64(skrim),
-										          	success: function(data_kel){
-								      					resolve(raw);
-										          	},
-										          	error: function(jqXHR, textStatus, error){
-										      			raw.error = 'Error ajax simpan rincian';
-										      			resolve(raw);
-										          	}
-										       	});
-							      			})
-							      		}
-								    })
-								    .catch(function(e){
-										raw.error = 'Error ajax kelurahan';
-				      					resolve(raw);
-								    });
-						      	}
-					        })
-						    .catch(function(e){
-								raw.error = 'Error ajax kecamatan';
-		      					resolve(raw);
-						    });
-				      	}
-			        })
-				    .catch(function(e){
-						raw.error = 'Error ajax kabupaten';
-      					resolve(raw);
-				    });
-		      	}
-			})
-		    .catch(function(e){
-		        console.log(e);
-		        return Promise.resolve({});
-		    });
-		});
-		Promise.all(sendData)
-		.then(function(all_status){
-			console.log('all_status', all_status);
-			jQuery('.close-form').click();
-			jQuery.ajax({
-                url: "../../refresh-belanja/"+config.id_daerah+"/"+id_unit,
-                type: "post",
-                data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl":jQuery('input[name="kodesbl"]').val()},
-                success: function(hasil){
-                  	var res=hasil.split("||");
-                 	var pagu, rinci;
-                  	if(res[0]==0){ pagu=0; } else if(res[0]!=0){ pagu = jQuery.number(res[0],0,',','.'); }
-                  	if(res[1]==0){ rinci=0; } else if(res[1]!=0){ rinci = jQuery.number(res[1],0,',','.'); }
-                  	jQuery(".statustotalpagu").html(pagu);
-                  	jQuery(".statustotalrincian").html(rinci);
-					jQuery('#wrap-loading').hide();
-					var _error = [];
-					all_status.map(function(row, n){
-						if(row.error){
-							_error.push('"'+row.desa+'" error: ('+row.error+')');
-						}
-					});
-					var catatan = '';
-					if(_error.length > 0){
-						catatan = ' Catatan: '+_error.join(', ');
-					}
-					alert('Berhasil simpan data!'+catatan);
-                }
-          	});
+    if(type_data == 'dana-bos'){
+        var sendData = excel.map(function(raw, i){
+            return new Promise(function(resolve, reject){
+                new Promise(function(resolve2, reject2){
+                    var customFormData = new FormData();
+                    customFormData.append('_token', tokek);
+                    customFormData.append('v1bnA1m', v1bnA1m);
+                    customFormData.append('DsK121m', C3rYDq('rekening='+id_rek_akun));
+                    customFormData.append('columns[0][data]', 'id_profil');
+                    customFormData.append('columns[0][name]', 'pr.id_profil');
+                    customFormData.append('columns[0][searchable]', 'true');
+                    customFormData.append('columns[0][orderable]', 'true');
+                    customFormData.append('columns[0][search][value]', '');
+                    customFormData.append('columns[0][search][regex]', 'false');
+                    customFormData.append('columns[1][data]', 'nama_teks');
+                    customFormData.append('columns[1][name]',  'pr.nama_teks');
+                    customFormData.append('columns[1][searchable]', 'true');
+                    customFormData.append('columns[1][orderable]', 'true');
+                    customFormData.append('columns[1][search][value]', raw.nama);
+                    customFormData.append('columns[1][search][regex]',  'false');
+                    // cari nama penerima bantuan
+                    relayAjax({
+                        url: lru13,
+                        type: "post",
+                        data: customFormData,
+                        processData: false,
+                        contentType: false,
+                        success: function(cari_penerima){
+                            raw.resolve2 = resolve2;
+                            if(cari_penerima.data.length==0){
+                                input_penerima(raw);
+                            }else{
+                                var dapat_profile = [];
+                                cari_penerima.data.map(function(profile, k){
+                                    if(profile.nama_teks == raw.nama){
+                                        dapat_profile.push(profile);
+                                    }
+                                });
+                                if(dapat_profile.length > 1){
+                                    var dapat_profile2 = [];
+                                    dapat_profile.map(function(profile, k){
+                                        if(profile.alamat_teks == raw.alamat){
+                                            dapat_profile2.push(profile);
+                                        }
+                                    });
+                                    dapat_profile = dapat_profile2;
+                                }
+                                if(dapat_profile.length == 0){
+                                    input_penerima(raw);
+                                }else{
+                                    raw.id_profile = cari_penerima.data[0].id_profile;
+                                    resolve2(raw);
+                                }
+                            }
+                        }
+                    });
+                })
+                .then(function(raw2){
+                    if(!raw2.id_profile){
+                        raw2.error = "Penerima tidak ditemukan atau tidak bisa disimpan!";
+                        resolve(raw2);
+                    }else{
+                        setKeterangan(raw2).then(function(id_ket){
+                        raw2.detil_rincian = {
+                            jenis_belanja: jenis_belanja,
+                            id_rek_akun: id_rek_akun,
+                            id_pengelompokan: id_pengelompokan,
+                            id_keterangan: id_ket
+                        };
+                        var skrim = ''
+                            +'kodesbl='+raw2.kodesbl
+                            +'&idbelanjarinci='
+                            +'&idakunrinci='
+                            +'&jenisbl='+jenis_belanja
+                            +'&akun='+encodeURIComponent(id_rek_akun)
+                            +'&subtitle='+id_pengelompokan
+                            +'&uraian_penerima='
+                            +'&id_penerima='
+                            +'&prop='+raw2.id_prov
+                            +'&kab_kota='+raw2.id_kab
+                            +'&kecamatan='+raw2.id_kec
+                            +'&kelurahan='+raw2.id_kel
+                            +'&komponenkel='
+                            +'&komponen='
+                            +'&idkomponen='
+                            +'&spek='
+                            +'&satuan='+encodeURIComponent(satuantext)
+                            +'&hargasatuan='+(+raw2.total.replace(/,/g, ''))
+                            +'&keterangan='+id_ket
+                            +'&volum1='+vol
+                            +'&satuan1='+satuan
+                            +'&volum2='
+                            +'&satuan2='
+                            +'&volum3='
+                            +'&satuan3='
+                            +'&volum4='
+                            +'&satuan4=';
+                        raw2.skrim = skrim;
+                        // resolve(raw2); console.log(raw2);
+                        relayAjax({
+                            url: config.sipd_url+"daerah/main/budget/belanja/"+config.tahun_anggaran+"/rinci/simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
+                            type: "post",
+                            data: "_token="+jQuery('meta[name=_token]').attr('content')+'&skrim='+CR64(skrim),
+                            success: function(data_kel){
+                                resolve(raw2);
+                            },
+                            error: function(jqXHR, textStatus, error){
+                                raw2.error = 'Error ajax simpan rincian';
+                                resolve(raw2);
+                            }
+                        });
+                    })
+                    }
+                })
+                .catch(function(e){
+                    console.log(e);
+                    return Promise.resolve({});
+                });
+            })
+            .catch(function(e){
+                console.log(e);
+                return Promise.resolve({});
+            });
+        });
+        Promise.all(sendData)
+        .then(function(all_status){
+            console.log('all_status', all_status);
+            after_insert(all_status);
+        })
+        .catch(function(err){
+            console.log('err', err);
+            alert('Ada kesalahan sistem!');
+            jQuery('#wrap-loading').hide();
+        });
+    }else{
+    	getIdProv(id_unit).then(function(data_prov){
+    		var sendData = excel.map(function(raw, i){
+    			return new Promise(function(resolve, reject){
+    				raw.id_unit = id_unit;
+    	      		var id_prov = jQuery('<select>'+data_prov+'</select>').find('option').filter(function(){
+    	      			return jQuery(this).html().toLocaleLowerCase().replace('provinsi ', '') == raw.prov.toLocaleLowerCase();
+    	      		}).val();
+    				// console.log('id_prov', id_prov, data_prov, raw.prov);
+    	      		if(typeof id_prov == 'undefined'){
+    	      			raw.error = 'Provinsi tidak ditemukan';
+    	      			resolve(raw);
+    	      		}else{
+    					raw.id_prov = id_prov;
+    					getIdKab(raw).then(function(id_kab){
+    			      		if(typeof id_kab == 'undefined'){
+    			      			raw.error = 'Kabupaten / Kota tidak ditemukan';
+    			      			resolve(raw);
+    			      		}else{
+    							raw.id_kab = id_kab;
+    							getIdKec(raw).then(function(id_kec){
+    					      		if(typeof id_kec == 'undefined'){
+    					      			raw.error = 'Kecamatan tidak ditemukan';
+    					      			resolve(raw);
+    					      		}else{
+    							      	raw.id_kec = id_kec;
+    					      			getIdKel(raw).then(function(id_kel){
+    							      		if(typeof id_kel == 'undefined'){
+    							      			raw.error = 'Desa / Kelurahan tidak ditemukan';
+    							      			resolve(raw);
+    							      		}else{
+    							      			raw.id_kel = id_kel;
+    							      			raw.kodesbl = jQuery('input[name="kodesbl"]').val();
+    							      			setKeterangan(raw).then(function(id_ket){
+    								      			raw.detil_rincian = {
+    								      				jenis_belanja: jenis_belanja,
+    								      				id_rek_akun: id_rek_akun,
+    								      				id_pengelompokan: id_pengelompokan,
+    								      				id_keterangan: id_ket
+    								      			};
+    								      			var skrim = ''
+    								      				+'kodesbl='+raw.kodesbl
+    								      				+'&idbelanjarinci='
+    								      				+'&idakunrinci='
+    								      				+'&jenisbl='+jenis_belanja
+    									      			+'&akun='+encodeURIComponent(id_rek_akun)
+    									      			+'&subtitle='+id_pengelompokan
+    									      			+'&uraian_penerima='
+    									      			+'&id_penerima='
+    									      			+'&prop='+raw.id_prov
+    									      			+'&kab_kota='+raw.id_kab
+    									      			+'&kecamatan='+raw.id_kec
+    									      			+'&kelurahan='+raw.id_kel
+    									      			+'&komponenkel='
+    									      			+'&komponen='
+    									      			+'&idkomponen='
+    									      			+'&spek='
+    									      			+'&satuan='+encodeURIComponent(satuantext)
+    									      			+'&hargasatuan='+(+raw.total.replace(/,/g, ''))
+    									      			+'&keterangan='+id_ket
+    									      			+'&volum1='+vol
+    									      			+'&satuan1='+satuan
+    									      			+'&volum2='
+    									      			+'&satuan2='
+    									      			+'&volum3='
+    									      			+'&satuan3='
+    									      			+'&volum4='
+    									      			+'&satuan4=';
+    										        raw.skrim = skrim;
+    										        // resolve(raw); console.log(raw);
+    								      			relayAjax({
+    										          	url: config.sipd_url+"daerah/main/budget/belanja/"+config.tahun_anggaran+"/rinci/simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
+    										          	type: "post",
+    										          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&skrim='+CR64(skrim),
+    										          	success: function(data_kel){
+    								      					resolve(raw);
+    										          	},
+    										          	error: function(jqXHR, textStatus, error){
+    										      			raw.error = 'Error ajax simpan rincian';
+    										      			resolve(raw);
+    										          	}
+    										       	});
+    							      			})
+    							      		}
+    								    })
+    								    .catch(function(e){
+    										raw.error = 'Error ajax kelurahan';
+    				      					resolve(raw);
+    								    });
+    						      	}
+    					        })
+    						    .catch(function(e){
+    								raw.error = 'Error ajax kecamatan';
+    		      					resolve(raw);
+    						    });
+    				      	}
+    			        })
+    				    .catch(function(e){
+    						raw.error = 'Error ajax kabupaten';
+          					resolve(raw);
+    				    });
+    		      	}
+    			})
+    		    .catch(function(e){
+    		        console.log(e);
+    		        return Promise.resolve({});
+    		    });
+    		});
+    		Promise.all(sendData)
+    		.then(function(all_status){
+    			console.log('all_status', all_status);
+    			after_insert(all_status);
+    		})
+    	    .catch(function(err){
+    	        console.log('err', err);
+    			alert('Ada kesalahan sistem!');
+    			jQuery('#wrap-loading').hide();
+    	    });
+        })
+        .catch(function(err){
+    		alert('Error ajax provinsi');
+    		jQuery('#wrap-loading').hide();
+        });
+    }
+}
 
-          	if(thpStatus=="murni"){
-                jQuery('#table_rinci').DataTable().ajax.reload();
-          	}else if(thpStatus=="perubahan" || thpStatus=="pergeseran"){
-                jQuery('#table_rinci_perubahan').DataTable().ajax.reload();
-          	}
-		})
-	    .catch(function(err){
-	        console.log('err', err);
-			alert('Ada kesalahan sistem!');
-			jQuery('#wrap-loading').hide();
-	    });
-    })
-    .catch(function(err){
-		alert('Error ajax provinsi');
-		jQuery('#wrap-loading').hide();
+function input_penerima(raw){
+    raw.res_input_penerima = 'Belum berani input penerima';
+    return raw.resolve2(raw);
+    
+    var customFormData = new FormData();
+    customFormData.append('_token', tokek);
+    customFormData.append('v1bnA1m', v1bnA1m);
+    customFormData.append('DsK121m', C3rYDq(''
+        +'jenis_penerima='+raw.jenis
+        +'&nama_penerima='+raw.nama
+        +'&nik_penerima='+raw.nik
+        +'&alamat_penerima='+raw.alamat
+        +'&prop_penerima='+raw.id_prov
+        +'&kab_kota_penerima='+raw.id_kab
+        +'&kecamatan_penerima='+raw.id_kec
+        +'&kelurahan_penerima='+raw.kel
+        +'&telp_penerima='+raw.tlp
+    ));
+    // insert penerima bantuan
+    relayAjax({
+        url: lru14,
+        type: "post",
+        data: customFormData,
+        processData: false,
+        contentType: false,
+        success: function(res_input_penerima){
+            raw.res_input_penerima = res_input_penerima;
+            if(res_input_penerima.id_profile){
+                raw.id_profile = res_input_penerima.id_profile;
+                raw.resolve2(raw);
+            }else{
+                raw.resolve2(raw);
+            }
+        }
     });
+}
+
+function after_insert(all_status){
+    jQuery('.close-form').click();
+    relayAjax({
+        url: "../../refresh-belanja/"+config.id_daerah+"/"+id_unit,
+        type: "post",
+        data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl":jQuery('input[name="kodesbl"]').val()},
+        success: function(hasil){
+            var res=hasil.split("||");
+            var pagu, rinci;
+            if(res[0]==0){ pagu=0; } else if(res[0]!=0){ pagu = jQuery.number(res[0],0,',','.'); }
+            if(res[1]==0){ rinci=0; } else if(res[1]!=0){ rinci = jQuery.number(res[1],0,',','.'); }
+            jQuery(".statustotalpagu").html(pagu);
+            jQuery(".statustotalrincian").html(rinci);
+            jQuery('#wrap-loading').hide();
+            var _error = [];
+            all_status.map(function(row, n){
+                if(row.error){
+                    _error.push('"'+row.desa+'" error: ('+row.error+')');
+                }
+            });
+            var catatan = '';
+            if(_error.length > 0){
+                catatan = ' Catatan: '+_error.join(', ');
+            }
+            alert('Berhasil simpan data!'+catatan);
+        }
+    });
+
+    if(thpStatus=="murni"){
+        jQuery('#table_rinci').DataTable().ajax.reload();
+    }else if(thpStatus=="perubahan" || thpStatus=="pergeseran"){
+        jQuery('#table_rinci_perubahan').DataTable().ajax.reload();
+    }
 }
 
 function getIdProv(id_unit){
 	return new Promise(function(resolve, reject){
-  		jQuery.ajax({
+  		relayAjax({
 	      	url: lru4,
 	      	type: "post",
             data: formData,
@@ -778,9 +957,12 @@ function getIdProv(id_unit){
 
 function getIdKab(raw){
 	return new Promise(function(resolve, reject){
-        var customFormData = formData;
+        
+        var customFormData = new FormData();
+        customFormData.append('_token', tokek);
+        customFormData.append('v1bnA1m', v1bnA1m);
         customFormData.append('DsK121m', C3rYDq('idprop='+raw.id_prov));
-  		jQuery.ajax({
+  		relayAjax({
         	url: lru5,
         	type: "post",
             data: customFormData,
@@ -801,9 +983,12 @@ function getIdKab(raw){
 
 function getIdKec(raw){
 	return new Promise(function(resolve, reject){
-        var customFormData = formData;
+        
+        var customFormData = new FormData();
+        customFormData.append('_token', tokek);
+        customFormData.append('v1bnA1m', v1bnA1m);
         customFormData.append('DsK121m', C3rYDq('idprop='+raw.id_prov+'&idkokab='+raw.id_kab));
-  		jQuery.ajax({
+  		relayAjax({
           	url: lru6,
           	type: "post",
             data: customFormData,
@@ -824,9 +1009,12 @@ function getIdKec(raw){
 
 function getIdKel(raw){
 	return new Promise(function(resolve, reject){
-        var customFormData = formData;
+        
+        var customFormData = new FormData();
+        customFormData.append('_token', tokek);
+        customFormData.append('v1bnA1m', v1bnA1m);
         customFormData.append('DsK121m', C3rYDq('idprop='+raw.id_prov+'&idkokab='+raw.id_kab+'&idcamat='+raw.id_kec));
-		jQuery.ajax({
+		relayAjax({
 	      	url: lru7,
 	      	type: "post",
             data: customFormData,
@@ -853,10 +1041,17 @@ function setKeterangan(raw){
       			return jQuery(this).html().toLocaleLowerCase() == raw.keterangan.toLocaleLowerCase();
       		}).val();
       		if(typeof _id_keterangan == 'undefined'){
-				jQuery.ajax({
-		          	url: "../../simpan-keterangan/"+config.id_daerah+"/"+raw.id_unit,
+                
+                var customFormData = new FormData();
+                customFormData.append('_token', tokek);
+                customFormData.append('v1bnA1m', v1bnA1m);
+                customFormData.append('DsK121m', C3rYDq('keterangan_add='+raw.keterangan));
+				relayAjax({
+		          	url: lru12,
 		          	type: "POST",
-		          	data:{"_token": $('meta[name=_token]').attr('content'),"kodesbl":raw.kodesbl,"skrim":CR64('keterangan_add='+raw.keterangan)},
+                    data: customFormData,
+                    processData: false,
+                    contentType: false,
 		          	success: function(data){
 		          		jQuery("select[name=keterangan]").append('<option value ="'+data['id_ket_sub_bl']+'">'+data['ket_bl_teks']+'</option>');
               			jQuery("select[name=keterangan]").val(data['id_ket_sub_bl']).trigger("change");
@@ -887,17 +1082,19 @@ function filePicked(oEvent) {
         	type: 'binary'
       	});
 
+        var no_sheet = 0;
       	workbook.SheetNames.forEach(function(sheetName) {
-	        // Here is your object
+	        no_sheet++;
+            if(no_sheet > 1){ return; }
 	        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
 	        var type_data = jQuery('#jenis_data').val();
-	        if(type_data == ''){
-	        	return alert('Jenis Data Excel tidak boleh kosong!');
-	        }else if(
-	        	type_data == 'dana-desa'
-	        	|| type_data == 'bagi-hasil'
-	        ){
-	        	var data = [];
+	        var data = [];
+            if(type_data == ''){
+                return alert('Jenis Data Excel tidak boleh kosong!');
+            }else if(
+                type_data == 'dana-desa'
+                || type_data == 'bagi-hasil'
+            ){
 	        	XL_row_object.map(function(row, i){
 	        		data_pasti = {};
 		        	data_pasti.no = row['NO'];
@@ -912,23 +1109,32 @@ function filePicked(oEvent) {
 	        		data_pasti.prov = row['PROVINSI'];
 	        		data.push(data_pasti);
 	        	});
-		        var json_object = JSON.stringify(data);
-		        console.log(data);
-		        jQuery("#file_output").val(json_object);
 	        }else if(
 	        	type_data == 'dana-bos'
 	        ){
-	        	var data = [];
-	        	var kec = '';
-	        	var kab = '';
-	        	var prov = '';
-	        	XL_row_object.map(function(b, i){
-	        		console.log('b', b);
+	        	XL_row_object.map(function(row, i){
+                    data_pasti = {};
+                    data_pasti.no = row['NO'];
+                    data_pasti.nama = row['PENERIMA'];
+                    data_pasti.total = row['PAGU'];
+                    if(row['KETERANGAN']){
+                        data_pasti.keterangan = row['KETERANGAN'];
+                    }
+                    data_pasti.jenis = row['JENIS'];
+                    data_pasti.nik = row['NIK'];
+                    data_pasti.alamat = row['ALAMAT'];
+                    data_pasti.kel = row['KELURAHAN'];
+                    data_pasti.kec = row['KECAMATAN'];
+                    data_pasti.kab = row['KABUPATEN'];
+                    data_pasti.prov = row['PROVINSI'];
+                    data_pasti.tlp = row['TLP'];
+                    data.push(data_pasti);
+	        		// console.log('b', b);
 	        	});
-		        var json_object = JSON.stringify(data);
-		        console.log(data);
-		        jQuery("#file_output").val(json_object);
-	        }
+            }
+	        console.log(data);
+            var json_object = JSON.stringify(data);
+		    jQuery("#file_output").val(json_object);
       	});
 	};
 
@@ -1009,14 +1215,17 @@ function gantiRekKomponen(type, selected){
 		var rek_asal = jQuery('select[name="akun"]').val();
 		jQuery('#ganti-rek-asal').html(jQuery('select[name="akun"]').html());
 		jQuery('#ganti-rek-asal').val(rek_asal);
-    var customFormData = formData;
-    customFormData.append('DsK121m', C3rYDq("komponenkel="+jenisbl));
-    jQuery.ajax({
-        url: lru3,
-        type: "post",
-        data: customFormData,
-        processData: false,
-        contentType: false,
+    
+        var customFormData = new FormData();
+        customFormData.append('_token', tokek);
+        customFormData.append('v1bnA1m', v1bnA1m);
+        customFormData.append('DsK121m', C3rYDq("komponenkel="+jenisbl));
+        relayAjax({
+            url: lru3,
+            type: "post",
+            data: customFormData,
+            processData: false,
+            contentType: false,
 		    success: function(data){
 		      	jQuery("#pilih-ganti-rek").html(data);
 		      	jQuery("#pilih-ganti-rek").val(rek_asal);
@@ -1119,7 +1328,7 @@ jQuery('#simpan-ganti-rek').on("click", function(){
         					if(kodesbl && idblrinci && idblrinci==current_data){
                                 return new Promise(function(resolve_redurce2, reject_redurce2){
                                     if(!type || type == 'rekening'){
-                						jQuery.ajax({
+                						relayAjax({
                 			              	url: "../../hapus-rincian/"+config.id_daerah+"/"+id_unit,
                 			              	type: "POST",
                 			              	data:{"_token": jQuery('meta[name=_token]').attr('content'),"skrim":CR64('kodesbl='+kodesbl+'&idbelanjarinci='+idblrinci+'&jeniskk=0')},
@@ -1131,7 +1340,7 @@ jQuery('#simpan-ganti-rek').on("click", function(){
                                         resolve_redurce2();
                                     }
         			          	}).then(function(){
-    			              		jQuery.ajax({
+    			              		relayAjax({
     						          	url: "../../simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
     						          	type: "POST",
     						          	data:{"_token": jQuery('meta[name=_token]').attr('content'),"skrim":CR64(jQuery('#formdetilrincian').serialize())},
@@ -1166,7 +1375,7 @@ jQuery('#simpan-ganti-rek').on("click", function(){
 			jQuery('#pilih-ganti-kelompok').html('');
 			jQuery('#ganti-keterangan-asal').html('');
 			jQuery('#pilih-ganti-keterangan').html('');
-			jQuery.ajax({
+			relayAjax({
                 url: "../../refresh-belanja/"+config.id_daerah+"/"+id_unit,
                 type: "post",
                 data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl": kodesbl},
@@ -1342,4 +1551,19 @@ function get_type_jadwal(){
     }else{
         return 'plan';
     }
+}
+
+function relayAjax(options, retries=20, delay=30000, timeout=90000){
+    options.timeout = timeout;
+    jQuery.ajax(options)
+    .fail(function(){
+        if (retries > 0) {
+            console.log('Koneksi error. Coba lagi '+retries);
+            setTimeout(function(){ 
+                relayAjax(options, --retries, delay, timeout);
+            },delay);
+        } else {
+            alert('Capek. Sudah dicoba berkali-kali error terus. Maaf, berhenti mencoba.');
+        }
+    });
 }
