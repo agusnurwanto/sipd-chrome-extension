@@ -450,9 +450,10 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 			              	url: config.sipd_url+'daerah/main/?'+current_data3,
 			              	type: "POST",
 			              	data:{
-                        _token: _token,
-                        v1bnA1m: v1bnA1m
-                      },
+                                _token: _token,
+                                v1bnA1m: v1bnA1m,
+                                DsK121m: C3rYDq('jeniskk=0')
+                            },
 			              	success: function(data){
 			              		resolve_reduce3(nextData3);
 			              	}
@@ -469,21 +470,23 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 	            });
 	        }, Promise.resolve(selected[last]))
 	        .then(function(){
-				relayAjax({
-                    url: "../../refresh-belanja/"+config.id_daerah+'/'+id_unit,
+                relayAjax({
+                    url: lru10,
                     type: "post",
-                    data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl":kodesbl},
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function(hasil){
-                      	var res=hasil.split("||");
-                      	var pagu, rinci;
-                      	if(res[0]==0){ pagu=0; } else if(res[0]!=0){ pagu = jQuery.number(res[0],0,',','.'); }
-                      	if(res[1]==0){ rinci=0; } else if(res[1]!=0){ rinci = jQuery.number(res[1],0,',','.'); }
-                      	jQuery(".statustotalpagu").html(pagu);
-                      	jQuery(".statustotalrincian").html(rinci);
-						jQuery('#wrap-loading').hide();
-						alert('Berhasil hapus multi komponen!');
+                        var res=hasil.split("||");
+                        var pagu, rinci;
+                        if(res[0]==0){ pagu=0; } else if(res[0]!=0){ pagu = jQuery.number(res[0],0,',','.'); }
+                        if(res[1]==0){ rinci=0; } else if(res[1]!=0){ rinci = jQuery.number(res[1],0,',','.'); }
+                        jQuery(".statustotalpagu").html(pagu);
+                        jQuery(".statustotalrincian").html(rinci);
+                        jQuery('#wrap-loading').hide();
+                        alert('Berhasil hapus multi komponen!');
                     }
-              	});
+                });
               	if(thpStatus=="murni"){
                 	jQuery('#table_rinci').DataTable().ajax.reload();
               	}else if(thpStatus=="perubahan" || thpStatus=="pergeseran"){
@@ -634,28 +637,31 @@ function insertRKA(){
                         contentType: false,
                         success: function(cari_penerima){
                             raw.resolve2 = resolve2;
+                            console.log('cari_penerima', cari_penerima);
                             if(cari_penerima.data.length==0){
                                 input_penerima(raw);
                             }else{
                                 var dapat_profile = [];
                                 cari_penerima.data.map(function(profile, k){
-                                    if(profile.nama_teks == raw.nama){
+                                    if(profile.nama_teks.trim().toLowerCase() == raw.nama.trim().toLowerCase()){
                                         dapat_profile.push(profile);
                                     }
                                 });
+                                // console.log('dapat_profile1', dapat_profile);
                                 if(dapat_profile.length > 1){
                                     var dapat_profile2 = [];
                                     dapat_profile.map(function(profile, k){
-                                        if(profile.alamat_teks == raw.alamat){
+                                        if(profile.alamat_teks.trim().toLowerCase() == raw.alamat.trim().toLowerCase()){
                                             dapat_profile2.push(profile);
                                         }
                                     });
                                     dapat_profile = dapat_profile2;
                                 }
+                                // console.log('dapat_profile2', dapat_profile);
                                 if(dapat_profile.length == 0){
                                     input_penerima(raw);
                                 }else{
-                                    raw.id_profile = cari_penerima.data[0].id_profile;
+                                    raw.id_profile = cari_penerima.data[0].id_profil;
                                     resolve2(raw);
                                 }
                             }
@@ -663,6 +669,7 @@ function insertRKA(){
                     });
                 })
                 .then(function(raw2){
+                    // console.log('raw2.id_profile', raw2.id_profile);
                     if(!raw2.id_profile){
                         raw2.error = "Penerima tidak ditemukan atau tidak bisa disimpan!";
                         resolve(raw2);
@@ -736,7 +743,7 @@ function insertRKA(){
         Promise.all(sendData)
         .then(function(all_status){
             console.log('all_status', all_status);
-            after_insert(all_status);
+            after_insert(all_status, type_data);
         })
         .catch(function(err){
             console.log('err', err);
@@ -861,7 +868,7 @@ function insertRKA(){
     		Promise.all(sendData)
     		.then(function(all_status){
     			console.log('all_status', all_status);
-    			after_insert(all_status);
+    			after_insert(all_status, type_data);
     		})
     	    .catch(function(err){
     	        console.log('err', err);
@@ -877,9 +884,8 @@ function insertRKA(){
 }
 
 function input_penerima(raw){
-    raw.res_input_penerima = 'Belum berani input penerima';
-    return raw.resolve2(raw);
-    
+    // raw.res_input_penerima = 'Belum berani input penerima';
+    // return raw.resolve2(raw);
     var customFormData = new FormData();
     customFormData.append('_token', tokek);
     customFormData.append('v1bnA1m', v1bnA1m);
@@ -888,9 +894,9 @@ function input_penerima(raw){
         +'&nama_penerima='+raw.nama
         +'&nik_penerima='+raw.nik
         +'&alamat_penerima='+raw.alamat
-        +'&prop_penerima='+raw.id_prov
-        +'&kab_kota_penerima='+raw.id_kab
-        +'&kecamatan_penerima='+raw.id_kec
+        +'&prop_penerima='+raw.prov
+        +'&kab_kota_penerima='+raw.kab
+        +'&kecamatan_penerima='+raw.kec
         +'&kelurahan_penerima='+raw.kel
         +'&telp_penerima='+raw.tlp
     ));
@@ -903,8 +909,8 @@ function input_penerima(raw){
         contentType: false,
         success: function(res_input_penerima){
             raw.res_input_penerima = res_input_penerima;
-            if(res_input_penerima.id_profile){
-                raw.id_profile = res_input_penerima.id_profile;
+            if(res_input_penerima.id_profil){
+                raw.id_profile = res_input_penerima.id_profil;
                 raw.resolve2(raw);
             }else{
                 raw.resolve2(raw);
@@ -913,7 +919,7 @@ function input_penerima(raw){
     });
 }
 
-function after_insert(all_status){
+function after_insert(all_status, type_data){
     jQuery('.close-form').click();
     relayAjax({
         url: lru10,
@@ -932,7 +938,11 @@ function after_insert(all_status){
             var _error = [];
             all_status.map(function(row, n){
                 if(row.error){
-                    _error.push('"'+row.desa+'" error: ('+row.error+')');
+                    if(type_data == 'dana-bos'){
+                        _error.push('"'+row.nama+'" error: ('+row.error+')');
+                    }else{
+                        _error.push('"'+row.desa+'" error: ('+row.error+')');
+                    }
                 }
             });
             var catatan = '';
@@ -1292,8 +1302,7 @@ function ubahKomponenAll(type, that){
 	}else{
 		console.log('selected', selected);
         setTimeout(function(){
-    		var kodesbl = jQuery('input[name="kodesbl"]').val();
-    		ubahKomponen(kodesbl, selected[0], function(){
+    		ubahKomponen(selected[0], function(){
     			gantiRekKomponen(type, selected);
     		});
         }, 500);
@@ -1304,7 +1313,13 @@ function ubahKomponenAll(type, that){
 jQuery('.tambah-detil').click();
 jQuery('.tambah-detil').click();
 
-var f_ubah = ubahKomponen.toString().replace('function ubahKomponen(kodesbl,idblrinci){', 'function ubahKomponen(kodesbl,idblrinci, callback){').replace('$("select[name=satuan4]")', 'if(callback){ callback() }; $("select[name=satuan4]")');
+// tambahkan callback
+var f_ubah = ubahKomponen.toString().replace('function ubahKomponen(_0x5e0d9a){', 'function ubahKomponen(_0x5e0d9a, callback){');
+
+// jalankan callback setelah rincian berhasil diload (fungsi ini perlu sealalu diupdate ketika ada encrypt JS)
+f_ubah = f_ubah.replace('$("select[name=satuan4]")', 'if(callback){ callback() }; $("select[name=satuan4]")');
+
+// run function baru dan tambahkan tombol ganti rekening
 var ganti_rek = '<button class="btn btn-danger btn-sm pull-right" style="margin: 0px 0px 5px 0px" id="ganti-rek-sce" onclick="gantiRekKomponen(); return false;" type="button" id="open_ganti_rek">Ganti Rekening</button>';
 eval(f_ubah.replace(/.$/," if(jQuery('#open_ganti_rek').length==0){ jQuery('.group-kodrek-komponen label').eq(0).append('"+ganti_rek+"') } }"));
 
@@ -1341,11 +1356,17 @@ jQuery('#simpan-ganti-rek').on("click", function(){
         					if(kodesbl && idblrinci && idblrinci==current_data){
                                 return new Promise(function(resolve_redurce2, reject_redurce2){
                                     if(!type || type == 'rekening'){
-                						relayAjax({
-                			              	url: "../../hapus-rincian/"+config.id_daerah+"/"+id_unit,
-                			              	type: "POST",
-                			              	data:{"_token": jQuery('meta[name=_token]').attr('content'),"skrim":CR64('kodesbl='+kodesbl+'&idbelanjarinci='+idblrinci+'&jeniskk=0')},
-                			              	success: function(data){
+                                        relayAjax({
+                			              	// url: "../../hapus-rincian/"+config.id_daerah+"/"+id_unit,
+                			              	// data:{"_token": jQuery('meta[name=_token]').attr('content'),"skrim":CR64('kodesbl='+kodesbl+'&idbelanjarinci='+idblrinci+'&jeniskk=0')},
+                                            url: config.sipd_url+'daerah/main/?'+current_data,
+                                            type: "POST",
+                                            data:{
+                                                _token: _token,
+                                                v1bnA1m: v1bnA1m,
+                                                DsK121m: C3rYDq('jeniskk=0')
+                                            },
+                                            success: function(data){
                                                 resolve_redurce2();
                                             }
                                         });
@@ -1353,10 +1374,17 @@ jQuery('#simpan-ganti-rek').on("click", function(){
                                         resolve_redurce2();
                                     }
         			          	}).then(function(){
-    			              		relayAjax({
-    						          	url: "../../simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
-    						          	type: "POST",
-    						          	data:{"_token": jQuery('meta[name=_token]').attr('content'),"skrim":CR64(jQuery('#formdetilrincian').serialize())},
+                                    var customFormData = new FormData();
+                                    customFormData.append('_token', tokek);
+                                    customFormData.append('v1bnA1m', v1bnA1m);
+                                    customFormData.append('DsK121m', C3rYDq(jQuery('#formdetilrincian').serialize()));
+                                    // resolve(raw2); console.log(raw2);
+                                    relayAjax({
+                                        url: lru9,
+                                        type: "post",
+                                        data: customFormData,
+                                        processData: false,
+                                        contentType: false,
     						          	success: function(data){
     			              				resolve_redurce(nextData);
     						          	}
