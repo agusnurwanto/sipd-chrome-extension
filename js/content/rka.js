@@ -597,7 +597,7 @@ function insertRKA(){
 	}
 	excel = JSON.parse(excel);
 	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
-	var id_kel = jQuery('select[name="kelurahan"] option').filter(function () { return jQuery(this).html() == "Poncol"; }).val();
+	var id_kel = jQuery('select[name="kelurahan"] option').filter(function(){ return jQuery(this).html() == "Poncol"; }).val();
 	var jenis_belanja = jQuery('#jenis-bel-excel').val();
 	var id_rek_akun = jQuery('#rek-excel').val();
 	var id_pengelompokan = jQuery('#paket-excel').val();
@@ -667,6 +667,7 @@ function insertRKA(){
                         raw2.error = "Penerima tidak ditemukan atau tidak bisa disimpan!";
                         resolve(raw2);
                     }else{
+                        raw2.kodesbl = jQuery('input[name="kodesbl"]').val();
                         setKeterangan(raw2).then(function(id_ket){
                         raw2.detil_rincian = {
                             jenis_belanja: jenis_belanja,
@@ -681,12 +682,9 @@ function insertRKA(){
                             +'&jenisbl='+jenis_belanja
                             +'&akun='+encodeURIComponent(id_rek_akun)
                             +'&subtitle='+id_pengelompokan
-                            +'&uraian_penerima='
-                            +'&id_penerima='
+                            +'&uraian_penerima='+raw2.nama
+                            +'&id_penerima='+raw2.id_profile
                             +'&prop='+raw2.id_prov
-                            +'&kab_kota='+raw2.id_kab
-                            +'&kecamatan='+raw2.id_kec
-                            +'&kelurahan='+raw2.id_kel
                             +'&komponenkel='
                             +'&komponen='
                             +'&idkomponen='
@@ -703,11 +701,17 @@ function insertRKA(){
                             +'&volum4='
                             +'&satuan4=';
                         raw2.skrim = skrim;
+                        var customFormData = new FormData();
+                        customFormData.append('_token', tokek);
+                        customFormData.append('v1bnA1m', v1bnA1m);
+                        customFormData.append('DsK121m', C3rYDq(skrim));
                         // resolve(raw2); console.log(raw2);
                         relayAjax({
-                            url: config.sipd_url+"daerah/main/budget/belanja/"+config.tahun_anggaran+"/rinci/simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
+                            url: lru9,
                             type: "post",
-                            data: "_token="+jQuery('meta[name=_token]').attr('content')+'&skrim='+CR64(skrim),
+                            data: customFormData,
+                            processData: false,
+                            contentType: false,
                             success: function(data_kel){
                                 resolve(raw2);
                             },
@@ -809,10 +813,17 @@ function insertRKA(){
     									      			+'&satuan4=';
     										        raw.skrim = skrim;
     										        // resolve(raw); console.log(raw);
-    								      			relayAjax({
-    										          	url: config.sipd_url+"daerah/main/budget/belanja/"+config.tahun_anggaran+"/rinci/simpan-belanjarinci/"+config.id_daerah+"/"+id_unit,
-    										          	type: "post",
-    										          	data: "_token="+jQuery('meta[name=_token]').attr('content')+'&skrim='+CR64(skrim),
+                                                    var customFormData = new FormData();
+                                                    customFormData.append('_token', tokek);
+                                                    customFormData.append('v1bnA1m', v1bnA1m);
+                                                    customFormData.append('DsK121m', C3rYDq(skrim));
+                                                    // resolve(raw2); console.log(raw2);
+                                                    relayAjax({
+                                                        url: lru9,
+                                                        type: "post",
+                                                        data: customFormData,
+                                                        processData: false,
+                                                        contentType: false,
     										          	success: function(data_kel){
     								      					resolve(raw);
     										          	},
@@ -905,9 +916,11 @@ function input_penerima(raw){
 function after_insert(all_status){
     jQuery('.close-form').click();
     relayAjax({
-        url: "../../refresh-belanja/"+config.id_daerah+"/"+id_unit,
+        url: lru10,
         type: "post",
-        data:{"_token":jQuery('meta[name=_token]').attr('content'),"kodesbl":jQuery('input[name="kodesbl"]').val()},
+        data: formData,
+        processData: false,
+        contentType: false,
         success: function(hasil){
             var res=hasil.split("||");
             var pagu, rinci;
