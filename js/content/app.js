@@ -853,7 +853,11 @@ jQuery(document).ready(function(){
         		+'<option value="penerima_bantuan">Master Data Penerima Bantuan</option>'
         		+'<option value="alamat">Master Data Provinsi, Kabupaten/Kota, Kecamatan, Desa/Kelurahan</option>'
         	+'</select>';
-		jQuery('.bg-title .col-lg-6').eq(1).prepend(master_html);
+        if(jQuery('.bg-title .col-lg-6').eq(1).length >= 1){
+			jQuery('.bg-title .col-lg-6').eq(1).prepend(master_html);
+		}else{
+			jQuery('.bg-title').append('<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">'+master_html+'</div>');
+		}
 		jQuery('#singkron_master_cse').on('click', function(){
 			var val = jQuery('#data_master_cse').val();
 			if(val == ''){
@@ -1751,16 +1755,14 @@ function tampil_semua_halaman(){
 
 function singkron_skpd_ke_lokal(tampil_renja){
 	if(tampil_renja && typeof data_unit != 'undefined'){
-		if(current_url.indexOf('skpd/'+config.tahun_anggaran+'/list/'+config.id_daerah+'') != -1){
-			jQuery('#table_skpd tbody tr').map(function(i, b){
-				var td = jQuery(b).find('td');
-				var id_skpd = td.find('ul.dropdown-menu li').eq(0).find('a').attr('onclick').split("'")[1];
-				id_skpd = id_skpd.split("'")[0];
-				if(td.eq(1).find('a').length == 0){
-					td.eq(1).append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[id_skpd]+'?key='+get_key()+'&rkpd=1">Print RENJA</a>');
-				}
-			});
-		}
+		jQuery('#table_skpd tbody tr').map(function(i, b){
+			var td = jQuery(b).find('td');
+			var id_skpd = td.find('ul.dropdown-menu li').eq(0).find('a').attr('onclick').split("'")[1];
+			id_skpd = id_skpd.split("'")[0];
+			if(td.eq(1).find('a').length == 0){
+				td.eq(1).append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[id_skpd]+'?key='+get_key()+'&rkpd=1">Print RENJA</a>');
+			}
+		});
 		return;
 	}
 	if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
@@ -1773,8 +1775,15 @@ function singkron_skpd_ke_lokal(tampil_renja){
 			success: function(unit){
 				var sendData = unit.data.map(function(b, i){
 					return new Promise(function(resolve, reject){
-						if(b.action.indexOf("ubahSkpd(") != -1){
-							var url_detail = b.action.split("onclick=ubahSkpd('")[1].split("'")[0];
+						if(
+							b.action.indexOf("ubahSkpd(") != -1
+							|| b.action.indexOf("detilSkpd(") != -1
+						){
+							try{
+								var url_detail = b.action.split("onclick=ubahSkpd('")[1].split("'")[0];
+							}catch(e){
+								var url_detail = b.action.split("onclick=detilSkpd('")[1].split("'")[0];
+							}
 		                	relayAjax({
 					          	url: config.sipd_url+"daerah/main/?"+url_detail,
 					          	type: "post",

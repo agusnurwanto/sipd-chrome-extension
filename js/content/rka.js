@@ -207,7 +207,7 @@ jQuery('#cari-ssh-sipd').on('click', function(){
 
 var tombol_tambahan = ''
     +'<button class="fcbtn btn btn-success btn-outline btn-1b" id="tampil-profil">'
-        +'<i class="fa fa-eyes m-r-5"></i> <span>Tampil Profil</span>'
+        +'<i class="fa fa-eye m-r-5"></i> <span>Tampil Profil</span>'
     +'</button>';
 jQuery('.button-box').prepend(tombol_tambahan);
 jQuery('#tampil-profil').on('click', function(){
