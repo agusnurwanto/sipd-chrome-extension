@@ -612,7 +612,7 @@ function getKab(id_unit, id_prov, url){
 	});
 }
 
-function getProv(id_unit, url){
+function getProv(id_unit, url, full=false){
 	return new Promise(function(resolve, reject){
 		if(typeof(alamat) == 'undefined'){
 			getToken().then(function(_token){
@@ -624,20 +624,24 @@ function getProv(id_unit, url){
 					processData: false,
   					contentType: false,
 					success: function(ret){
-						alamat = {
-							kab: {}
-						};
-						jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
-							var val = jQuery(b).attr('value');
-							var nama = jQuery(b).text();
-							if(val!=0){
-								alamat[val] = { 
-									nama: nama,
-									val: val
-								};
-							}
-						});
-						return resolve(alamat);
+						if(full){
+							return resolve(ret);
+						}else{
+							alamat = {
+								kab: {}
+							};
+							jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
+								var val = jQuery(b).attr('value');
+								var nama = jQuery(b).text();
+								if(val!=0){
+									alamat[val] = { 
+										nama: nama,
+										val: val
+									};
+								}
+							});
+							return resolve(alamat);
+						}
 					}
 				});
 			});

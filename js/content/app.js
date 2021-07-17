@@ -793,9 +793,13 @@ jQuery(document).ready(function(){
 
 		// harus di inject agar bekerja
 		run_script('window.ext_url = "'+chrome.extension.getURL('')+'"');
+		injectScript( chrome.extension.getURL('/js/content/rka_functions.js'), 'html');
 		injectScript( chrome.extension.getURL('/js/content/rka.js'), 'html');
 
 		var singkron_rka = ''
+			+'<button class="fcbtn btn btn-warning btn-outline btn-1b" id="tambah-penerima-ex">'
+				+'<i class="fa fa-plus m-r-5"></i> <span>Penerima Bantuan</span>'
+			+'</button>'
 			+'<button class="fcbtn btn btn-info btn-outline btn-1b" id="download_data_excel" style="display: none;">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Download Rincian Excel</span>'
 			+'</button>'
@@ -806,6 +810,7 @@ jQuery(document).ready(function(){
 		jQuery('#download_data_excel').on('click', function(){
 			tableHtmlToExcel('data_rin_excel', jQuery('table.m-b-0>tbody>tr').eq(4).find('td').eq(2).text().trim());
 		});
+
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			jQuery('#download_data_excel').hide();
 			jQuery('body').prepend(''
@@ -841,25 +846,22 @@ jQuery(document).ready(function(){
 				+'</table>');
 			singkron_rka_ke_lokal();
 		});
-
-		if(jQuery('button.tambah-detil').length >= 1){
-			var master_html = ''
-            	+'<button onclick="return false;" class="btn btn-primary" id="singkron_master_cse" style="float:right; margin-left: 10px;">Singkron Data Master ke DB Lokal</button>'
-            	+'<select class="form-control" style="width: 300px; float: right;" id="data_master_cse">'
-            		+'<option value="">Pilih Data Master</option>'
-            		+'<option value="penerima_bantuan">Master Data Penerima Bantuan</option>'
-            		+'<option value="alamat">Master Data Provinsi, Kabupaten/Kota, Kecamatan, Desa/Kelurahan</option>'
-            	+'</select>';
-			jQuery('.bg-title .col-lg-6').eq(1).prepend(master_html);
-			jQuery('#singkron_master_cse').on('click', function(){
-				var val = jQuery('#data_master_cse').val();
-				if(val == ''){
-					alert('Data Master tidak boleh kosong!');
-				}else{
-					singkron_master_cse(val);
-				}
-			});
-		}
+		var master_html = ''
+        	+'<button onclick="return false;" class="btn btn-primary" id="singkron_master_cse" style="float:right; margin-left: 10px;">Singkron Data Master ke DB Lokal</button>'
+        	+'<select class="form-control" style="width: 300px; float: right;" id="data_master_cse">'
+        		+'<option value="">Pilih Data Master</option>'
+        		+'<option value="penerima_bantuan">Master Data Penerima Bantuan</option>'
+        		+'<option value="alamat">Master Data Provinsi, Kabupaten/Kota, Kecamatan, Desa/Kelurahan</option>'
+        	+'</select>';
+		jQuery('.bg-title .col-lg-6').eq(1).prepend(master_html);
+		jQuery('#singkron_master_cse').on('click', function(){
+			var val = jQuery('#data_master_cse').val();
+			if(val == ''){
+				alert('Data Master tidak boleh kosong!');
+			}else{
+				singkron_master_cse(val);
+			}
+		});
 	// SIKRONISASI PROGRAM PRIORITAS NASIONAL DENGAN PROGRAM PRIORITAS DAERAH (APBD perda)
 	}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/apbd/9/'+config.id_daerah+'/setunit') != -1){
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
