@@ -111,7 +111,6 @@ function insertRKA(){
     	return alert('Data Excel tidak boleh kosong!');
 	}
 	excel = JSON.parse(excel);
-	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
 	var id_kel = jQuery('select[name="kelurahan"] option').filter(function(){ return jQuery(this).html() == "Poncol"; }).val();
 	var jenis_belanja = jQuery('#jenis-bel-excel').val();
 	var id_rek_akun = jQuery('#rek-excel').val();
@@ -120,7 +119,13 @@ function insertRKA(){
 	var satuantext = jQuery('#satuan-excel option:selected').text();
 	var satuan = jQuery('#satuan-excel').val();
 	jQuery('.tambah-detil').click();
-    if(type_data == 'dana-bos'){
+    if(
+    	type_data == 'BOS'
+        || type_data == 'HIBAH-BRG'
+        || type_data == 'HIBAH'
+        || type_data == 'BANSOS-BRG'
+        || type_data == 'BANSOS'
+    ){
         var sendData = excel.map(function(raw, i){
             return new Promise(function(resolve, reject){
                 new Promise(function(resolve2, reject2){
@@ -235,20 +240,22 @@ function insertRKA(){
             alert('Ada kesalahan sistem!');
             jQuery('#wrap-loading').hide();
         });
-    }else{
-    	getIdProv(id_unit).then(function(data_prov){
+    }else if(
+        type_data == 'BANKEU'
+        || type_data == 'BAGI-HASIL'
+    ){
+    	getIdProv().then(function(data_prov){
     		var sendData = excel.map(function(raw, i){
     			return new Promise(function(resolve, reject){
-    				raw.id_unit = id_unit;
     	      		var id_prov = jQuery('<select>'+data_prov+'</select>').find('option').filter(function(){
-    	      			return jQuery(this).html().toLocaleLowerCase().replace('provinsi ', '') == raw.prov.toLocaleLowerCase();
+    	      			return jQuery(this).val() == raw.prov;
     	      		}).val();
     				// console.log('id_prov', id_prov, data_prov, raw.prov);
     	      		if(typeof id_prov == 'undefined'){
     	      			raw.error = 'Provinsi tidak ditemukan';
     	      			resolve(raw);
     	      		}else{
-    					raw.id_prov = id_prov;
+    					raw.id_prov = raw.prov;
     					getIdKab(raw).then(function(id_kab){
     			      		if(typeof id_kab == 'undefined'){
     			      			raw.error = 'Kabupaten / Kota tidak ditemukan';
@@ -478,7 +485,7 @@ function getIdKab(raw){
             contentType: false,
             success: function(data_kab){
 	      		var id_kab = jQuery('<select>'+data_kab+'</select>').find('option').filter(function(){
-	      			return jQuery(this).html().toLocaleLowerCase().replace('kab. ', '') == raw.kab.toLocaleLowerCase();
+	      			return jQuery(this).val() == raw.kab;
 	      		}).val();
 	      		resolve(id_kab);
           	},
@@ -504,7 +511,7 @@ function getIdKec(raw){
             contentType: false,
           	success: function(data_kec){
             	var id_kec = jQuery('<select>'+data_kec+'</select>').find('option').filter(function(){
-	      			return jQuery(this).html().toLocaleLowerCase() == raw.kec.toLocaleLowerCase();
+	      			return jQuery(this).val() == raw.kec;
 	      		}).val();
 	      		resolve(id_kec);
           	},
@@ -530,7 +537,7 @@ function getIdKel(raw){
             contentType: false,
 	      	success: function(data_kel){
 	        	var id_kel = jQuery('<select>'+data_kel+'</select>').find('option').filter(function(){
-	      			return jQuery(this).html().toLocaleLowerCase() == raw.desa.toLocaleLowerCase();
+	      			return jQuery(this).val() == raw.desa();
 	      		}).val();
 	      		resolve(id_kel);
           	},
@@ -590,18 +597,19 @@ function filePicked(oEvent) {
         	type: 'binary'
       	});
 
-        var no_sheet = 0;
+        var cek = false;
       	workbook.SheetNames.forEach(function(sheetName) {
-	        no_sheet++;
-            if(no_sheet > 1){ return; }
+            if(sheetName != 'data'){ return; }
+            cek = true;
+            console.log('sheetName', sheetName);
 	        var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
 	        var type_data = jQuery('#jenis_data').val();
 	        var data = [];
             if(type_data == ''){
                 return alert('Jenis Data Excel tidak boleh kosong!');
             }else if(
-                type_data == 'dana-desa'
-                || type_data == 'bagi-hasil'
+                type_data == 'BANKEU'
+        		|| type_data == 'BAGI-HASIL'
             ){
 	        	XL_row_object.map(function(row, i){
 	        		data_pasti = {};
@@ -618,7 +626,11 @@ function filePicked(oEvent) {
 	        		data.push(data_pasti);
 	        	});
 	        }else if(
-	        	type_data == 'dana-bos'
+		        type_data == 'BOS'
+		        || type_data == 'HIBAH-BRG'
+		        || type_data == 'HIBAH'
+		        || type_data == 'BANSOS-BRG'
+		        || type_data == 'BANSOS'
 	        ){
 	        	XL_row_object.map(function(row, i){
                     data_pasti = {};
@@ -645,6 +657,9 @@ function filePicked(oEvent) {
             var json_object = JSON.stringify(data);
 		    jQuery("#file_output").val(json_object);
       	});
+      	if(!cek){
+      		alert('Nama sheet "data" tidak ditemukan!');
+      	}
 	};
 
     reader.onerror = function(ex) {

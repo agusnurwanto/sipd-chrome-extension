@@ -231,10 +231,13 @@ var modal = ''
                       		+'<label class="control-label">Jenis Data Excel</label>'
                           	+'<select class="form-control" name="jenis_data" id="jenis_data">'
                                 +'<option value="">Pilih Format Data Excel</option>'
-                                +'<option value="dana-desa">Dana Desa / ADD (BANKEU)</option>'
+                                +'<option value="BANKEU">Belanja Bantuan Keuangan</option>'
                                 +'<option value="bagi-hasil">Belanja Bagi Hasil</option>'
                                 +'<option value="dana-bos">Dana BOS (BOS Pusat)</option>'
-                                +'<option value="upload-rincian">Upload Rincian</option>'
+                                +'<option value="HIBAH-BRG">Belanja Hibah (Barang/Jasa)</option>'
+                                +'<option value="HIBAH">Belanja Hibah (Uang)</option>'
+                                +'<option value="BANSOS-BRG">Belanja Bantuan Sosial (Barang/Jasa)</option>'
+                                +'<option value="BANSOS">Belanja Bantuan Sosial (Uang)</option>'
                             +'</select>'
                       	+'</div>'
                       	+'<div class="form-group">'
@@ -335,6 +338,7 @@ var modal = ''
         +'</div>'
     +'</div>';
 jQuery('body').append(modal);
+jQuery('#jenis_data').html(jQuery('select[name="jenisbl"]').html());
 var import_excel = ''
 	+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="import_excel">'
 		+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Import Excel</span>'
@@ -492,40 +496,37 @@ jQuery('#jenis_data').on('change', function(){
 	if(jenis != ''){
 		jQuery('#label-excel').text('DOWNLOAD DI SINI');
 	}
-	if(jenis == 'dana-desa'){
-		jQuery('#label-excel').attr('href', ext_url+'excel/ADD-2021.xlsx');
-		jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
-		jQuery('#jenis-bel-excel').val('BANKEU').trigger('change');
-		jQuery('#jenis-bel-excel').attr('disabled', true);
-		// jQuery('#rek-excel').html();
-		jQuery('#paket-excel').html(jQuery('select[name="subtitle"]').html());
-		jQuery('#keterangan-excel').html(jQuery('select[name="keterangan"]').html());
-		jQuery('#satuan-excel').html(jQuery('select[name="satuan1"]').html());
-		jQuery('#satuan-excel').select2();
-		jQuery('.group-dana-desa').show();
-	}else if(jenis == 'bagi-hasil'){
-		jQuery('#label-excel').attr('href', ext_url+'excel/ADD-2021.xlsx');
-		jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
-		jQuery('#jenis-bel-excel').val('BAGI-HASIL').trigger('change');
-		jQuery('#jenis-bel-excel').attr('disabled', true);
-		// jQuery('#rek-excel').html();
-		jQuery('#paket-excel').html(jQuery('select[name="subtitle"]').html());
-		jQuery('#keterangan-excel').html(jQuery('select[name="keterangan"]').html());
-		jQuery('#satuan-excel').html(jQuery('select[name="satuan1"]').html());
-		jQuery('#satuan-excel').select2();
-		jQuery('.group-dana-desa').show();
-	}else if(jenis == 'dana-bos'){
-		jQuery('#label-excel').attr('href', ext_url+'excel/BOS-HIBAH.xlsx');
-		jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
-		jQuery('#jenis-bel-excel').val('BOS').trigger('change');
-		jQuery('#jenis-bel-excel').attr('disabled', true);
-		// jQuery('#rek-excel').html();
-		jQuery('#paket-excel').html(jQuery('select[name="subtitle"]').html());
-		jQuery('#keterangan-excel').html(jQuery('select[name="keterangan"]').html());
-		jQuery('#satuan-excel').html(jQuery('select[name="satuan1"]').html());
-		jQuery('#satuan-excel').select2();
-		jQuery('.group-dana-desa').show();
-	}
+    var cek = false;
+    if(
+        jenis == 'BANKEU'
+        || jenis == 'BAGI-HASIL'
+    ){
+        jQuery('#label-excel').attr('href', ext_url+'excel/BANKEU.xlsx');
+        jQuery('.group-dana-desa').show();
+        cek = true;
+    }else if(
+        jenis == 'BOS'
+        || jenis == 'HIBAH-BRG'
+        || jenis == 'HIBAH'
+        || jenis == 'BANSOS-BRG'
+        || jenis == 'BANSOS'
+    ){
+        jQuery('#label-excel').attr('href', ext_url+'excel/BOS-HIBAH.xlsx');
+        jQuery('.group-dana-desa').show();
+        cek = true;
+    }
+    if(cek){
+    	jQuery('#jenis-bel-excel').html(jQuery('select[name="jenisbl"]').html());
+    	jQuery('#jenis-bel-excel').val(jenis).trigger('change');
+    	jQuery('#jenis-bel-excel').attr('disabled', true);
+    	jQuery('#paket-excel').html(jQuery('select[name="subtitle"]').html());
+    	jQuery('#keterangan-excel').html(jQuery('select[name="keterangan"]').html());
+    	jQuery('#satuan-excel').html(jQuery('select[name="satuan1"]').html());
+    	jQuery('#satuan-excel').select2();
+    }else{
+        var text_jenis = jQuery(this).find('option:selected').text();
+        alert('Maaf jenis belanja "'+text_jenis+'" belum bisa diimport. Harap pilih jenis belanja yang lainnya!');
+    }
 });
 jQuery('#jenis-bel-excel').on('change', function(){
 	jQuery('#wrap-loading').show();
