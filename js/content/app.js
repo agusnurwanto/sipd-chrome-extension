@@ -1586,17 +1586,6 @@ jQuery(document).ready(function(){
 	        jQuery('#wrap-loading').show();
 	        singkron_pengaturan_sipd_lokal();
 		});
-	 }else if(current_url.indexOf('/renstra/'+config.tahun_anggaran+'/list/'+config.id_daerah+'/') != -1){
-		console.log('halaman RENSTRA');
-		var singkron_lokal = ''
-            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-renstra-lokal" style="margin-left: 30px;">'
-                    +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
-            +'</button>';
-		jQuery('#reset_program').after(singkron_lokal);
-		jQuery('#singkron-renstra-lokal').on('click', function(){
-	        jQuery('#wrap-loading').show();
-	        singkron_renstra_lokal();
-		});
 	 }else if(
 	 	jQuery('h3.page-title').text().indexOf('Pendapatan') != -1
 	 ){

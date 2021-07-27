@@ -1666,85 +1666,289 @@ function singkron_pengaturan_sipd_lokal(){
 
 function singkron_renstra_lokal(){
 	jQuery('#wrap-loading').show();
-	var id_unit = window.location.href.split('?')[0].split(''+config.id_daerah+'/')[1];
-	relayAjax({
-      	url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/renstra/'+config.tahun_anggaran+'/tampil-renstra/'+config.id_daerah+'/'+id_unit+'?filter_program=&filter_indi_prog=&filter_giat=&filter_skpd=',
-      	type: "GET",
-      	contentType: 'application/json',
-      	success: function(rens){
-      		var data_renstra = [];
-      		rens.data.map(function(b, i){
-      			data_renstra[i] = {};
-      			data_renstra[i].id_bidang_urusan = b.id_bidang_urusan;
-				data_renstra[i].id_giat = b.id_giat;
-				data_renstra[i].id_program = b.id_program;
-				data_renstra[i].id_renstra = b.id_renstra;
-				data_renstra[i].id_rpjmd = b.id_rpjmd;
-				data_renstra[i].id_sub_giat = b.id_sub_giat;
-				data_renstra[i].id_unit = b.id_unit;
-				data_renstra[i].indikator = b.indikator;
-				data_renstra[i].indikator_sub = b.indikator_sub;
-				data_renstra[i].is_locked = b.is_locked;
-				data_renstra[i].kebijakan_teks = b.kebijakan_teks;
-				data_renstra[i].kode_bidang_urusan = b.kode_bidang_urusan;
-				data_renstra[i].kode_giat = b.kode_giat;
-				data_renstra[i].kode_program = b.kode_program;
-				data_renstra[i].kode_skpd = b.kode_skpd;
-				data_renstra[i].kode_sub_giat = b.kode_sub_giat;
-				data_renstra[i].misi_teks = b.misi_teks;
-				data_renstra[i].nama_bidang_urusan = b.nama_bidang_urusan;
-				data_renstra[i].nama_giat = b.nama_giat;
-				data_renstra[i].nama_program = b.nama_program;
-				data_renstra[i].nama_skpd = b.nama_skpd;
-				data_renstra[i].nama_sub_giat = b.nama_sub_giat;
-				data_renstra[i].outcome = b.outcome;
-				data_renstra[i].pagu_1 = b.pagu_1;
-				data_renstra[i].pagu_2 = b.pagu_2;
-				data_renstra[i].pagu_3 = b.pagu_3;
-				data_renstra[i].pagu_4 = b.pagu_4;
-				data_renstra[i].pagu_5 = b.pagu_5;
-				data_renstra[i].pagu_sub_1 = b.pagu_sub_1;
-				data_renstra[i].pagu_sub_2 = b.pagu_sub_2;
-				data_renstra[i].pagu_sub_3 = b.pagu_sub_3;
-				data_renstra[i].pagu_sub_4 = b.pagu_sub_4;
-				data_renstra[i].pagu_sub_5 = b.pagu_sub_5;
-				data_renstra[i].sasaran_teks = b.sasaran_teks;
-				data_renstra[i].satuan = b.satuan;
-				data_renstra[i].satuan_sub = b.satuan_sub;
-				data_renstra[i].strategi_teks = b.strategi_teks;
-				data_renstra[i].target_1 = b.target_1;
-				data_renstra[i].target_2 = b.target_2;
-				data_renstra[i].target_3 = b.target_3;
-				data_renstra[i].target_4 = b.target_4;
-				data_renstra[i].target_5 = b.target_5;
-				data_renstra[i].target_sub_1 = b.target_sub_1;
-				data_renstra[i].target_sub_2 = b.target_sub_2;
-				data_renstra[i].target_sub_3 = b.target_sub_3;
-				data_renstra[i].target_sub_4 = b.target_sub_4;
-				data_renstra[i].target_sub_5 = b.target_sub_5;
-				data_renstra[i].tujuan_teks = b.tujuan_teks;
-				data_renstra[i].visi_teks = b.visi_teks;
-			});
-			var data = {
-			    message:{
-			        type: "get-url",
-			        content: {
-		                url: config.url_server_lokal,
-		                type: 'post',
-		                data: { 
-		                    action: 'singkron_renstra',
-		                    tahun_anggaran: config.tahun_anggaran,
-		                    api_key: config.api_key,
-		                    data: data_renstra
-		                },
-		            	return: true
-		            }
-			    }
-			};
-			chrome.runtime.sendMessage(data, function(response) {
-			    console.log('responeMessage', response);
-			});
-      	}
+	var sendData = [];
+	sendData.push( new Promise(function(resolve, reject){
+		relayAjax({
+	      	url: lru2,
+	        type: 'post',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function (data) {
+	      		var data_renstra = { 
+	                action: 'singkron_renstra_tujuan',
+	                tahun_anggaran: config.tahun_anggaran,
+	                api_key: config.api_key,
+	                tujuan: []
+	            };
+	      		data.data.map(function(tujuan, i){
+	      			data_renstra.tujuan[i] = {};
+	      			data_renstra.tujuan[i].bidur_lock = tujuan.bidur_lock;
+					data_renstra.tujuan[i].id_bidang_urusan = tujuan.id_bidang_urusan;
+					data_renstra.tujuan[i].id_unik = tujuan.id_unik;
+					data_renstra.tujuan[i].id_unik_indikator = tujuan.id_unik_indikator;
+					data_renstra.tujuan[i].id_unit = tujuan.id_unit;
+					data_renstra.tujuan[i].indikator_teks = tujuan.indikator_teks;
+					data_renstra.tujuan[i].is_locked = tujuan.is_locked;
+					data_renstra.tujuan[i].is_locked_indikator = tujuan.is_locked_indikator;
+					data_renstra.tujuan[i].kode_bidang_urusan = tujuan.kode_bidang_urusan;
+					data_renstra.tujuan[i].kode_skpd = tujuan.kode_skpd;
+					data_renstra.tujuan[i].nama_bidang_urusan = tujuan.nama_bidang_urusan;
+					data_renstra.tujuan[i].nama_skpd = tujuan.nama_skpd;
+					data_renstra.tujuan[i].satuan = tujuan.satuan;
+					data_renstra.tujuan[i].status = tujuan.status;
+					data_renstra.tujuan[i].target_1 = tujuan.target_1;
+					data_renstra.tujuan[i].target_2 = tujuan.target_2;
+					data_renstra.tujuan[i].target_3 = tujuan.target_3;
+					data_renstra.tujuan[i].target_4 = tujuan.target_4;
+					data_renstra.tujuan[i].target_5 = tujuan.target_5;
+					data_renstra.tujuan[i].target_akhir = tujuan.target_akhir;
+					data_renstra.tujuan[i].target_awal = tujuan.target_awal;
+					data_renstra.tujuan[i].tujuan_teks = tujuan.tujuan_teks;
+					data_renstra.tujuan[i].urut_tujuan = tujuan.urut_tujuan;
+				});
+				var data = {
+				    message:{
+				        type: "get-url",
+				        content: {
+			                url: config.url_server_lokal,
+			                type: 'post',
+			                data: data_renstra,
+			            	return: false
+			            }
+				    }
+				};
+				chrome.runtime.sendMessage(data, function(response) {
+				    console.log('responeMessage', response);
+				});
+				resolve(true);
+	      	}
+	    });
+	}) );
+	sendData.push( new Promise(function(resolve, reject){
+		relayAjax({
+	      	url: lru3,
+	        type: 'post',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function (data) {
+	      		var data_renstra = { 
+	                action: 'singkron_renstra_sasaran',
+	                tahun_anggaran: config.tahun_anggaran,
+	                api_key: config.api_key,
+	                sasaran: []
+	            };
+	      		data.data.map(function(sasaran, i){
+	      			data_renstra.sasaran[i] = {};
+	      			data_renstra.sasaran[i].bidur_lock = sasaran.bidur_lock;
+					data_renstra.sasaran[i].id_bidang_urusan = sasaran.id_bidang_urusan;
+					data_renstra.sasaran[i].id_misi = sasaran.id_misi;
+					data_renstra.sasaran[i].id_unik = sasaran.id_unik;
+					data_renstra.sasaran[i].id_unik_indikator = sasaran.id_unik_indikator;
+					data_renstra.sasaran[i].id_unit = sasaran.id_unit;
+					data_renstra.sasaran[i].id_visi = sasaran.id_visi;
+					data_renstra.sasaran[i].indikator_teks = sasaran.indikator_teks;
+					data_renstra.sasaran[i].is_locked = sasaran.is_locked;
+					data_renstra.sasaran[i].is_locked_indikator = sasaran.is_locked_indikator;
+					data_renstra.sasaran[i].kode_bidang_urusan = sasaran.kode_bidang_urusan;
+					data_renstra.sasaran[i].kode_skpd = sasaran.kode_skpd;
+					data_renstra.sasaran[i].kode_tujuan = sasaran.kode_tujuan;
+					data_renstra.sasaran[i].nama_bidang_urusan = sasaran.nama_bidang_urusan;
+					data_renstra.sasaran[i].nama_skpd = sasaran.nama_skpd;
+					data_renstra.sasaran[i].sasaran_teks = sasaran.sasaran_teks;
+					data_renstra.sasaran[i].satuan = sasaran.satuan;
+					data_renstra.sasaran[i].status = sasaran.status;
+					data_renstra.sasaran[i].target_1 = sasaran.target_1;
+					data_renstra.sasaran[i].target_2 = sasaran.target_2;
+					data_renstra.sasaran[i].target_3 = sasaran.target_3;
+					data_renstra.sasaran[i].target_4 = sasaran.target_4;
+					data_renstra.sasaran[i].target_5 = sasaran.target_5;
+					data_renstra.sasaran[i].target_akhir = sasaran.target_akhir;
+					data_renstra.sasaran[i].target_awal = sasaran.target_awal;
+					data_renstra.sasaran[i].tujuan_lock = sasaran.tujuan_lock;
+					data_renstra.sasaran[i].tujuan_teks = sasaran.tujuan_teks;
+					data_renstra.sasaran[i].urut_sasaran = sasaran.urut_sasaran;
+					data_renstra.sasaran[i].urut_tujuan = sasaran.urut_tujuan;
+				});
+				var data = {
+				    message:{
+				        type: "get-url",
+				        content: {
+			                url: config.url_server_lokal,
+			                type: 'post',
+			                data: data_renstra,
+			            	return: false
+			            }
+				    }
+				};
+				chrome.runtime.sendMessage(data, function(response) {
+				    console.log('responeMessage', response);
+				});
+				resolve(true);
+	      	}
+	    });
+	}) );
+	sendData.push( new Promise(function(resolve, reject){
+		relayAjax({
+	      	url: lru4,
+	        type: 'post',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function (data) {
+	      		var data_renstra = { 
+	                action: 'singkron_renstra_program',
+	                tahun_anggaran: config.tahun_anggaran,
+	                api_key: config.api_key,
+	                program: []
+	            };
+	      		data.data.map(function(program, i){
+	      			data_renstra.program[i] = {};
+	      			data_renstra.program[i].bidur_lock = program.bidur_lock;
+					data_renstra.program[i].id_bidang_urusan = program.id_bidang_urusan;
+					data_renstra.program[i].id_misi = program.id_misi;
+					data_renstra.program[i].id_program = program.id_program;
+					data_renstra.program[i].id_unik = program.id_unik;
+					data_renstra.program[i].id_unik_indikator = program.id_unik_indikator;
+					data_renstra.program[i].id_unit = program.id_unit;
+					data_renstra.program[i].id_visi = program.id_visi;
+					data_renstra.program[i].indikator = program.indikator;
+					data_renstra.program[i].is_locked = program.is_locked;
+					data_renstra.program[i].is_locked_indikator = program.is_locked_indikator;
+					data_renstra.program[i].kode_bidang_urusan = program.kode_bidang_urusan;
+					data_renstra.program[i].kode_program = program.kode_program;
+					data_renstra.program[i].kode_sasaran = program.kode_sasaran;
+					data_renstra.program[i].kode_skpd = program.kode_skpd;
+					data_renstra.program[i].kode_tujuan = program.kode_tujuan;
+					data_renstra.program[i].nama_bidang_urusan = program.nama_bidang_urusan;
+					data_renstra.program[i].nama_program = program.nama_program;
+					data_renstra.program[i].nama_skpd = program.nama_skpd;
+					data_renstra.program[i].pagu_1 = program.pagu_1;
+					data_renstra.program[i].pagu_2 = program.pagu_2;
+					data_renstra.program[i].pagu_3 = program.pagu_3;
+					data_renstra.program[i].pagu_4 = program.pagu_4;
+					data_renstra.program[i].pagu_5 = program.pagu_5;
+					data_renstra.program[i].program_lock = program.program_lock;
+					data_renstra.program[i].sasaran_lock = program.sasaran_lock;
+					data_renstra.program[i].sasaran_teks = program.sasaran_teks;
+					data_renstra.program[i].satuan = program.satuan;
+					data_renstra.program[i].status = program.status;
+					data_renstra.program[i].target_1 = program.target_1;
+					data_renstra.program[i].target_2 = program.target_2;
+					data_renstra.program[i].target_3 = program.target_3;
+					data_renstra.program[i].target_4 = program.target_4;
+					data_renstra.program[i].target_5 = program.target_5;
+					data_renstra.program[i].target_akhir = program.target_akhir;
+					data_renstra.program[i].target_awal = program.target_awal;
+					data_renstra.program[i].tujuan_lock = program.tujuan_lock;
+					data_renstra.program[i].tujuan_teks = program.tujuan_teks;
+					data_renstra.program[i].urut_sasaran = program.urut_sasaran;
+					data_renstra.program[i].urut_tujuan = program.urut_tujuan;
+				});
+				var data = {
+				    message:{
+				        type: "get-url",
+				        content: {
+			                url: config.url_server_lokal,
+			                type: 'post',
+			                data: data_renstra,
+			            	return: false
+			            }
+				    }
+				};
+				chrome.runtime.sendMessage(data, function(response) {
+				    console.log('responeMessage', response);
+				});
+				resolve(true);
+	      	}
+	    });
+	}) );
+	sendData.push( new Promise(function(resolve, reject){
+		relayAjax({
+	      	url: lru5,
+	        type: 'post',
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        success: function (data) {
+	      		var data_renstra = { 
+	                action: 'singkron_renstra_kegiatan',
+	                tahun_anggaran: config.tahun_anggaran,
+	                api_key: config.api_key,
+	                kegiatan: []
+	            };
+	      		data.data.map(function(kegiatan, i){
+	      			data_renstra.kegiatan[i] = {};
+	      			data_renstra.kegiatan[i].bidur_lock = kegiatan.bidur_lock;
+					data_renstra.kegiatan[i].giat_lock = kegiatan.giat_lock;
+					data_renstra.kegiatan[i].id_bidang_urusan = kegiatan.id_bidang_urusan;
+					data_renstra.kegiatan[i].id_giat = kegiatan.id_giat;
+					data_renstra.kegiatan[i].id_misi = kegiatan.id_misi;
+					data_renstra.kegiatan[i].id_program = kegiatan.id_program;
+					data_renstra.kegiatan[i].id_unik = kegiatan.id_unik;
+					data_renstra.kegiatan[i].id_unik_indikator = kegiatan.id_unik_indikator;
+					data_renstra.kegiatan[i].id_unit = kegiatan.id_unit;
+					data_renstra.kegiatan[i].id_visi = kegiatan.id_visi;
+					data_renstra.kegiatan[i].indikator = kegiatan.indikator;
+					data_renstra.kegiatan[i].is_locked = kegiatan.is_locked;
+					data_renstra.kegiatan[i].is_locked_indikator = kegiatan.is_locked_indikator;
+					data_renstra.kegiatan[i].kode_bidang_urusan = kegiatan.kode_bidang_urusan;
+					data_renstra.kegiatan[i].kode_giat = kegiatan.kode_giat;
+					data_renstra.kegiatan[i].kode_program = kegiatan.kode_program;
+					data_renstra.kegiatan[i].kode_sasaran = kegiatan.kode_sasaran;
+					data_renstra.kegiatan[i].kode_skpd = kegiatan.kode_skpd;
+					data_renstra.kegiatan[i].kode_tujuan = kegiatan.kode_tujuan;
+					data_renstra.kegiatan[i].kode_unik_program = kegiatan.kode_unik_program;
+					data_renstra.kegiatan[i].nama_bidang_urusan = kegiatan.nama_bidang_urusan;
+					data_renstra.kegiatan[i].nama_giat = kegiatan.nama_giat;
+					data_renstra.kegiatan[i].nama_program = kegiatan.nama_program;
+					data_renstra.kegiatan[i].nama_skpd = kegiatan.nama_skpd;
+					data_renstra.kegiatan[i].pagu_1 = kegiatan.pagu_1;
+					data_renstra.kegiatan[i].pagu_2 = kegiatan.pagu_2;
+					data_renstra.kegiatan[i].pagu_3 = kegiatan.pagu_3;
+					data_renstra.kegiatan[i].pagu_4 = kegiatan.pagu_4;
+					data_renstra.kegiatan[i].pagu_5 = kegiatan.pagu_5;
+					data_renstra.kegiatan[i].program_lock = kegiatan.program_lock;
+					data_renstra.kegiatan[i].renstra_prog_lock = kegiatan.renstra_prog_lock;
+					data_renstra.kegiatan[i].sasaran_lock = kegiatan.sasaran_lock;
+					data_renstra.kegiatan[i].sasaran_teks = kegiatan.sasaran_teks;
+					data_renstra.kegiatan[i].satuan = kegiatan.satuan;
+					data_renstra.kegiatan[i].status = kegiatan.status;
+					data_renstra.kegiatan[i].target_1 = kegiatan.target_1;
+					data_renstra.kegiatan[i].target_2 = kegiatan.target_2;
+					data_renstra.kegiatan[i].target_3 = kegiatan.target_3;
+					data_renstra.kegiatan[i].target_4 = kegiatan.target_4;
+					data_renstra.kegiatan[i].target_5 = kegiatan.target_5;
+					data_renstra.kegiatan[i].target_akhir = kegiatan.target_akhir;
+					data_renstra.kegiatan[i].target_awal = kegiatan.target_awal;
+					data_renstra.kegiatan[i].tujuan_lock = kegiatan.tujuan_lock;
+					data_renstra.kegiatan[i].tujuan_teks = kegiatan.tujuan_teks;
+					data_renstra.kegiatan[i].urut_sasaran = kegiatan.urut_sasaran;
+					data_renstra.kegiatan[i].urut_tujuan = kegiatan.urut_tujuan;
+				});
+				var data = {
+				    message:{
+				        type: "get-url",
+				        content: {
+			                url: config.url_server_lokal,
+			                type: 'post',
+			                data: data_renstra,
+			            	return: false
+			            }
+				    }
+				};
+				chrome.runtime.sendMessage(data, function(response) {
+				    console.log('responeMessage', response);
+				});
+				resolve(true);
+	      	}
+	    });
+	}) );
+	Promise.all(sendData)
+    .then(function(all_data){
+    	jQuery('#wrap-loading').hide();
+    	alert('Berhasil singkron data RENSTRA!');
     });
 }
 
@@ -2804,7 +3008,7 @@ function singkron_data_rpjmd_lokal() {
         formDataCustom.append('_token', tokek);
         formDataCustom.append('v1bnA1m', v1bnA1m);
         formDataCustom.append('DsK121m', Curut("filter_program=&filter_indi_prog=&filter_skpd="));
-        jQuery.ajax({
+        jQuery.relayAjax({
             url: lru1,
             type: 'post',
             data: formDataCustom,
@@ -2861,7 +3065,7 @@ function singkron_data_rpjmd_lokal() {
                     data_rpjmd.program[i].urut_tujuan = program.urut_tujuan;
                     data_rpjmd.program[i].visi_teks = program.visi_teks;
                 })
-                jQuery.ajax({
+                relayAjax({
                     url: lru5,
                     type: 'post',
                     data: formData,
@@ -2898,7 +3102,7 @@ function singkron_data_rpjmd_lokal() {
                             data_rpjmd.sasaran[i].urut_tujuan = sasaran.urut_tujuan;
                             data_rpjmd.sasaran[i].visi_teks = sasaran.visi_teks;
                         });
-                        jQuery.ajax({
+                        relayAjax({
                             url: lru4,
                             type: 'post',
                             data: formData,

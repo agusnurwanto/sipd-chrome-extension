@@ -40,5 +40,20 @@ jQuery(document).ready(function () {
         jQuery('#singkron_data_rpjmd_lokal').on('click', function () {
             singkron_data_rpjmd_lokal();
         });
+    } else if (
+        jQuery('h3.page-title').text().indexOf('Penyusunan RENSTRA') != -1
+    ) {
+        console.log('halaman RENSTRA');
+        var singkron_data_renstra = ''
+            +'<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">'
+                + '<button class="fcbtn btn btn-danger pull-right" id="singkron-renstra-lokal">'
+                    + '<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RENSTRA ke DB lokal</span>'
+                + '</button>'
+            +'</div>';
+        jQuery('.bg-title').append(singkron_data_renstra);
+        jQuery('#singkron-renstra-lokal').on('click', function(){
+            jQuery('#wrap-loading').show();
+            singkron_renstra_lokal();
+        });
     }
 });
