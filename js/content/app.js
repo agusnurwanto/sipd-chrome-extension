@@ -2335,7 +2335,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 											_rka.harga_satuan_murni = rka.harga_satuan_murni;
 											_rka.id_daerah = rka.id_daerah;
 											_rka.id_rinci_sub_bl = rka.id_rinci_sub_bl;
-											_rka.id_standar_nfs = rka.id_standar_nfs;
+											_rka.id_standar_harga = rka.id_standar_harga;
 											_rka.is_locked = rka.is_locked;
 											_rka.jenis_bl = rka.jenis_bl;
 											_rka.ket_bl_teks = rka.ket_bl_teks;
