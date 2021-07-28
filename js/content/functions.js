@@ -3008,7 +3008,7 @@ function singkron_data_rpjmd_lokal() {
         formDataCustom.append('_token', tokek);
         formDataCustom.append('v1bnA1m', v1bnA1m);
         formDataCustom.append('DsK121m', Curut("filter_program=&filter_indi_prog=&filter_skpd="));
-        jQuery.relayAjax({
+        relayAjax({
             url: lru1,
             type: 'post',
             data: formDataCustom,
