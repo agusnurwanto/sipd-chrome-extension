@@ -2850,6 +2850,7 @@ function singkron_data_giat_lokal() {
                     data_prog_keg.subgiat[i] = {};
                     data_prog_keg.subgiat[i].id_bidang_urusan = subgiat.id_bidang_urusan;
                     data_prog_keg.subgiat[i].id_program = subgiat.id_program;
+		    data_prog_keg.subgiat[i].id_giat = subgiat.id_giat;
                     data_prog_keg.subgiat[i].id_sub_giat = subgiat.id_sub_giat
                     data_prog_keg.subgiat[i].id_urusan = subgiat.id_urusan
                     data_prog_keg.subgiat[i].is_locked = subgiat.is_locked
