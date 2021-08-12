@@ -46,10 +46,9 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			){
 				jQuery('#table_skpd tbody tr').map(function(i, b){
 					var td = jQuery(b).find('td');
-					var id_skpd = td.find('ul.dropdown-menu li').eq(0).find('a').attr('onclick').split("'")[1];
-					id_skpd = id_skpd.split("'")[0];
+					var kode_skpd = td.eq(0).text().trim();
 					if(td.eq(1).find('a').length == 0){
-						td.eq(1).append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[id_skpd]+'?key='+get_key()+'&rkpd=1">Print RENJA</a>');
+						td.eq(1).append(' <a class="btn btn-sm btn-info" target="_blank" href="'+data_unit[kode_skpd]+'?key='+get_key()+'&rkpd=1">Print RENJA</a>');
 					}
 				});
 				if(jQuery('.m-l-10').find('a').length == 0){

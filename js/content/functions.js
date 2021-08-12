@@ -161,11 +161,12 @@ function run_download_excel(){
 		jQuery(b).attr('style', style+"; font-size: 20px;");
 	});
 
-	jQuery('td').map(function(i, b){
-		style = jQuery(b).attr('style');
+	var td = document.getElementsByTagName("td");
+	for(var i=0, l=td.length; i<l; i++){
+		style = td[i].getAttribute('style');
 		if (typeof style == 'undefined'){ style = ''; };
-		jQuery(b).attr('style', style+'; mso-number-format:\\@;');
-	});
+		td[i].setAttribute('style', style+'; mso-number-format:\\@;');
+	};
 
 	jQuery('#excel').on('click', function(){
 		var name = "Laporan";
