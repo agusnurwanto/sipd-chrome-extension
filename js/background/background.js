@@ -201,7 +201,7 @@ db.transaction(function (tx) {
 
 
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
-	console.log('request', request);
+	console.log('request & sender', request, sender);
 	var type = request.message.type;
 	if(type == 'actions'){
 		var actions = request.message.content.key;
@@ -241,7 +241,8 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			console.log(type, ret);
 			var options = {
 				type: 'response-actions',
-				data: ret
+				data: ret,
+				tab: sender.tab
 			};
 			sendMessageTabActive(options);
 		});
@@ -270,7 +271,8 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		    	if(request.message.content.return){
 			     	var options = {
 			     		type: 'response-fecth-url',
-			     		data: ret
+			     		data: ret,
+			     		tab: sender.tab
 			     	}
 			     	sendMessageTabActive(options);
 			    }
