@@ -537,7 +537,7 @@ function getIdKel(raw){
             contentType: false,
 	      	success: function(data_kel){
 	        	var id_kel = jQuery('<select>'+data_kel+'</select>').find('option').filter(function(){
-	      			return jQuery(this).val() == raw.desa();
+	      			return jQuery(this).val() == raw.desa;
 	      		}).val();
 	      		resolve(id_kel);
           	},
