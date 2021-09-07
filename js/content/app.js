@@ -2234,7 +2234,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 					            data_rka.dataBl[i].id_label_prov = d.id_label_prov;
 					            data_rka.dataBl[i].waktu_awal = d.waktu_awal;
 					            data_rka.dataBl[i].pagumurni = data_sbl.data.pagumurni;
-					            data_rka.dataBl[i].pagu = d.pagu;
+					            data_rka.dataBl[i].pagu = data_sbl.data.pagu;
 					            data_rka.dataBl[i].output_sub_giat = d.output_sub_giat;
 					            data_rka.dataBl[i].sasaran = d.sasaran;
 					            data_rka.dataBl[i].indikator = d.indikator;
