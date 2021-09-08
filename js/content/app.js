@@ -2098,6 +2098,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 						kode_get = opsi.action.split("detilGiat('")[1].split("'")[0];
 						data_sbl = { 
 							data: {
+								pagu : opsi.pagu,
 								pagumurni : opsi.pagumurni,
 								kode_sub_skpd : opsi.kode_sub_skpd,
 								nama_sub_skpd : opsi.nama_sub_skpd
