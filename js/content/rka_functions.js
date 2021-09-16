@@ -149,8 +149,10 @@ function insertRKA(){
                         success: function(cari_penerima){
                             raw.resolve2 = resolve2;
                             console.log('cari_penerima', cari_penerima);
+                            // jika data penerima tidak ditemukan maka lakukan input data penerima bantuan
                             if(cari_penerima.data.length==0){
                                 input_penerima(raw);
+                            // jika data ditemukan maka langsung lankukan input/update rincian
                             }else{
                                 raw.id_profile = cari_penerima.data[0].id_profil;
                                 resolve2(raw);
@@ -165,59 +167,60 @@ function insertRKA(){
                         resolve(raw2);
                     }else{
                         raw2.kodesbl = jQuery('input[name="kodesbl"]').val();
+                        // get id keterangan (tambah data keterangan jika belum ada)
                         setKeterangan(raw2).then(function(id_ket){
-                        raw2.detil_rincian = {
-                            jenis_belanja: jenis_belanja,
-                            id_rek_akun: id_rek_akun,
-                            id_pengelompokan: id_pengelompokan,
-                            id_keterangan: id_ket
-                        };
-                        var skrim = ''
-                            +'kodesbl='+raw2.kodesbl
-                            +'&idbelanjarinci='
-                            +'&idakunrinci='
-                            +'&jenisbl='+jenis_belanja
-                            +'&akun='+encodeURIComponent(id_rek_akun)
-                            +'&subtitle='+id_pengelompokan
-                            +'&uraian_penerima='+raw2.nama
-                            +'&id_penerima='+raw2.id_profile
-                            +'&prop='+raw2.id_prov
-                            +'&komponenkel='
-                            +'&komponen='
-                            +'&idkomponen='
-                            +'&spek='
-                            +'&satuan='+encodeURIComponent(satuantext)
-                            +'&hargasatuan='+(+raw2.total.replace(/,/g, ''))
-                            +'&keterangan='+id_ket
-                            +'&volum1='+vol
-                            +'&satuan1='+satuan
-                            +'&volum2='
-                            +'&satuan2='
-                            +'&volum3='
-                            +'&satuan3='
-                            +'&volum4='
-                            +'&satuan4=';
-                        raw2.skrim = skrim;
-                        var customFormData = new FormData();
-                        customFormData.append('_token', tokek);
-                        customFormData.append('v1bnA1m', v1bnA1m);
-                        customFormData.append('DsK121m', C3rYDq(skrim));
-                        // resolve(raw2); console.log(raw2);
-                        relayAjax({
-                            url: lru9,
-                            type: "post",
-                            data: customFormData,
-                            processData: false,
-                            contentType: false,
-                            success: function(data_kel){
-                                resolve(raw2);
-                            },
-                            error: function(jqXHR, textStatus, error){
-                                raw2.error = 'Error ajax simpan rincian';
-                                resolve(raw2);
-                            }
-                        });
-                    })
+                            raw2.detil_rincian = {
+                                jenis_belanja: jenis_belanja,
+                                id_rek_akun: id_rek_akun,
+                                id_pengelompokan: id_pengelompokan,
+                                id_keterangan: id_ket
+                            };
+                            var skrim = ''
+                                +'kodesbl='+raw2.kodesbl
+                                +'&idbelanjarinci='+raw2.idbelanjarinci
+                                +'&idakunrinci='+raw2.idakunrinci
+                                +'&jenisbl='+jenis_belanja
+                                +'&akun='+encodeURIComponent(id_rek_akun)
+                                +'&subtitle='+id_pengelompokan
+                                +'&uraian_penerima='+raw2.nama
+                                +'&id_penerima='+raw2.id_profile
+                                +'&prop='+raw2.id_prov
+                                +'&komponenkel='
+                                +'&komponen='
+                                +'&idkomponen='
+                                +'&spek='
+                                +'&satuan='+encodeURIComponent(satuantext)
+                                +'&hargasatuan='+(+raw2.total.replace(/,/g, ''))
+                                +'&keterangan='+id_ket
+                                +'&volum1='+vol
+                                +'&satuan1='+satuan
+                                +'&volum2='
+                                +'&satuan2='
+                                +'&volum3='
+                                +'&satuan3='
+                                +'&volum4='
+                                +'&satuan4=';
+                            raw2.skrim = skrim;
+                            var customFormData = new FormData();
+                            customFormData.append('_token', tokek);
+                            customFormData.append('v1bnA1m', v1bnA1m);
+                            customFormData.append('DsK121m', C3rYDq(skrim));
+                            // resolve(raw2); console.log(raw2);
+                            relayAjax({
+                                url: lru9,
+                                type: "post",
+                                data: customFormData,
+                                processData: false,
+                                contentType: false,
+                                success: function(data_kel){
+                                    resolve(raw2);
+                                },
+                                error: function(jqXHR, textStatus, error){
+                                    raw2.error = 'Error ajax simpan rincian';
+                                    resolve(raw2);
+                                }
+                            });
+                        })
                     }
                 })
                 .catch(function(e){
@@ -284,8 +287,8 @@ function insertRKA(){
     								      			};
     								      			var skrim = ''
     								      				+'kodesbl='+raw.kodesbl
-    								      				+'&idbelanjarinci='
-    								      				+'&idakunrinci='
+    								      				+'&idbelanjarinci='+raw.idbelanjarinci
+    								      				+'&idakunrinci='+raw.idakunrinci
     								      				+'&jenisbl='+jenis_belanja
     									      			+'&akun='+encodeURIComponent(id_rek_akun)
     									      			+'&subtitle='+id_pengelompokan
@@ -614,6 +617,8 @@ function filePicked(oEvent) {
 	        	XL_row_object.map(function(row, i){
 	        		data_pasti = {};
 		        	data_pasti.no = row['NO'];
+                    data_pasti.idbelanjarinci = row['idbelanjarinci'];
+                    data_pasti.idakunrinci = row['idakunrinci'];
 		        	data_pasti.desa = row['DESA'];
 	        		data_pasti.total = row['PAGU'];
 	        		data_pasti.keterangan = '';
@@ -635,6 +640,8 @@ function filePicked(oEvent) {
 	        	XL_row_object.map(function(row, i){
                     data_pasti = {};
                     data_pasti.no = row['NO'];
+                    data_pasti.idbelanjarinci = row['idbelanjarinci'];
+                    data_pasti.idakunrinci = row['idakunrinci'];
                     data_pasti.id_profil = row['ID_PROFIL'];
                     data_pasti.nama = row['PENERIMA'];
                     data_pasti.total = row['PAGU'];
@@ -1054,7 +1061,7 @@ function tampil_profil(){
 					if(tr.find('td').eq(1).find('.info-profil').length == 0){
 						tr.find('td').eq(1).append('<span class="info-profil"></span>');
 					}
-					var info = '';
+					var info = 'id_profile='+rinci.id_penerima+'<br>idblrinci='+rinci.idblrinci+'<br>idakun='+rinci.idakun+'<br>';
 					if(rinci.nama_prop){
 						info += rinci.rka.lokus_akun_teks+', '+rinci.nama_kel+', '+rinci.nama_kec+', '+rinci.nama_kab+', '+rinci.nama_prop
 						resolve(info);
