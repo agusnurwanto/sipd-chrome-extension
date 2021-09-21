@@ -154,6 +154,7 @@ function insertRKA(){
                                 input_penerima(raw);
                             // jika data ditemukan maka langsung lankukan input/update rincian
                             }else{
+                                raw.nama = cari_penerima.data[0].nama_teks;
                                 raw.id_profile = cari_penerima.data[0].id_profil;
                                 resolve2(raw);
                             }
@@ -971,7 +972,7 @@ function get_type_jadwal(){
     }
 }
 
-function relayAjax(options, retries=20, delay=30000, timeout=90000){
+function relayAjax(options, retries=20, delay=30000, timeout=1090000){
     options.timeout = timeout;
     jQuery.ajax(options)
     .fail(function(){

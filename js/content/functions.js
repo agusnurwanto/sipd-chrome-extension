@@ -2751,7 +2751,7 @@ function get_key(){
 	return key;
 }
 
-function relayAjax(options, retries=20, delay=30000, timeout=90000){
+function relayAjax(options, retries=20, delay=30000, timeout=1090000){
 	options.timeout = timeout;
     jQuery.ajax(options)
     .fail(function(){

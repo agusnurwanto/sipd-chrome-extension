@@ -262,7 +262,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			// });
 		});
 	}else if(type == 'get-url'){
-		jQuery.ajax({
+		relayAjax({
 		    url: request.message.content.url,
 		    type: request.message.content.type,
 		    data: request.message.content.data,
