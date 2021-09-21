@@ -683,6 +683,68 @@ jQuery(document).ready(function(){
 			singkron_rka = '<label><input type="checkbox" id="only_pagu"> Hanya Pagu SKPD</label>'+singkron_rka;
 			jQuery('.m-l-10').closest('.p-b-20').find('.col-md-2').append('<div class="button-box pull-right p-t-20">'+singkron_rka+'</div>');
 			jQuery('#singkron_rka_ke_lokal').attr('id_unit', 'all');
+			var modal = ''
+				+'<div class="modal fade" id="mod-konfirmasi-units" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
+			        +'<div class="modal-dialog modal-lg" role="document">'
+			            +'<div class="modal-content">'
+			                +'<div class="modal-header bgpanel-theme">'
+			                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
+			                    +'<h4 class="modal-title text-white" id="">Sinkronisasi Unit SKPD</h4>'
+			                +'</div>'
+			                +'<div class="modal-body">'
+			                  	+'<table class="table table-hover table-striped" id="table_skpd_modal">'
+			                      	+'<thead>'
+			                        	+'<tr class="bg-grey-600">'
+			                          		+'<th class="text-white"><input type="checkbox" id="modal_cek_skpd_all"></th>'
+			                          		+'<th class="text-white">SKPD</th>'
+			                          		+'<th class="text-white">Keterangan</th>'
+			                        	+'</tr>'
+			                        	+'<tr>'
+			                          		+'<th colspan="3">'
+			                            		+'<div class="dttable-search">'
+			                                		+'<span class="icon"><i class="fa fa-search"></i></span>'
+			                                		+'<input type="search" id="search" class="dttable2-filter" placeholder="Cari..." />'
+			                            		+'</div>'
+			                          		+'</th>'
+			                        	+'</tr>'
+			                      	+'</thead>'
+			                      	+'<tbody></tbody>'
+			                  	+'</table>'
+			                +'</div>'
+			                +'<div class="modal-footer">'
+			                    +'<button type="button" class="btn btn-success" id="singkron_skpd_modal">Sinkron Data SKPD</button>'
+			                    +'<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>'
+			                +'</div>'
+			            +'</div>'
+			        +'</div>'
+			    +'</div>';
+			jQuery('body').append(modal);
+			run_script('jQuery("#table_skpd_modal").DataTable();');
+			jQuery('#modal_cek_skpd_all').on('click', function(){
+				if(jQuery(this).is(':checked') == true){
+					jQuery('.cek_skpd_modal').prop('cecked', true);
+				}else{
+					jQuery('.cek_skpd_modal').prop('cecked', false);
+				}
+			});
+			jQuery('#singkron_skpd_modal').on('click', function(){
+				var data_skpd_selected = [];
+				jQuery('.cek_skpd_modal').map(function(i, b){
+					if(jQuery(b).is(':checked') == true){
+						var id_skpd = jQuery(b).attr('data-id');
+						units_skpd.map(function(bb, ii){
+							if(bb.nama_skpd.id_skpd == id_skpd){
+								data_skpd_selected.push(bb);
+							}
+						});
+					}
+				});
+				if(data_skpd_selected.length == 0){
+					alert('Pilih SKPD dulu!');
+				}else if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+					singkron_all_unit(data_skpd_selected);
+				}
+			});
 		// halaman list sub kegiatan oleh kepala PD
 		}else if(jQuery('#form_bl .pull-right.p-t-20').length >= 1){
 			jQuery('#form_bl .pull-right.p-t-20').append(singkron_rka);
@@ -696,75 +758,31 @@ jQuery(document).ready(function(){
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			var cek_unit = jQuery('#singkron_rka_ke_lokal').attr('id_unit');
 			if(cek_unit == 'all'){
-				if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
-					jQuery('#wrap-loading').show();
-					relayAjax({
-						url: tamu,
-						type: 'post',
-						data: formData,
-						processData: false,
-	  					contentType: false,
-						success: function(units){
-							jQuery('#persen-loading').attr('persen', 0);
-							jQuery('#persen-loading').html('0%');
-							var last = units.data.length-1;
-							jQuery('#persen-loading').attr('total', units.data.length);
-							units.data.reduce(function(sequence, nextData){
-			                    return sequence.then(function(current_data){
-			                		return new Promise(function(resolve_reduce, reject_reduce){
-		                				var c_persen = +jQuery('#persen-loading').attr('persen');
-		                				c_persen++;
-										jQuery('#persen-loading').attr('persen', c_persen);
-										jQuery('#persen-loading').html(((c_persen/units.data.length)*100).toFixed(2)+'%'+'<br>'+current_data.nama_skpd.nama_skpd);
-			                			relayAjax({
-											url: endog + '?' + current_data.nama_skpd.sParam,
-											success: function(html){
-												var kode_get = html.split('lru8="')[1].split('"')[0];
-												current_data.kode_get = kode_get;
-					                			singkron_rka_ke_lokal_all(current_data, function(){
-					                				console.log('next reduce', nextData);
-													resolve_reduce(nextData);
-					                			});
-					                		}
-					                	});
-									})
-			                        .catch(function(e){
-			                            console.log(e);
-			                            return Promise.resolve(nextData);
-			                        });
-			                    })
-			                    .catch(function(e){
-			                        console.log(e);
-			                        return Promise.resolve(nextData);
-			                    });
-			                }, Promise.resolve(units.data[last]))
-			                .then(function(data_last){
-			                	var opsi = { 
-									action: 'get_cat_url',
-									api_key: config.api_key,
-									category : 'Semua Perangkat Daerah Tahun Anggaran '+config.tahun_anggaran
-								};
-								var data = {
-								    message:{
-								        type: "get-url",
-								        content: {
-										    url: config.url_server_lokal,
-										    type: 'post',
-										    data: opsi,
-							    			return: true
-										}
-								    }
-								};
-								chrome.runtime.sendMessage(data, function(response) {
-								    console.log('responeMessage', response);
-								});
-			                })
-			                .catch(function(e){
-			                    console.log(e);
-			                });
-						}
-					});
-				}
+				jQuery('#wrap-loading').show();
+				relayAjax({
+					url: tamu,
+					type: 'post',
+					data: formData,
+					processData: false,
+  					contentType: false,
+					success: function(units){
+						window.units_skpd = units.data;
+						var html = '';
+						units.data.map(function(b, i){
+							html += ''
+								+'<tr>'
+									+'<td><input type="checkbox" class="cek_skpd_modal" data-id="'+b.nama_skpd.id_skpd+'"></td>'
+									+'<td>'+b.nama_skpd.nama_skpd+'</td>'
+									+'<td>-</td>'
+								+'</tr>';
+						});
+						run_script('jQuery("#table_skpd_modal").DataTable().destroy();');
+						jQuery('#table_skpd_modal tbody').html(html);
+						run_script('jQuery("#table_skpd_modal").DataTable();');
+						run_script('jQuery("#mod-konfirmasi-units").modal("show");');
+						jQuery('#wrap-loading').hide();
+					}
+				});
 			}else{
 				singkron_rka_ke_lokal_all();
 			}
