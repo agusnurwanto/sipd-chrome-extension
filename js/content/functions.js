@@ -1443,6 +1443,62 @@ function singkron_user_dewan_lokal(){
                 return sequence.then(function(current_data){
             		return new Promise(function(resolve_reduce, reject_reduce){
             			var url_detail = current_data.action.split("ubahUser('")[1].split("'")[0];
+            			var url_set_skpd_mitra = current_data.action.split("setUserSKPD('");
+            			if(url_set_skpd_mitra.length >= 2){
+            				// ini dipakai untuk mendapatkan detail user. Url untuk mendapatkan data skpd ada di lru8
+            				url_set_skpd_mitra = url_set_skpd_mitra[1].split("'")[0];
+					    	
+					    	var formDataCustom = new FormData();
+							formDataCustom.append('_token', tokek);
+							formDataCustom.append('v1bnA1m', v1bnA1m);
+							formDataCustom.append('xSj0S', browser_global);
+							formDataCustom.append('DsK121m', Curut('siduser='+current_data.id_user));
+	            			relayAjax({
+						      	url: lru8,
+						      	type: "POST",
+								data: formDataCustom,
+								processData: false,
+								contentType: false,
+						      	success: function(skpd){
+						      		var data_skpd = { 
+										action: 'singkron_skpd_mitra_bappeda',
+										tahun_anggaran: config.tahun_anggaran,
+										api_key: config.api_key,
+										id_user: current_data.id_user,
+										data: []
+									};
+									skpd.data.map(function(b, i){
+										var current_user_skpd = {};
+										current_user_skpd.akses_user = b.akses_user;
+										current_user_skpd.id_level = b.id_level;
+										current_user_skpd.id_unit = b.id_unit;
+										current_user_skpd.id_user = b.id_user;
+										current_user_skpd.is_locked = b.is_locked;
+										current_user_skpd.kode_skpd = b.kode_skpd;
+										current_user_skpd.login_name = b.login_name;
+										current_user_skpd.nama_skpd = b.nama_skpd;
+										current_user_skpd.nama_user = b.nama_user;
+										current_user_skpd.nip = b.nip;
+										data_skpd.data.push(current_user_skpd);
+									});
+									var data = {
+									    message:{
+									        type: "get-url",
+									        content: {
+											    url: config.url_server_lokal,
+											    type: 'post',
+											    data: data_skpd,
+								    			return: false
+											}
+									    }
+									};
+									chrome.runtime.sendMessage(data, function(response) {
+									    console.log('responeMessage', response);
+							    		resolve_reduce(nextData);
+									});
+						      	}
+						    });
+            			}
             			relayAjax({
 					      	url: endog+'?'+url_detail,
 					      	type: "POST",
@@ -2532,7 +2588,7 @@ var Base64 = {
             }
             t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a)
         }
-        return t
+        return t.replace(/=/g, '@');
     },
     decode: function(e) {
         var t = "";

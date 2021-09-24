@@ -22,6 +22,7 @@ if(typeof v1bnA1m == 'undefined'){
 	v1bnA1m = jQuery('.logos input[type="hidden"]').val();
 }
 
+window.browser_global = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36';
 window.formData = new FormData();
 if(typeof tokek != 'undefined'){
 	console.log('tokek', tokek);
