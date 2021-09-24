@@ -761,6 +761,51 @@ jQuery(document).ready(function(){
 					+'</table>';
 				jQuery('#action-sipd').prepend(skpd_lintas_urusan);
 			}
+		}else if(page_title == 'Sistem Informasi Pemerintahan Daerah - Lampiran 3 APBD'){
+			console.log('Lampiran 3 APBD');
+			jQuery('td[colspan="16"]').eq(0).attr('contenteditable', true);
+			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
+			jQuery('td[colspan="16"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+			jQuery('td[colspan="16"]').parent().appendTo('#custom tbody');
+			var hapus_header = ''
+				+'<div class="text_tengah" style="margin-top: 20px">'
+					+'<label><input type="checkbox" id="hilang_header"> Hilangkan header & TTD</label>'
+					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_header_aja"> Hilangkan header</label>'
+					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_ttd"> Hilangkan TTD</label>'
+				+'</div>';
+			jQuery('#action-sipd').append(hapus_header);
+			jQuery('#hilang_header').on('click', function(){
+				jQuery('#hilang_header_aja').prop('checked', false);
+				jQuery('#hilang_ttd').prop('checked', false);
+				if(jQuery(this).is(':checked') == true){
+					jQuery('td[colspan="16"]').eq(0).hide();
+					jQuery('td[colspan="16"]').eq(1).hide();
+					jQuery('td.text_tengah.text_15').closest('table').hide();
+				}else{
+					jQuery('td[colspan="16"]').eq(0).show();
+					jQuery('td[colspan="16"]').eq(1).show();
+					jQuery('td.text_tengah.text_15').closest('table').show();
+				}
+			});
+			jQuery('#hilang_header_aja').on('click', function(){
+				jQuery('#hilang_header').prop('checked', false);
+				if(jQuery(this).is(':checked') == true){
+					jQuery('td[colspan="16"]').eq(0).hide();
+					jQuery('td[colspan="16"]').eq(1).hide();
+				}else{
+					jQuery('td[colspan="16"]').eq(0).show();
+					jQuery('td[colspan="16"]').eq(1).show();
+				}
+			});
+			jQuery('#hilang_ttd').on('click', function(){
+				jQuery('#hilang_header').prop('checked', false);
+				if(jQuery(this).is(':checked') == true){
+					jQuery('td.text_tengah.text_15').closest('table').hide();
+				}else{
+					jQuery('td.text_tengah.text_15').closest('table').show();
+				}
+			});
+		}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1){
 		}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1){
 			jQuery('table[cellpadding="5"] tr').map(function(i,b){
 			    var kode = jQuery(b).find('td').eq(0).text().split('.');
