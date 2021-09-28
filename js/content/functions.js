@@ -2809,6 +2809,28 @@ function get_key(){
 
 function relayAjax(options, retries=20, delay=30000, timeout=1090000){
 	options.timeout = timeout;
+	if(!options.success_rewrite){
+		options.success_rewrite = options.success;
+	}
+	options.success = function(response, status, xhr){ 
+	    var ct = xhr.getResponseHeader("content-type") || "";
+	    if (ct.indexOf('html') > -1) {
+	    	if(response.indexOf('eval(function(') != -1){
+	    		var script_eval = response.split('eval(')[1];
+	    		script_eval = script_eval.split('</script')[0];
+	    		eval('('+script_eval);
+	    		console.log('Terdeteksi script eval(). Coba lagi '+retries, response);
+	    		setTimeout(function(){ 
+	                relayAjax(options, --retries, delay, timeout);
+	            },delay);
+	    	}else{
+	    		options.success_rewrite(response);
+	    	}
+	    }
+	    if (ct.indexOf('json') > -1) {
+	    	options.success_rewrite(response);
+	    } 
+	}
     jQuery.ajax(options)
     .fail(function(){
         if (retries > 0) {

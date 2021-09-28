@@ -923,6 +923,7 @@ jQuery(document).ready(function(){
 				if(data_sub_keg_selected.length == 0){
 					alert('Pilih sub kegiatan dulu!');
 				}else if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+					var id_unit = idune;
 					var cat_wp = '';
 					var last = data_sub_keg_selected.length-1;
 					data_sub_keg_selected.reduce(function(sequence, nextData){
@@ -2238,12 +2239,17 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 		            	window.sub_keg_skpd = subkeg.data;
 						var html = '';
 						subkeg.data.map(function(b, i){
-							html += ''
-								+'<tr>'
-									+'<td><input type="checkbox" class="cek_sub_keg_modal" data-id="'+b.kode_sbl+'"></td>'
-									+'<td>'+b.nama_sub_giat.nama_sub_giat+'</td>'
-									+'<td>-</td>'
-								+'</tr>';
+							if(
+								b.nama_sub_giat.mst_lock 
+								!= 3 && b.kode_sub_skpd
+							){
+								html += ''
+									+'<tr>'
+										+'<td><input type="checkbox" class="cek_sub_keg_modal" data-id="'+b.kode_sbl+'"></td>'
+										+'<td>'+b.nama_sub_giat.nama_sub_giat+'</td>'
+										+'<td>-</td>'
+									+'</tr>';
+							}
 						});
 						run_script('jQuery("#table_sub_keg_modal").DataTable().destroy();');
 						jQuery('#table_sub_keg_modal tbody').html(html);
