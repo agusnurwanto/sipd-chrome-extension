@@ -869,6 +869,130 @@ jQuery(document).ready(function(){
 		jQuery('h3.page-title').text() == 'Kegiatan / Sub Kegiatan Belanja'
 	){
 		console.log('halaman sub kegiatan');
+
+		// cek jika halaman ini adalah halaman sub keg ketika login sebagai PA/KPA dan operator 
+		if(jQuery('.icon-basket').closest('.m-t-0').length > 0){
+			var modal_sub_keg = ''
+				+'<div class="modal fade" id="mod-konfirmasi-sub-keg" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
+			        +'<div class="modal-dialog modal-lg" role="document">'
+			            +'<div class="modal-content">'
+			                +'<div class="modal-header bgpanel-theme">'
+			                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
+			                    +'<h4 class="modal-title text-white" id="">Sinkronisasi Sub Kegiatan</h4>'
+			                +'</div>'
+			                +'<div class="modal-body">'
+			                  	+'<table class="table table-hover table-striped" id="table_sub_keg_modal">'
+			                      	+'<thead>'
+			                        	+'<tr class="bg-grey-600">'
+			                          		+'<th class="text-white"><input type="checkbox" id="modal_cek_sub_keg_all"></th>'
+			                          		+'<th class="text-white">Sub Kegiatan</th>'
+			                          		+'<th class="text-white">Keterangan</th>'
+			                        	+'</tr>'
+			                      	+'</thead>'
+			                      	+'<tbody></tbody>'
+			                  	+'</table>'
+			                +'</div>'
+			                +'<div class="modal-footer">'
+			                    +'<button type="button" class="btn btn-success" id="singkron_sub_keg_modal">Sinkron Data Sub Kegiatan</button>'
+			                    +'<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>'
+			                +'</div>'
+			            +'</div>'
+			        +'</div>'
+			    +'</div>';
+			jQuery('body').append(modal_sub_keg);
+			run_script('jQuery("#table_sub_keg_modal").DataTable();');
+			jQuery('#modal_cek_sub_keg_all').on('click', function(){
+				if(jQuery(this).is(':checked') == true){
+					jQuery('.cek_sub_keg_modal').prop('checked', true);
+				}else{
+					jQuery('.cek_sub_keg_modal').prop('checked', false);
+				}
+			});
+			jQuery('#singkron_sub_keg_modal').on('click', function(){
+				var data_sub_keg_selected = [];
+				jQuery('.cek_sub_keg_modal').map(function(i, b){
+					if(jQuery(b).is(':checked') == true){
+						var kode_sbl = jQuery(b).attr('data-id');
+						sub_keg_skpd.map(function(bb, ii){
+							if(bb.nama_sub_giat.kode_sbl == kode_sbl){
+								data_sub_keg_selected.push(bb);
+							}
+						});
+					}
+				});
+				if(data_sub_keg_selected.length == 0){
+					alert('Pilih sub kegiatan dulu!');
+				}else if(confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')){
+					var cat_wp = '';
+					var last = data_sub_keg_selected.length-1;
+					data_sub_keg_selected.reduce(function(sequence, nextData){
+	                    return sequence.then(function(current_data){
+	                		return new Promise(function(resolve_reduce, reject_reduce){
+	                        	if(current_data.nama_sub_giat.mst_lock != 3 && current_data.kode_sub_skpd){
+	                        		cat_wp = current_data.kode_sub_skpd+' '+current_data.nama_sub_skpd;
+	                        		var nama_skpd = current_data.nama_skpd.split(' ');
+	                        		nama_skpd.shift();
+	                        		nama_skpd = nama_skpd.join(' ');
+									singkron_rka_ke_lokal({
+										id_unit: id_unit,
+										action: current_data.action,
+										kode_bl: current_data.kode_bl,
+										kode_sbl: current_data.kode_sbl,
+										idbl: current_data.id_bl,
+										idsubbl: current_data.id_sub_bl,
+										kode_skpd: current_data.kode_skpd,
+										nama_skpd: nama_skpd,
+										kode_sub_skpd: current_data.kode_sub_skpd,
+										nama_sub_skpd: current_data.nama_sub_skpd,
+										pagumurni: current_data.pagumurni,
+										pagu: current_data.pagu,
+										no_return: true
+									}, function(){
+										console.log('next reduce', nextData);
+										resolve_reduce(nextData);
+									});
+								}else{
+									resolve_reduce(nextData);
+								}
+			                })
+	                        .catch(function(e){
+	                            console.log(e);
+	                            return Promise.resolve(nextData);
+	                        });
+	                    })
+	                    .catch(function(e){
+	                        console.log(e);
+	                        return Promise.resolve(nextData);
+	                    });
+	                }, Promise.resolve(data_sub_keg_selected[last]))
+	                .then(function(data_last){
+	                	var opsi = { 
+							action: 'get_cat_url',
+							api_key: config.api_key,
+							category : cat_wp
+						};
+						var data = {
+						    message:{
+						        type: "get-url",
+						        content: {
+								    url: config.url_server_lokal,
+								    type: 'post',
+								    data: opsi,
+					    			return: true
+								}
+						    }
+						};
+						chrome.runtime.sendMessage(data, function(response) {
+						    console.log('responeMessage', response);
+						});
+	                })
+	                .catch(function(e){
+	                    console.log(e);
+	                });
+				}
+			});
+		}
+
 		var singkron_rka = ''
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_rka_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RKA ke DB lokal</span>'
@@ -894,14 +1018,6 @@ jQuery(document).ready(function(){
 			                          		+'<th class="text-white">SKPD</th>'
 			                          		+'<th class="text-white">Keterangan</th>'
 			                        	+'</tr>'
-			                        	+'<tr>'
-			                          		+'<th colspan="3">'
-			                            		+'<div class="dttable-search">'
-			                                		+'<span class="icon"><i class="fa fa-search"></i></span>'
-			                                		+'<input type="search" id="search" class="dttable2-filter" placeholder="Cari..." />'
-			                            		+'</div>'
-			                          		+'</th>'
-			                        	+'</tr>'
 			                      	+'</thead>'
 			                      	+'<tbody></tbody>'
 			                  	+'</table>'
@@ -917,9 +1033,9 @@ jQuery(document).ready(function(){
 			run_script('jQuery("#table_skpd_modal").DataTable();');
 			jQuery('#modal_cek_skpd_all').on('click', function(){
 				if(jQuery(this).is(':checked') == true){
-					jQuery('.cek_skpd_modal').prop('cecked', true);
+					jQuery('.cek_skpd_modal').prop('checked', true);
 				}else{
-					jQuery('.cek_skpd_modal').prop('cecked', false);
+					jQuery('.cek_skpd_modal').prop('checked', false);
 				}
 			});
 			jQuery('#singkron_skpd_modal').on('click', function(){
@@ -947,9 +1063,6 @@ jQuery(document).ready(function(){
 		}else{
 			jQuery('.icon-basket').closest('.m-t-0').append('<div class="col-xs-12 col-md-6"><div class="button-box pull-right p-t-20">'+singkron_rka+'</div></div>');
 		}
-		jQuery('#tampil_laporan_renja').on('click', function(){
-			singkron_skpd_ke_lokal(1);
-		});
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			var cek_unit = jQuery('#singkron_rka_ke_lokal').attr('id_unit');
 			if(cek_unit == 'all'){
@@ -2050,76 +2163,94 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 				processData: false,
 				contentType: false,
 				success: function(subkeg){
-					var cat_wp = '';
-					var last = subkeg.data.length-1;
-					subkeg.data.reduce(function(sequence, nextData){
-	                    return sequence.then(function(current_data){
-	                		return new Promise(function(resolve_reduce, reject_reduce){
-	                        	if(current_data.nama_sub_giat.mst_lock != 3 && current_data.kode_sub_skpd){
-	                        		cat_wp = current_data.kode_sub_skpd+' '+current_data.nama_sub_skpd;
-	                        		var nama_skpd = current_data.nama_skpd.split(' ');
-	                        		nama_skpd.shift();
-	                        		nama_skpd = nama_skpd.join(' ');
-									singkron_rka_ke_lokal({
-										id_unit: id_unit,
-										action: current_data.action,
-										kode_bl: current_data.kode_bl,
-										kode_sbl: current_data.kode_sbl,
-										idbl: current_data.id_bl,
-										idsubbl: current_data.id_sub_bl,
-										kode_skpd: current_data.kode_skpd,
-										nama_skpd: nama_skpd,
-										kode_sub_skpd: current_data.kode_sub_skpd,
-										nama_sub_skpd: current_data.nama_sub_skpd,
-										pagumurni: current_data.pagumurni,
-										pagu: current_data.pagu,
-										no_return: true
-									}, function(){
-										console.log('next reduce', nextData);
+					if(opsi_unit && opsi_unit.id_skpd){
+						var cat_wp = '';
+						var last = subkeg.data.length-1;
+						subkeg.data.reduce(function(sequence, nextData){
+		                    return sequence.then(function(current_data){
+		                		return new Promise(function(resolve_reduce, reject_reduce){
+		                        	if(current_data.nama_sub_giat.mst_lock != 3 && current_data.kode_sub_skpd){
+		                        		cat_wp = current_data.kode_sub_skpd+' '+current_data.nama_sub_skpd;
+		                        		var nama_skpd = current_data.nama_skpd.split(' ');
+		                        		nama_skpd.shift();
+		                        		nama_skpd = nama_skpd.join(' ');
+										singkron_rka_ke_lokal({
+											id_unit: id_unit,
+											action: current_data.action,
+											kode_bl: current_data.kode_bl,
+											kode_sbl: current_data.kode_sbl,
+											idbl: current_data.id_bl,
+											idsubbl: current_data.id_sub_bl,
+											kode_skpd: current_data.kode_skpd,
+											nama_skpd: nama_skpd,
+											kode_sub_skpd: current_data.kode_sub_skpd,
+											nama_sub_skpd: current_data.nama_sub_skpd,
+											pagumurni: current_data.pagumurni,
+											pagu: current_data.pagu,
+											no_return: true
+										}, function(){
+											console.log('next reduce', nextData);
+											resolve_reduce(nextData);
+										});
+									}else{
 										resolve_reduce(nextData);
-									});
-								}else{
-									resolve_reduce(nextData);
-								}
-			                })
-	                        .catch(function(e){
-	                            console.log(e);
-	                            return Promise.resolve(nextData);
-	                        });
-	                    })
-	                    .catch(function(e){
-	                        console.log(e);
-	                        return Promise.resolve(nextData);
-	                    });
-	                }, Promise.resolve(subkeg.data[last]))
-	                .then(function(data_last){
-						if(callback){
-							return callback();
-						}else{
-		                	var opsi = { 
-								action: 'get_cat_url',
-								api_key: config.api_key,
-								category : cat_wp
-							};
-							var data = {
-							    message:{
-							        type: "get-url",
-							        content: {
-									    url: config.url_server_lokal,
-									    type: 'post',
-									    data: opsi,
-						    			return: true
 									}
-							    }
-							};
-							chrome.runtime.sendMessage(data, function(response) {
-							    console.log('responeMessage', response);
-							});
-						}
-	                })
-	                .catch(function(e){
-	                    console.log(e);
-	                });
+				                })
+		                        .catch(function(e){
+		                            console.log(e);
+		                            return Promise.resolve(nextData);
+		                        });
+		                    })
+		                    .catch(function(e){
+		                        console.log(e);
+		                        return Promise.resolve(nextData);
+		                    });
+		                }, Promise.resolve(subkeg.data[last]))
+		                .then(function(data_last){
+							if(callback){
+								return callback();
+							}else{
+			                	var opsi = { 
+									action: 'get_cat_url',
+									api_key: config.api_key,
+									category : cat_wp
+								};
+								var data = {
+								    message:{
+								        type: "get-url",
+								        content: {
+										    url: config.url_server_lokal,
+										    type: 'post',
+										    data: opsi,
+							    			return: true
+										}
+								    }
+								};
+								chrome.runtime.sendMessage(data, function(response) {
+								    console.log('responeMessage', response);
+								});
+							}
+		                })
+		                .catch(function(e){
+		                    console.log(e);
+		                });
+		            }else{
+		            	window.sub_keg_skpd = subkeg.data;
+						var html = '';
+						subkeg.data.map(function(b, i){
+							html += ''
+								+'<tr>'
+									+'<td><input type="checkbox" class="cek_sub_keg_modal" data-id="'+b.kode_sbl+'"></td>'
+									+'<td>'+b.nama_sub_giat.nama_sub_giat+'</td>'
+									+'<td>-</td>'
+								+'</tr>';
+						});
+						run_script('jQuery("#table_sub_keg_modal").DataTable().destroy();');
+						jQuery('#table_sub_keg_modal tbody').html(html);
+						run_script('jQuery("#table_sub_keg_modal").DataTable();');
+						run_script('jQuery("#mod-konfirmasi-sub-keg").modal("show");');
+						jQuery('#wrap-loading').hide();
+		            }
 				}
 			});
 		});
