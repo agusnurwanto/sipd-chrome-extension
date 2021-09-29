@@ -3100,7 +3100,9 @@ function singkron_data_rpjmd_lokal() {
                     api_key: config.api_key,
                     program: [],
                     sasaran: [],
-                    tujuan: []
+                    tujuan: [],
+                    misi: [],
+                    visi: []
                 };
                 data.data.map(function (program, i) {
                     data_rpjmd.program[i] = {};
@@ -3214,21 +3216,58 @@ function singkron_data_rpjmd_lokal() {
                                     data_rpjmd.tujuan[i].urut_misi = tujuan.urut_misi;
                                     data_rpjmd.tujuan[i].urut_tujuan = tujuan.urut_tujuan;
                                     data_rpjmd.tujuan[i].visi_teks = tujuan.visi_teks;
-                                });
-                                var data = {
-                                    message: {
-                                        type: "get-url",
-                                        content: {
-                                            url: config.url_server_lokal,
-                                            type: 'post',
-                                            data: data_rpjmd,
-                                            return: true
-                                        }
-                                    }
-                                };
-                                chrome.runtime.sendMessage(data, function (response) {
-                                    console.log('responeMessage', response);
-                                });
+	                            });
+	                           	relayAjax({
+		                            url: lru3,
+		                            type: 'post',
+		                            data: formData,
+		                            processData: false,
+		                            contentType: false,
+		                            success: function (data) {
+		                                data.data.map(function (misi, i) {
+		                                    data_rpjmd.misi[i] = {};
+		                                    data_rpjmd.misi[i].id_misi = misi.id_misi;
+											data_rpjmd.misi[i].id_misi_old = misi.id_misi_old;
+											data_rpjmd.misi[i].id_visi = misi.id_visi;
+											data_rpjmd.misi[i].is_locked = misi.is_locked;
+											data_rpjmd.misi[i].misi_teks = misi.misi_teks;
+											data_rpjmd.misi[i].status = misi.status;
+											data_rpjmd.misi[i].urut_misi = misi.urut_misi;
+											data_rpjmd.misi[i].visi_lock = misi.visi_lock;
+											data_rpjmd.misi[i].visi_teks = misi.visi_teks;
+										});
+			                           	relayAjax({
+				                            url: lru2,
+				                            type: 'post',
+				                            data: formData,
+				                            processData: false,
+				                            contentType: false,
+				                            success: function (data) {
+				                                data.data.map(function (visi, i) {
+				                                    data_rpjmd.visi[i] = {};
+				                                    data_rpjmd.visi[i].id_visi = visi.id_visi;
+													data_rpjmd.visi[i].is_locked = visi.is_locked;
+													data_rpjmd.visi[i].status = visi.status;
+													data_rpjmd.visi[i].visi_teks = visi.visi_teks;
+				                                });
+				                                var data = {
+				                                    message: {
+				                                        type: "get-url",
+				                                        content: {
+				                                            url: config.url_server_lokal,
+				                                            type: 'post',
+				                                            data: data_rpjmd,
+				                                            return: true
+				                                        }
+				                                    }
+				                                };
+				                                chrome.runtime.sendMessage(data, function (response) {
+				                                    console.log('responeMessage', response);
+				                                });
+				                            }
+				                        });
+		                            }
+		                        });
                             }
                         });
                     }
