@@ -2509,7 +2509,8 @@ function setLampiran(cetak, model, jenis){
 		if(link_laporan[cetak][model][jenis].cetak){
 			set_link_laporan(link_laporan[cetak][model][jenis]);
 		}else{
-			jQuery('#wrap-loading').show();
+			// loading dimatikan agar tidak mengganggu user experience
+			// jQuery('#wrap-loading').show();
 			var data = {
 			    message:{
 			        type: "get-url",

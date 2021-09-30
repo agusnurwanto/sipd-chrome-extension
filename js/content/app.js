@@ -616,56 +616,68 @@ jQuery(document).ready(function(){
 		}
 
 		run_download_excel();
-		// RINGKASAN APBD YANG DIKLASIFIKASI MENURUT URUSAN PEMERINTAHAN DAERAH DAN ORGANISASI (APBD perda)
-		// RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN (APBD penjabaran)
-		if(page_title == 'Sistem Informasi Pemerintahan Daerah - Lampiran 2 APBD'){
-			injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
+
+		if(page_title.indexOf('Sistem Informasi Pemerintahan Daerah - Lampiran') != -1){
+			// agar bisa edit nomor dan tanggal perda
+			var table_lampiran = jQuery("td:contains('Peraturan Daerah Kabupaten Magetan')").eq(2).closest('table');
+			table_lampiran.attr('contenteditable', true);
+
+			// dapatkan jumlan colspan laporan
+			var colspan_length = table_lampiran.closest('td').attr('colspan');
+
+			// agar bisa edit tanda tangan kepala daerah
+			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
+
+			// tambahkan opsi hilangkan header & TTD
+			var hapus_header = ''
+				+'<div class="text_tengah" style="margin-top: 20px">'
+					+'<label><input type="checkbox" id="hilang_header"> Hilangkan header & TTD</label>'
+					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_header_aja"> Hilangkan header</label>'
+					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_ttd"> Hilangkan TTD</label>'
+				+'</div>';
+			jQuery('#action-sipd').append(hapus_header);
+
+			// buat table baru untuk memisahkan header dengan table utama
+			jQuery('td[colspan="'+colspan_length+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+			jQuery('td[colspan="'+colspan_length+'"]').parent().appendTo('#custom tbody');
+
+			// fungsi untuk bind action hapus_header
+			jQuery('#hilang_header').on('click', function(){
+				jQuery('#hilang_header_aja').prop('checked', false);
+				jQuery('#hilang_ttd').prop('checked', false);
+				if(jQuery(this).is(':checked') == true){
+					jQuery('td[colspan="'+colspan_length+'"]').eq(0).hide();
+					jQuery('td[colspan="'+colspan_length+'"]').eq(1).hide();
+					jQuery('td.text_tengah.text_15').closest('table').hide();
+				}else{
+					jQuery('td[colspan="'+colspan_length+'"]').eq(0).show();
+					jQuery('td[colspan="'+colspan_length+'"]').eq(1).show();
+					jQuery('td.text_tengah.text_15').closest('table').show();
+				}
+			});
+			jQuery('#hilang_header_aja').on('click', function(){
+				jQuery('#hilang_header').prop('checked', false);
+				if(jQuery(this).is(':checked') == true){
+					jQuery('td[colspan="'+colspan_length+'"]').eq(0).hide();
+					jQuery('td[colspan="'+colspan_length+'"]').eq(1).hide();
+				}else{
+					jQuery('td[colspan="'+colspan_length+'"]').eq(0).show();
+					jQuery('td[colspan="'+colspan_length+'"]').eq(1).show();
+				}
+			});
+			jQuery('#hilang_ttd').on('click', function(){
+				jQuery('#hilang_header').prop('checked', false);
+				if(jQuery(this).is(':checked') == true){
+					jQuery('td.text_tengah.text_15').closest('table').hide();
+				}else{
+					jQuery('td.text_tengah.text_15').closest('table').show();
+				}
+			});
+		}
+
+		if(page_title == 'script lama tidak dipakai, tidak dihapus karena untuk dokumentasi'){
 			ttd_kepala_daerah(jQuery('table[cellpadding="3"]>tbody'));
 			if(jQuery('td[colspan="17"]').eq(1).text().indexOf('PENJABARAN') != -1){
-				console.log('Lampiran 2 APBD penjabaran');
-				jQuery('td[colspan="17"]').eq(0).attr('contenteditable', true);
-				jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
-				jQuery('td[colspan="17"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
-				jQuery('td[colspan="17"]').parent().appendTo('#custom tbody');
-				var hapus_header = ''
-					+'<div class="text_tengah" style="margin-top: 20px">'
-						+'<label><input type="checkbox" id="hilang_header"> Hilangkan header & TTD</label>'
-						+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_header_aja"> Hilangkan header</label>'
-						+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_ttd"> Hilangkan TTD</label>'
-					+'</div>';
-				jQuery('#action-sipd').append(hapus_header);
-				jQuery('#hilang_header').on('click', function(){
-					jQuery('#hilang_header_aja').prop('checked', false);
-					jQuery('#hilang_ttd').prop('checked', false);
-					if(jQuery(this).is(':checked') == true){
-						jQuery('td[colspan="17"]').eq(0).hide();
-						jQuery('td[colspan="17"]').eq(1).hide();
-						jQuery('td.text_tengah.text_15').closest('table').hide();
-					}else{
-						jQuery('td[colspan="17"]').eq(0).show();
-						jQuery('td[colspan="17"]').eq(1).show();
-						jQuery('td.text_tengah.text_15').closest('table').show();
-					}
-				});
-				jQuery('#hilang_header_aja').on('click', function(){
-					jQuery('#hilang_header').prop('checked', false);
-					if(jQuery(this).is(':checked') == true){
-						jQuery('td[colspan="17"]').eq(0).hide();
-						jQuery('td[colspan="17"]').eq(1).hide();
-					}else{
-						jQuery('td[colspan="17"]').eq(0).show();
-						jQuery('td[colspan="17"]').eq(1).show();
-					}
-				});
-				jQuery('#hilang_ttd').on('click', function(){
-					jQuery('#hilang_header').prop('checked', false);
-					if(jQuery(this).is(':checked') == true){
-						jQuery('td.text_tengah.text_15').closest('table').hide();
-					}else{
-						jQuery('td.text_tengah.text_15').closest('table').show();
-					}
-				});
-			}else{
 				console.log('Lampiran 2 APBD perda');
 				var bidang_urusan = {};
 				var skpd = {};
@@ -761,50 +773,6 @@ jQuery(document).ready(function(){
 					+'</table>';
 				jQuery('#action-sipd').prepend(skpd_lintas_urusan);
 			}
-		}else if(page_title == 'Sistem Informasi Pemerintahan Daerah - Lampiran 3 APBD'){
-			console.log('Lampiran 3 APBD');
-			jQuery('td[colspan="16"]').eq(0).attr('contenteditable', true);
-			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
-			jQuery('td[colspan="16"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
-			jQuery('td[colspan="16"]').parent().appendTo('#custom tbody');
-			var hapus_header = ''
-				+'<div class="text_tengah" style="margin-top: 20px">'
-					+'<label><input type="checkbox" id="hilang_header"> Hilangkan header & TTD</label>'
-					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_header_aja"> Hilangkan header</label>'
-					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_ttd"> Hilangkan TTD</label>'
-				+'</div>';
-			jQuery('#action-sipd').append(hapus_header);
-			jQuery('#hilang_header').on('click', function(){
-				jQuery('#hilang_header_aja').prop('checked', false);
-				jQuery('#hilang_ttd').prop('checked', false);
-				if(jQuery(this).is(':checked') == true){
-					jQuery('td[colspan="16"]').eq(0).hide();
-					jQuery('td[colspan="16"]').eq(1).hide();
-					jQuery('td.text_tengah.text_15').closest('table').hide();
-				}else{
-					jQuery('td[colspan="16"]').eq(0).show();
-					jQuery('td[colspan="16"]').eq(1).show();
-					jQuery('td.text_tengah.text_15').closest('table').show();
-				}
-			});
-			jQuery('#hilang_header_aja').on('click', function(){
-				jQuery('#hilang_header').prop('checked', false);
-				if(jQuery(this).is(':checked') == true){
-					jQuery('td[colspan="16"]').eq(0).hide();
-					jQuery('td[colspan="16"]').eq(1).hide();
-				}else{
-					jQuery('td[colspan="16"]').eq(0).show();
-					jQuery('td[colspan="16"]').eq(1).show();
-				}
-			});
-			jQuery('#hilang_ttd').on('click', function(){
-				jQuery('#hilang_header').prop('checked', false);
-				if(jQuery(this).is(':checked') == true){
-					jQuery('td.text_tengah.text_15').closest('table').hide();
-				}else{
-					jQuery('td.text_tengah.text_15').closest('table').show();
-				}
-			});
 		}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1){
 		}else if(current_url.indexOf('lampiran/'+config.tahun_anggaran+'/kua/41/'+config.id_daerah+'/setunit') != -1){
 			jQuery('table[cellpadding="5"] tr').map(function(i,b){
