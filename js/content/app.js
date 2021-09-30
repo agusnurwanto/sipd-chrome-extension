@@ -618,61 +618,62 @@ jQuery(document).ready(function(){
 		run_download_excel();
 
 		if(page_title.indexOf('Sistem Informasi Pemerintahan Daerah - Lampiran') != -1){
+			// agar bisa edit tanda tangan kepala daerah
+			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
+
 			// agar bisa edit nomor dan tanggal perda
-			var table_lampiran = jQuery("td:contains('Peraturan Daerah Kabupaten Magetan')").eq(2).closest('table');
+			var table_lampiran = jQuery("td:contains('Peraturan')").eq(2).closest('table');
 			table_lampiran.attr('contenteditable', true);
 
 			// dapatkan jumlan colspan laporan
 			var colspan_length = table_lampiran.closest('td').attr('colspan');
+			if(colspan_length >= 1){
+				// tambahkan opsi hilangkan header & TTD
+				var hapus_header = ''
+					+'<div class="text_tengah" style="margin-top: 20px">'
+						+'<label><input type="checkbox" id="hilang_header"> Hilangkan header & TTD</label>'
+						+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_header_aja"> Hilangkan header</label>'
+						+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_ttd"> Hilangkan TTD</label>'
+					+'</div>';
+				jQuery('#action-sipd').append(hapus_header);
 
-			// agar bisa edit tanda tangan kepala daerah
-			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
+				// buat table baru untuk memisahkan header dengan table utama
+				jQuery('td[colspan="'+colspan_length+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+				jQuery('td[colspan="'+colspan_length+'"]').parent().appendTo('#custom tbody');
 
-			// tambahkan opsi hilangkan header & TTD
-			var hapus_header = ''
-				+'<div class="text_tengah" style="margin-top: 20px">'
-					+'<label><input type="checkbox" id="hilang_header"> Hilangkan header & TTD</label>'
-					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_header_aja"> Hilangkan header</label>'
-					+'<label style="margin-left: 20px;"><input type="checkbox" id="hilang_ttd"> Hilangkan TTD</label>'
-				+'</div>';
-			jQuery('#action-sipd').append(hapus_header);
-
-			// buat table baru untuk memisahkan header dengan table utama
-			jQuery('td[colspan="'+colspan_length+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
-			jQuery('td[colspan="'+colspan_length+'"]').parent().appendTo('#custom tbody');
-
-			// fungsi untuk bind action hapus_header
-			jQuery('#hilang_header').on('click', function(){
-				jQuery('#hilang_header_aja').prop('checked', false);
-				jQuery('#hilang_ttd').prop('checked', false);
-				if(jQuery(this).is(':checked') == true){
-					jQuery('td[colspan="'+colspan_length+'"]').eq(0).hide();
-					jQuery('td[colspan="'+colspan_length+'"]').eq(1).hide();
-					jQuery('td.text_tengah.text_15').closest('table').hide();
-				}else{
-					jQuery('td[colspan="'+colspan_length+'"]').eq(0).show();
-					jQuery('td[colspan="'+colspan_length+'"]').eq(1).show();
-					jQuery('td.text_tengah.text_15').closest('table').show();
-				}
-			});
-			jQuery('#hilang_header_aja').on('click', function(){
-				jQuery('#hilang_header').prop('checked', false);
-				if(jQuery(this).is(':checked') == true){
-					jQuery('td[colspan="'+colspan_length+'"]').eq(0).hide();
-					jQuery('td[colspan="'+colspan_length+'"]').eq(1).hide();
-				}else{
-					jQuery('td[colspan="'+colspan_length+'"]').eq(0).show();
-					jQuery('td[colspan="'+colspan_length+'"]').eq(1).show();
-				}
-			});
-			jQuery('#hilang_ttd').on('click', function(){
-				jQuery('#hilang_header').prop('checked', false);
-				if(jQuery(this).is(':checked') == true){
-					jQuery('td.text_tengah.text_15').closest('table').hide();
-				}else{
-					jQuery('td.text_tengah.text_15').closest('table').show();
-				}
-			});
+				// fungsi untuk bind action hapus_header
+				jQuery('#hilang_header').on('click', function(){
+					jQuery('#hilang_header_aja').prop('checked', false);
+					jQuery('#hilang_ttd').prop('checked', false);
+					if(jQuery(this).is(':checked') == true){
+						jQuery('td[colspan="'+colspan_length+'"]').eq(0).hide();
+						jQuery('td[colspan="'+colspan_length+'"]').eq(1).hide();
+						jQuery('td.text_tengah.text_15').closest('table').hide();
+					}else{
+						jQuery('td[colspan="'+colspan_length+'"]').eq(0).show();
+						jQuery('td[colspan="'+colspan_length+'"]').eq(1).show();
+						jQuery('td.text_tengah.text_15').closest('table').show();
+					}
+				});
+				jQuery('#hilang_header_aja').on('click', function(){
+					jQuery('#hilang_header').prop('checked', false);
+					if(jQuery(this).is(':checked') == true){
+						jQuery('td[colspan="'+colspan_length+'"]').eq(0).hide();
+						jQuery('td[colspan="'+colspan_length+'"]').eq(1).hide();
+					}else{
+						jQuery('td[colspan="'+colspan_length+'"]').eq(0).show();
+						jQuery('td[colspan="'+colspan_length+'"]').eq(1).show();
+					}
+				});
+				jQuery('#hilang_ttd').on('click', function(){
+					jQuery('#hilang_header').prop('checked', false);
+					if(jQuery(this).is(':checked') == true){
+						jQuery('td.text_tengah.text_15').closest('table').hide();
+					}else{
+						jQuery('td.text_tengah.text_15').closest('table').show();
+					}
+				});
+			}
 		}
 
 		if(page_title == 'script lama tidak dipakai, tidak dihapus karena untuk dokumentasi'){
