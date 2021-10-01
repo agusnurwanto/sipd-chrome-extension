@@ -622,12 +622,17 @@ jQuery(document).ready(function(){
 			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
 
 			// agar bisa edit nomor dan tanggal perda
-			var table_lampiran = jQuery("td:contains('Peraturan')").eq(2).closest('table');
-			table_lampiran.attr('contenteditable', true);
+			var table_lampiran1 = jQuery("td:contains('Peraturan')").eq(2).closest('table');
+			table_lampiran1.attr('contenteditable', true);
+			
+			// agar bisa edit nomor dan tanggal perda pada lampiran 3 penjabaran
+			var table_lampiran2 = jQuery("td:contains('Peraturan')").eq(4).closest('table');
+			table_lampiran2.attr('contenteditable', true);
 
 			// dapatkan jumlan colspan laporan
-			var colspan_length = table_lampiran.closest('td').attr('colspan');
-			if(colspan_length >= 1){
+			var colspan_length1 = table_lampiran1.closest('td').attr('colspan');
+			var colspan_length2 = table_lampiran2.closest('td').attr('colspan');
+			if(colspan_length1 >= 1){
 				// tambahkan opsi hilangkan header & TTD
 				var hapus_header = ''
 					+'<div class="text_tengah" style="margin-top: 20px">'
@@ -637,32 +642,47 @@ jQuery(document).ready(function(){
 					+'</div>';
 				jQuery('#action-sipd').append(hapus_header);
 
-				// buat table baru untuk memisahkan header dengan table utama
-				jQuery('td[colspan="'+colspan_length+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
-				jQuery('td[colspan="'+colspan_length+'"]').parent().appendTo('#custom tbody');
+				if(
+					page_title.indexOf('Lampiran 3 APBD') == -1
+					&& page_title.indexOf('Lampiran 4 APBD') == -1
+				){
+					// buat table baru untuk memisahkan header dengan table utama
+					jQuery('td[colspan="'+colspan_length1+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+					jQuery('td[colspan="'+colspan_length1+'"]').parent().appendTo('#custom tbody');
+					jQuery('td[colspan="'+colspan_length2+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+					jQuery('td[colspan="'+colspan_length2+'"]').parent().appendTo('#custom tbody');
+				}
 
 				// fungsi untuk bind action hapus_header
 				jQuery('#hilang_header').on('click', function(){
 					jQuery('#hilang_header_aja').prop('checked', false);
 					jQuery('#hilang_ttd').prop('checked', false);
 					if(jQuery(this).is(':checked') == true){
-						jQuery('td[colspan="'+colspan_length+'"]').eq(0).hide();
-						jQuery('td[colspan="'+colspan_length+'"]').eq(1).hide();
+						jQuery('td[colspan="'+colspan_length1+'"]').eq(0).hide();
+						jQuery('td[colspan="'+colspan_length1+'"]').eq(1).hide();
+						jQuery('td[colspan="'+colspan_length2+'"]').eq(0).hide();
+						jQuery('td[colspan="'+colspan_length2+'"]').eq(1).hide();
 						jQuery('td.text_tengah.text_15').closest('table').hide();
 					}else{
-						jQuery('td[colspan="'+colspan_length+'"]').eq(0).show();
-						jQuery('td[colspan="'+colspan_length+'"]').eq(1).show();
+						jQuery('td[colspan="'+colspan_length1+'"]').eq(0).show();
+						jQuery('td[colspan="'+colspan_length1+'"]').eq(1).show();
+						jQuery('td[colspan="'+colspan_length2+'"]').eq(0).show();
+						jQuery('td[colspan="'+colspan_length2+'"]').eq(1).show();
 						jQuery('td.text_tengah.text_15').closest('table').show();
 					}
 				});
 				jQuery('#hilang_header_aja').on('click', function(){
 					jQuery('#hilang_header').prop('checked', false);
 					if(jQuery(this).is(':checked') == true){
-						jQuery('td[colspan="'+colspan_length+'"]').eq(0).hide();
-						jQuery('td[colspan="'+colspan_length+'"]').eq(1).hide();
+						jQuery('td[colspan="'+colspan_length1+'"]').eq(0).hide();
+						jQuery('td[colspan="'+colspan_length1+'"]').eq(1).hide();
+						jQuery('td[colspan="'+colspan_length2+'"]').eq(0).hide();
+						jQuery('td[colspan="'+colspan_length2+'"]').eq(1).hide();
 					}else{
-						jQuery('td[colspan="'+colspan_length+'"]').eq(0).show();
-						jQuery('td[colspan="'+colspan_length+'"]').eq(1).show();
+						jQuery('td[colspan="'+colspan_length1+'"]').eq(0).show();
+						jQuery('td[colspan="'+colspan_length1+'"]').eq(1).show();
+						jQuery('td[colspan="'+colspan_length2+'"]').eq(0).show();
+						jQuery('td[colspan="'+colspan_length2+'"]').eq(1).show();
 					}
 				});
 				jQuery('#hilang_ttd').on('click', function(){
