@@ -622,11 +622,12 @@ jQuery(document).ready(function(){
 			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
 
 			// agar bisa edit nomor dan tanggal perda
-			var table_lampiran1 = jQuery("td:contains('Peraturan')").eq(2).closest('table');
-			table_lampiran1.attr('contenteditable', true);
+			var table_lampiran1 = jQuery("td:contains('Peraturan')").eq(2);
+			var text_table_lampiran1 = table_lampiran1.text().trim();
+			table_lampiran1.closest('table').attr('contenteditable', true);
 			
 			// agar bisa edit nomor dan tanggal perda pada lampiran 3 penjabaran
-			var table_lampiran2 = jQuery("td:contains('Peraturan')").eq(4).closest('table');
+			var table_lampiran2 = jQuery("td:contains('"+text_table_lampiran1+"')").eq(4).closest('table');
 			table_lampiran2.attr('contenteditable', true);
 
 			// dapatkan jumlan colspan laporan
