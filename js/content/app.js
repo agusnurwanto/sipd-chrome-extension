@@ -642,6 +642,15 @@ jQuery(document).ready(function(){
 					+'</div>';
 				jQuery('#action-sipd').append(hapus_header);
 
+				if(page_title == 'Sistem Informasi Pemerintahan Daerah - Lampiran 3 APBD'){
+					var td_dasar_hukum = jQuery("td:contains('Dasar Hukum')").eq(1);
+					if(td_dasar_hukum.length){
+						td_dasar_hukum.closest('table').closest('table').find('>tbody>tr').map(function(i, b){
+							jQuery(b).find('td').eq(13).attr('contenteditable', true);
+						});
+					}
+				}
+
 				if(
 					page_title.indexOf('Lampiran 3 APBD') == -1
 					&& page_title.indexOf('Lampiran 4 APBD') == -1
