@@ -1738,47 +1738,67 @@ function singkron_renstra_lokal(){
 	                api_key: config.api_key,
 	                tujuan: []
 	            };
-	      		data.data.map(function(tujuan, i){
-	      			data_renstra.tujuan[i] = {};
-	      			data_renstra.tujuan[i].bidur_lock = tujuan.bidur_lock;
-					data_renstra.tujuan[i].id_bidang_urusan = tujuan.id_bidang_urusan;
-					data_renstra.tujuan[i].id_unik = tujuan.id_unik;
-					data_renstra.tujuan[i].id_unik_indikator = tujuan.id_unik_indikator;
-					data_renstra.tujuan[i].id_unit = tujuan.id_unit;
-					data_renstra.tujuan[i].indikator_teks = tujuan.indikator_teks;
-					data_renstra.tujuan[i].is_locked = tujuan.is_locked;
-					data_renstra.tujuan[i].is_locked_indikator = tujuan.is_locked_indikator;
-					data_renstra.tujuan[i].kode_bidang_urusan = tujuan.kode_bidang_urusan;
-					data_renstra.tujuan[i].kode_skpd = tujuan.kode_skpd;
-					data_renstra.tujuan[i].nama_bidang_urusan = tujuan.nama_bidang_urusan;
-					data_renstra.tujuan[i].nama_skpd = tujuan.nama_skpd;
-					data_renstra.tujuan[i].satuan = tujuan.satuan;
-					data_renstra.tujuan[i].status = tujuan.status;
-					data_renstra.tujuan[i].target_1 = tujuan.target_1;
-					data_renstra.tujuan[i].target_2 = tujuan.target_2;
-					data_renstra.tujuan[i].target_3 = tujuan.target_3;
-					data_renstra.tujuan[i].target_4 = tujuan.target_4;
-					data_renstra.tujuan[i].target_5 = tujuan.target_5;
-					data_renstra.tujuan[i].target_akhir = tujuan.target_akhir;
-					data_renstra.tujuan[i].target_awal = tujuan.target_awal;
-					data_renstra.tujuan[i].tujuan_teks = tujuan.tujuan_teks;
-					data_renstra.tujuan[i].urut_tujuan = tujuan.urut_tujuan;
+				var sendData2 = data.data.map(function(tujuan, i){
+	      			return new Promise(function(resolve2, reject2){
+				    	var formDataCustom = new FormData();
+						formDataCustom.append('_token', tokek);
+						formDataCustom.append('v1bnA1m', v1bnA1m);
+						formDataCustom.append('DsK121m', Curut('kamus=tujuan&kodekamus='+tujuan.id_unik+'&idopd='+tujuan.id_unit+'&aksi=ubah_kamus'));
+	      				relayAjax({
+					      	url: lru11,
+					        type: 'post',
+					        data: formDataCustom,
+					        processData: false,
+					        contentType: false,
+					        success: function (kamus) {
+				      			data_renstra.tujuan[i] = {};
+				      			data_renstra.tujuan[i].bidur_lock = tujuan.bidur_lock;
+								data_renstra.tujuan[i].id_bidang_urusan = tujuan.id_bidang_urusan;
+								data_renstra.tujuan[i].id_unik = tujuan.id_unik;
+								data_renstra.tujuan[i].id_unik_indikator = tujuan.id_unik_indikator;
+								data_renstra.tujuan[i].id_unit = tujuan.id_unit;
+								data_renstra.tujuan[i].indikator_teks = tujuan.indikator_teks;
+								data_renstra.tujuan[i].is_locked = tujuan.is_locked;
+								data_renstra.tujuan[i].is_locked_indikator = tujuan.is_locked_indikator;
+								data_renstra.tujuan[i].kode_bidang_urusan = tujuan.kode_bidang_urusan;
+								data_renstra.tujuan[i].kode_skpd = tujuan.kode_skpd;
+								data_renstra.tujuan[i].nama_bidang_urusan = tujuan.nama_bidang_urusan;
+								data_renstra.tujuan[i].nama_skpd = tujuan.nama_skpd;
+								data_renstra.tujuan[i].satuan = tujuan.satuan;
+								data_renstra.tujuan[i].status = tujuan.status;
+								data_renstra.tujuan[i].target_1 = tujuan.target_1;
+								data_renstra.tujuan[i].target_2 = tujuan.target_2;
+								data_renstra.tujuan[i].target_3 = tujuan.target_3;
+								data_renstra.tujuan[i].target_4 = tujuan.target_4;
+								data_renstra.tujuan[i].target_5 = tujuan.target_5;
+								data_renstra.tujuan[i].target_akhir = tujuan.target_akhir;
+								data_renstra.tujuan[i].target_awal = tujuan.target_awal;
+								data_renstra.tujuan[i].tujuan_teks = tujuan.tujuan_teks;
+								data_renstra.tujuan[i].urut_tujuan = tujuan.urut_tujuan;
+								data_renstra.tujuan[i].kode_sasaran_rpjm = kamus.kode_sasaran_rpjm;
+								resolve2(true);
+							}
+						});
+					});
 				});
-				var data = {
-				    message:{
-				        type: "get-url",
-				        content: {
-			                url: config.url_server_lokal,
-			                type: 'post',
-			                data: data_renstra,
-			            	return: false
-			            }
-				    }
-				};
-				chrome.runtime.sendMessage(data, function(response) {
-				    console.log('responeMessage', response);
+				Promise.all(sendData2)
+				.then(function(all_data){
+					var data = {
+					    message:{
+					        type: "get-url",
+					        content: {
+				                url: config.url_server_lokal,
+				                type: 'post',
+				                data: data_renstra,
+				            	return: false
+				            }
+					    }
+					};
+					chrome.runtime.sendMessage(data, function(response) {
+					    console.log('responeMessage', response);
+					});
+					resolve(true);
 				});
-				resolve(true);
 	      	}
 	    });
 	}) );
