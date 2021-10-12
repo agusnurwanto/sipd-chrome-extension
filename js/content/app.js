@@ -31,6 +31,9 @@ if(typeof tokek != 'undefined'){
 	formData.append('v1bnA1m', v1bnA1m);
 }
 
+// untuk menjaga session SIPD agar tetap login
+intervalSession();
+
 var tahapan = jQuery('button[onclick="setFase()"]').text().trim();
 if(tahapan != ''){
 	config.tahun_anggaran = tahapan.split(' - ')[1];

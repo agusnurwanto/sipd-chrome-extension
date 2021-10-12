@@ -3366,3 +3366,27 @@ function cekJadwal(){
 	var total_detik = seconds+(minutes*60)+(hours*60*60)+(days*60*60*60);
 	return total_detik;
 }
+
+function intervalSession(no){
+	if(!no){
+		no = 0;
+	}
+	var formDataCustom = new FormData();
+	formDataCustom.append('_token', tokek);
+	formDataCustom.append('v1bnA1m', v1bnA1m);
+	formDataCustom.append('DsK121m', Curut("sdaerah="+config.id_daerah+"&sapp=budget&sdata=0&stahun=0"));
+	relayAjax({
+		url: endog + '/set_portal',
+		type: 'post',
+        data: formDataCustom,
+        processData: false,
+        contentType: false,
+		success: function(html){
+			no++;
+			console.log('Interval session per 20s ke '+no);
+			setTimeout(function(){
+				intervalSession(no);
+			}, 20000);
+		}
+	});
+}
