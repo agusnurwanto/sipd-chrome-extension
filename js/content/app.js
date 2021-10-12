@@ -624,18 +624,18 @@ jQuery(document).ready(function(){
 			// agar bisa edit tanda tangan kepala daerah
 			jQuery('td.text_tengah.text_15').closest('table').attr('contenteditable', true);
 
-			// agar bisa edit nomor dan tanggal perda
 			var table_lampiran1 = jQuery("td:contains('Peraturan')").eq(2);
 			var text_table_lampiran1 = table_lampiran1.text().trim();
-			table_lampiran1.closest('table').attr('contenteditable', true);
-			
-			// agar bisa edit nomor dan tanggal perda pada lampiran 3 penjabaran
 			var table_lampiran2 = jQuery("td:contains('"+text_table_lampiran1+"')").eq(4).closest('table');
-			table_lampiran2.attr('contenteditable', true);
 
 			// dapatkan jumlan colspan laporan
-			var colspan_length1 = table_lampiran1.closest('td').attr('colspan');
-			var colspan_length2 = table_lampiran2.closest('td').attr('colspan');
+			var colspan_length1 = table_lampiran1.closest('table').closest('td').attr('colspan');
+			var colspan_length2 = table_lampiran2.closest('table').closest('td').attr('colspan');
+
+			// agar bisa edit nomor dan tanggal perda
+			table_lampiran1.closest('table').attr('contenteditable', true);
+			table_lampiran2.attr('contenteditable', true);
+
 			if(colspan_length1 >= 1){
 				// tambahkan opsi hilangkan header & TTD
 				var hapus_header = ''
@@ -658,6 +658,8 @@ jQuery(document).ready(function(){
 				if(
 					page_title.indexOf('Lampiran 3 APBD') == -1
 					&& page_title.indexOf('Lampiran 4 APBD') == -1
+					&& page_title.indexOf('Lampiran 5 APBD') == -1
+					&& page_title.indexOf('Lampiran 6 APBD') == -1
 				){
 					// buat table baru untuk memisahkan header dengan table utama
 					jQuery('td[colspan="'+colspan_length1+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
