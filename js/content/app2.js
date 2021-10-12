@@ -44,11 +44,14 @@ jQuery(document).ready(function () {
         jQuery('h3.page-title').text().indexOf('Penyusunan RENSTRA') != -1
     ) {
         console.log('halaman RENSTRA');
-        var cek_koneksi_rpjm = ''
-            + '<button class="fcbtn btn btn-success" id="cek-koneksi-rpjm" style="margin-right: 10px;">'
-                + '<i class="fa fa-eye m-r-5"></i> <span>Cek Status Koneksi Tujuan RENSTRA Dengan Sasaran RPJM</span>'
-            + '</button>';
-        jQuery('.tambah-tujuan').before(cek_koneksi_rpjm);
+        var jadwal_kunci = cekJadwal();
+        if(jadwal_kunci > 0){
+            var cek_koneksi_rpjm = ''
+                + '<button class="fcbtn btn btn-success" id="cek-koneksi-rpjm" style="margin-right: 10px;">'
+                    + '<i class="fa fa-eye m-r-5"></i> <span>Cek Status Koneksi Tujuan RENSTRA Dengan Sasaran RPJM</span>'
+                + '</button>';
+            jQuery('.tambah-tujuan').before(cek_koneksi_rpjm);
+        }
         var singkron_data_renstra = ''
             +'<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">'
                 + '<button class="fcbtn btn btn-danger pull-right" id="singkron-renstra-lokal">'
