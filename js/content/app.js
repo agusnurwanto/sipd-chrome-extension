@@ -2510,6 +2510,38 @@ function singkron_rka_ke_lokal(opsi, callback) {
 								}
 							}
 
+							// cek jika rincian 0 maka langsung return.
+							if(
+								subkeg.dataBl[0].pagu == 0
+								|| subkeg.dataBl[0].pagu == ''
+								|| !subkeg.dataBl[0].pagu
+							){
+								data_rka.no_page = 1;
+								data_rka.rka = 0;
+								var data = {
+								    message:{
+								        type: "get-url",
+								        content: {
+										    url: config.url_server_lokal,
+										    type: 'post',
+										    data: data_rka,
+							    			return: false
+										}
+								    }
+								};
+								if(!opsi || !opsi.no_return){
+									data.message.content.return = true;
+								}
+								chrome.runtime.sendMessage(data, function(response) {
+								    // console.log('responeMessage', response);
+								});
+								if(callback){
+							    	callback();
+							    }
+							    console.log('Rincian kosong di SIPD!');
+								return true;
+							}
+
 							go_halaman_detail_rincian(kode_go_hal_rinci).then(function(kode_get_rinci){
 								// subkeg = JSON.parse(subkeg);
 								// get rincian belanja
