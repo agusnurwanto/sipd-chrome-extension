@@ -3359,10 +3359,10 @@ function singkron_all_unit(units) {
 }
 
 function cekJadwal(){
-	var days = +(jQuery('#days').text().split(' ')[0]);
-	var hours = +(jQuery('#hours').text().split(' ')[0]);
-	var minutes = +(jQuery('#minutes').text().split(' ')[0]);
-	var seconds = +(jQuery('#seconds').text().split(' ')[0]);
+	var days = +(jQuery('#days').html().split('<span>')[0]);
+	var hours = +(jQuery('#hours').html().split('<span>')[0]);
+	var minutes = +(jQuery('#minutes').html().split('<span>')[0]);
+	var seconds = +(jQuery('#seconds').html().split('<span>')[0]);
 	var total_detik = seconds+(minutes*60)+(hours*60*60)+(days*60*60*60);
 	return total_detik;
 }

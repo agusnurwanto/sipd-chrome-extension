@@ -45,6 +45,7 @@ jQuery(document).ready(function () {
     ) {
         console.log('halaman RENSTRA');
         var jadwal_kunci = cekJadwal();
+        console.log('jadwal_kunci', jadwal_kunci);
         if(jadwal_kunci > 0){
             var cek_koneksi_rpjm = ''
                 + '<button class="fcbtn btn btn-success" id="cek-koneksi-rpjm" style="margin-right: 10px;">'
