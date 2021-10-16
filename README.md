@@ -15,6 +15,14 @@ Semoga bermanfaat
 - Pengembangan script extension akan berhenti setelah aplikasi SIPD siap untuk mengakomodir semua fitur yang diperlukan oleh pemda
 - Demikian dan salam semangat :blush:
 
+### Cara Pakai Extension
+- Download file master zip terbaru atau bisa clone repository ke lokal
+- Buat file baru **config.js** dan copy isi dari **config.js.example** ke file **config.js**
+- Edit configurasi file config.js menyesuaikan data dari pemda
+- **id_daerah** bisa didapatkan dengan buka **inspect element > console log**. Ketikan kode **drakor** dan tekan **Enter**. Informasi lebih detail bisa cek video tutorial ini https://www.youtube.com/watch?v=VnySS0RE6zc
+- Buka halaman [chrome://extensions/](chrome://extensions/), aktifkan developer mode.
+- Tekan tombol **Load unpacked** dan pilih folder sipd-chrome-extension
+
 ### Fitur:
 - Export data SSH ke database lokal
 - Export data akun belanja ke database lokal
@@ -23,11 +31,8 @@ Semoga bermanfaat
 - Mapping multi standar harga ke multi rekening belanja langsung di SIPD
 - Pencarian item standar harga dengan ID standar harga di halaman tambah rincian belanja
 - Auto login user admin / penyelia SSH
-- Download excel RKA
-- Download excel KUA PPAS lampiran 4.1
-- Download excel KUA PPAS lampiran 4.2
+- Download excel semua laporan
 - Export SKPD ke database lokal
-- Print APBD lampiran III semua Perangkat Daerah menjadi satu
 - Export RKA seluruh perangkat daerah
 - Export program kegiatan ke database lokal
 - Menampilkan nama TAPD di RKA pendapatan
@@ -55,7 +60,6 @@ Semoga bermanfaat
 - Get data rincian murni untuk printout APBD Penjabaran di wp-sipd lokal
 - Export data usulan ASMAS
 - Export data usulan POKIR
-- Allow chrome browser for SIPD
 - Menampilkan tombol print lokal APBD Penjabaran lampiran 1,2,3,4,5,6
 - Print RENJA per OPD dan semua OPD di halaman Pengaturan > Profil > Perangkat Daerah
 - Print mandatory spending di halaman Pengaturan > Data > Label (Tag) Sub Kegiatan
@@ -65,13 +69,14 @@ Semoga bermanfaat
 - Perbaikan singkron master penerima bantuan dan pilih ssh by id encrypted
 - Hapus duplikat item SSH & SBU
 - Upload data penerima HIBAH, BOS, BANSOS, BANKEU
+- Jaga session login agar tidak terlogout sendiri ketika user tidak aktif dalam 1 menit terakhir
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki
 - Melengkapi video tutorial di youtube
 
 ### Video tutorial
-- Cara install chrome extension https://www.youtube.com/watch?v=VnySS0RE6zc&t=318s
+- Cara install chrome extension https://www.youtube.com/watch?v=VnySS0RE6zc
 - Mencari Komponen SSH dengan ID Standar Harga di halaman input rincian belanja 
     - v1 = https://www.youtube.com/watch?v=ixiwcs7xz8g
 	- v2 = https://youtu.be/2MgCu5J_jcs

@@ -616,19 +616,44 @@ function filePicked(oEvent) {
         		|| type_data == 'BAGI-HASIL'
             ){
 	        	XL_row_object.map(function(row, i){
-	        		data_pasti = {};
-		        	data_pasti.no = row['NO'];
-                    data_pasti.idbelanjarinci = row['idbelanjarinci'];
-                    data_pasti.idakunrinci = row['idakunrinci'];
-		        	data_pasti.desa = row['DESA'];
-	        		data_pasti.total = row['PAGU'];
-	        		data_pasti.keterangan = '';
+                    data_pasti = {
+                        no: '',
+                        idbelanjarinci: '',
+                        idakunrinci: '',
+                        desa: '',
+                        total: '',
+                        keterangan: '',
+                        kec: '',
+                        kab: '',
+                        prov: ''
+                    };
+                    if(row['NO']){
+                        data_pasti.no = row['NO'];
+                    }
+                    if(row['idbelanjarinci']){
+                        data_pasti.idbelanjarinci = row['idbelanjarinci'];
+                    }
+                    if(row['idakunrinci']){
+                        data_pasti.idakunrinci = row['idakunrinci'];
+                    }
+		        	if(row['DESA']){
+                        data_pasti.desa = row['DESA'];
+                    }
+	        		if(row['PAGU']){
+                        data_pasti.total = row['PAGU'];
+                    }
 	        		if(row['KETERANGAN']){
 	        			data_pasti.keterangan = row['KETERANGAN'];
 	        		}
-	        		data_pasti.kec = row['KECAMATAN'];
-	        		data_pasti.kab = row['KABUPATEN'];
-	        		data_pasti.prov = row['PROVINSI'];
+	        		if(row['KECAMATAN']){
+                        data_pasti.kec = row['KECAMATAN'];
+                    }
+	        		if(row['KABUPATEN']){
+                        data_pasti.kab = row['KABUPATEN'];
+                    }
+	        		if(row['PROVINSI']){
+                        data_pasti.prov = row['PROVINSI'];
+                    }
 	        		data.push(data_pasti);
 	        	});
 	        }else if(
@@ -639,24 +664,68 @@ function filePicked(oEvent) {
 		        || type_data == 'BANSOS'
 	        ){
 	        	XL_row_object.map(function(row, i){
-                    data_pasti = {};
-                    data_pasti.no = row['NO'];
-                    data_pasti.idbelanjarinci = row['idbelanjarinci'];
-                    data_pasti.idakunrinci = row['idakunrinci'];
-                    data_pasti.id_profil = row['ID_PROFIL'];
-                    data_pasti.nama = row['PENERIMA'];
-                    data_pasti.total = row['PAGU'];
+                    data_pasti = {
+                        no: '',
+                        idbelanjarinci: '',
+                        idakunrinci: '',
+                        id_profile: '',
+                        nama: '',
+                        total: '',
+                        keterangan: '',
+                        jenis: '',
+                        nik: '',
+                        alamat: '',
+                        kel: '',
+                        kec: '',
+                        kab: '',
+                        prov: '',
+                        tlp: ''
+                    };
+                    if(row['NO']){
+                        data_pasti.no = row['NO'];
+                    }
+                    if(row['idbelanjarinci']){
+                        data_pasti.idbelanjarinci = row['idbelanjarinci'];
+                    }
+                    if(row['idakunrinci']){
+                        data_pasti.idakunrinci = row['idakunrinci'];
+                    }
+                    if(row['ID_PROFIL']){
+                        data_pasti.id_profil = row['ID_PROFIL'];
+                    }
+                    if(row['PENERIMA']){
+                        data_pasti.nama = row['PENERIMA'];
+                    }
+                    if(row['PAGU']){
+                        data_pasti.total = row['PAGU'];
+                    }
                     if(row['KETERANGAN']){
                         data_pasti.keterangan = row['KETERANGAN'];
                     }
-                    data_pasti.jenis = row['JENIS'];
-                    data_pasti.nik = row['NIK'];
-                    data_pasti.alamat = row['ALAMAT'];
-                    data_pasti.kel = row['KELURAHAN'];
-                    data_pasti.kec = row['KECAMATAN'];
-                    data_pasti.kab = row['KABUPATEN'];
-                    data_pasti.prov = row['PROVINSI'];
-                    data_pasti.tlp = row['TLP'];
+                    if(row['JENIS']){
+                        data_pasti.jenis = row['JENIS'];
+                    }
+                    if(row['NIK']){
+                        data_pasti.nik = row['NIK'];
+                    }
+                    if(row['ALAMAT']){
+                        data_pasti.alamat = row['ALAMAT'];
+                    }
+                    if(row['KELURAHAN']){
+                        data_pasti.kel = row['KELURAHAN'];
+                    }
+                    if(row['KECAMATAN']){
+                        data_pasti.kec = row['KECAMATAN'];
+                    }
+                    if(row['KABUPATEN']){
+                        data_pasti.kab = row['KABUPATEN'];
+                    }
+                    if(row['PROVINSI']){
+                        data_pasti.prov = row['PROVINSI'];
+                    }
+                    if(row['TLP']){
+                        data_pasti.tlp = row['TLP'];
+                    }
                     data.push(data_pasti);
 	        		// console.log('b', b);
 	        	});
