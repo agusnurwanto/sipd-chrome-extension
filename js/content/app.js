@@ -2553,7 +2553,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 									contentType: false,
 									success: function(data){
 
-										var _leng = 250;
+										var _leng = 25000;
 										var _data_all = [];
 										var _data = [];
 										data.data.map(function(rka, i){
