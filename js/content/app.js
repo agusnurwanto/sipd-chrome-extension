@@ -2134,40 +2134,50 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 		if(typeof promise_nonactive == 'undefined'){
 			window.promise_nonactive = {};
 		}
-		// ubah status sub_keg_bl jadi tidak aktif semua agar jika ada sub keg yang dihapus, sipd lokal bisa ikut terupdate
-		new Promise(function(resolve_reduce_nonactive, reject_reduce_nonactive){
-			promise_nonactive[id_unit] = resolve_reduce_nonactive;
-			var data = {
-			    message:{
-			        type: "get-url",
-			        content: {
-					    url: config.url_server_lokal,
-					    type: 'post',
-					    data: {
-					    	action: 'update_nonactive_sub_bl',
-							api_key: config.api_key,
-							tahun_anggaran: config.tahun_anggaran,
-							id_unit: id_unit
-					    },
-		    			return: true
-					}
-			    }
-			};
-			chrome.runtime.sendMessage(data, function(response) {
-			    console.log('responeMessage', response);
-			});
-		}).then(function(){
-			var url_get_unit = lru8;
-			if(opsi_unit && opsi_unit.kode_get){
-				url_get_unit = opsi_unit.kode_get;
-			}
-			relayAjax({
-				url: url_get_unit,
-				type: 'POST',
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function(subkeg){
+		var url_get_unit = lru8;
+		if(opsi_unit && opsi_unit.kode_get){
+			url_get_unit = opsi_unit.kode_get;
+		}
+		relayAjax({
+			url: url_get_unit,
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function(subkeg){
+				// ubah status sub_keg_bl jadi tidak aktif semua agar jika ada sub keg yang dihapus, sipd lokal bisa ikut terupdate
+				new Promise(function(resolve_reduce_nonactive, reject_reduce_nonactive){
+					promise_nonactive[id_unit] = resolve_reduce_nonactive;
+					var subkeg_aktif = [];
+					subkeg.data.map(function(b, i){
+						if(
+							b.nama_sub_giat.mst_lock 
+							!= 3 && b.kode_sub_skpd
+						){
+							subkeg_aktif.push({kode_sbl: b.kode_sbl});
+						}
+					});
+					var data = {
+					    message:{
+					        type: "get-url",
+					        content: {
+							    url: config.url_server_lokal,
+							    type: 'post',
+							    data: {
+							    	action: 'update_nonactive_sub_bl',
+									api_key: config.api_key,
+									tahun_anggaran: config.tahun_anggaran,
+									id_unit: id_unit,
+									subkeg_aktif: subkeg_aktif
+							    },
+				    			return: true
+							}
+					    }
+					};
+					chrome.runtime.sendMessage(data, function(response) {
+					    console.log('responeMessage', response);
+					});
+				}).then(function(){
 					if(opsi_unit && opsi_unit.id_skpd){
 						var cat_wp = '';
 						var last = subkeg.data.length-1;
@@ -2261,8 +2271,8 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 						run_script('jQuery("#mod-konfirmasi-sub-keg").modal("show");');
 						jQuery('#wrap-loading').hide();
 		            }
-				}
-			});
+				});
+			}
 		});
 	}
 }
