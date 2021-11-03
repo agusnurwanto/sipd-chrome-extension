@@ -904,7 +904,7 @@ jQuery(document).ready(function(){
 			        +'</div>'
 			    +'</div>';
 			jQuery('body').append(modal_sub_keg);
-			run_script('jQuery("#table_sub_keg_modal").DataTable();');
+			run_script('jQuery("#table_sub_keg_modal").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]]});');
 			jQuery('#modal_cek_sub_keg_all').on('click', function(){
 				if(jQuery(this).is(':checked') == true){
 					jQuery('.cek_sub_keg_modal').prop('checked', true);
@@ -1035,7 +1035,7 @@ jQuery(document).ready(function(){
 			        +'</div>'
 			    +'</div>';
 			jQuery('body').append(modal);
-			run_script('jQuery("#table_skpd_modal").DataTable();');
+			run_script('jQuery("#table_skpd_modal").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]]});');
 			jQuery('#modal_cek_skpd_all').on('click', function(){
 				if(jQuery(this).is(':checked') == true){
 					jQuery('.cek_skpd_modal').prop('checked', true);
@@ -1091,7 +1091,7 @@ jQuery(document).ready(function(){
 						});
 						run_script('jQuery("#table_skpd_modal").DataTable().destroy();');
 						jQuery('#table_skpd_modal tbody').html(html);
-						run_script('jQuery("#table_skpd_modal").DataTable();');
+						run_script('jQuery("#table_skpd_modal").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]]});');
 						run_script('jQuery("#mod-konfirmasi-units").modal("show");');
 						jQuery('#wrap-loading').hide();
 					}
@@ -2257,7 +2257,7 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 						});
 						run_script('jQuery("#table_sub_keg_modal").DataTable().destroy();');
 						jQuery('#table_sub_keg_modal tbody').html(html);
-						run_script('jQuery("#table_sub_keg_modal").DataTable();');
+						run_script('jQuery("#table_sub_keg_modal").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]]});');
 						run_script('jQuery("#mod-konfirmasi-sub-keg").modal("show");');
 						jQuery('#wrap-loading').hide();
 		            }
