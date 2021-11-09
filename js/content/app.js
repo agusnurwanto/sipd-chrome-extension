@@ -2521,6 +2521,8 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							}
 
 							// cek jika rincian 0 maka langsung return.
+							// dimatikan karena rincian yang dinollkan pada apbd-p tidak ikut ketarik
+							/*
 							if(
 								subkeg.dataBl[0].pagu == 0
 								|| subkeg.dataBl[0].pagu == ''
@@ -2551,6 +2553,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							    console.log('Rincian kosong di SIPD!');
 								return true;
 							}
+							*/
 
 							go_halaman_detail_rincian(kode_go_hal_rinci).then(function(kode_get_rinci){
 								// subkeg = JSON.parse(subkeg);
