@@ -1701,15 +1701,16 @@ function singkron_pengaturan_sipd_lokal(){
                     tahun_anggaran: config.tahun_anggaran,
                     api_key: config.api_key,
                     data: {
+                            id_daerah: drakor,
                             daerah: jQuery('h4.text-white.font-bold').text(),
                             kepala_daerah: jQuery('input[name="kepala_daerah"]').val(),
                             wakil_kepala_daerah: jQuery('input[name="wakil_kepala_daerah"]').val(),
                             awal_rpjmd: jQuery('input[name="awal_rpjmd"]').val(),
                             akhir_rpjmd: jQuery('input[name="akhir_rpjmd"]').val(),
-                            pelaksana_rkpd: jQuery('input[name="pelaksana_rkpd"]').val(),
-                            pelaksana_kua: jQuery('input[name="pelaksana_kua"]').val(),
-                            pelaksana_apbd: jQuery('input[name="pelaksana_apbd"]').val(),
-                            set_kpa_sekda: jQuery('input[name="set_kpa_sekda"]').val(),
+                            pelaksana_rkpd: jQuery('select[name="pelaksana_rkpd"]').val(),
+                            pelaksana_kua: jQuery('select[name="pelaksana_kua"]').val(),
+                            pelaksana_apbd: jQuery('select[name="pelaksana_apbd"]').val(),
+                            set_kpa_sekda: jQuery('select[name="set_kpa_sekda"]').val(),
                     }
                 },
             	return: true
