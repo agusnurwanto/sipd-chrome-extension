@@ -674,10 +674,12 @@ jQuery(document).ready(function(){
 					)
 				){
 					// buat table baru untuk memisahkan header dengan table utama
-					jQuery('td[colspan="'+colspan_length1+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
-					jQuery('td[colspan="'+colspan_length1+'"]').parent().appendTo('#custom tbody');
-					jQuery('td[colspan="'+colspan_length2+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
-					jQuery('td[colspan="'+colspan_length2+'"]').parent().appendTo('#custom tbody');
+					jQuery('thead > tr > td[colspan="'+colspan_length1+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+					jQuery('thead > tr > td[colspan="'+colspan_length1+'"]').parent().appendTo('#custom tbody');
+					if(colspan_length2 >= 1){
+						jQuery('thead > tr > td[colspan="'+colspan_length2+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+						jQuery('thead > tr > td[colspan="'+colspan_length2+'"]').parent().appendTo('#custom tbody');
+					}
 				}
 
 				// fungsi untuk bind action hapus_header
