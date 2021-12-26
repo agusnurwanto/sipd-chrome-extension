@@ -92,3 +92,4 @@ Semoga bermanfaat
 - Ganti/update Rekening Multi Komponen di halaman rincian belanja https://www.youtube.com/watch?v=Wo6BdOCPb1g
 - Integrasi data SIPD ke SIMDA keuangan https://youtu.be/vFOsAlnxmTo
 - Integrasi data APBD SIPD ke SIMDA Pink 2022 https://smkasiyahhomeschooling.blogspot.com/2021/12/sipd-chrome-extension-untuk-migrasi.html
+- Integrasi data APBD SIPD ke FMIS https://smkasiyahhomeschooling.blogspot.com/2021/12/fmis-chrome-extension-untuk-integrasi.html

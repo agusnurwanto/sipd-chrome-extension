@@ -2422,62 +2422,71 @@ function singkron_pendapatan_lokal(url_lru2, id_unit, cb){
 	}
 }
 
-function singkron_pembiayaan_lokal(type){
-	jQuery('#wrap-loading').show();
-	var id_unit = idune;
-	relayAjax({
-      	url: lru2,
-      	type: "POST",
-		data: formData,
-		processData: false,
-		contentType: false,
-      	success: function(data){
-      		var data_pembiayaan = [];
-      		data.data.map(function(b, i){
-      			data_pembiayaan[i] = {};
-      			data_pembiayaan[i].created_user = b.created_user;
-				data_pembiayaan[i].createddate = b.createddate;
-				data_pembiayaan[i].createdtime = b.createdtime;
-				data_pembiayaan[i].id_pembiayaan = b.id_pembiayaan;
-				data_pembiayaan[i].keterangan = b.keterangan;
-				data_pembiayaan[i].kode_akun = b.kode_akun;
-				data_pembiayaan[i].nama_akun = b.nama_akun;
-				data_pembiayaan[i].nilaimurni = b.nilaimurni;
-				data_pembiayaan[i].program_koordinator = b.program_koordinator;
-				data_pembiayaan[i].rekening = b.rekening;
-				data_pembiayaan[i].skpd_koordinator = b.skpd_koordinator;
-				data_pembiayaan[i].total = b.total;
-				data_pembiayaan[i].updated_user = b.updated_user;
-				data_pembiayaan[i].updateddate = b.updateddate;
-				data_pembiayaan[i].updatedtime = b.updatedtime;
-				data_pembiayaan[i].uraian = b.uraian;
-				data_pembiayaan[i].urusan_koordinator = b.urusan_koordinator;
-				data_pembiayaan[i].type = type;
-				data_pembiayaan[i].user1 = b.user1;
-				data_pembiayaan[i].user2 = b.user2;
-			});
-			var data = {
-			    message:{
-			        type: "get-url",
-			        content: {
-		                url: config.url_server_lokal,
-		                type: 'post',
-		                data: { 
-		                    action: 'singkron_pembiayaan',
-		                    tahun_anggaran: config.tahun_anggaran,
-		                    api_key: config.api_key,
-		                    data: data_pembiayaan,
-		                    id_skpd: id_unit
-		                },
-		            	return: true
-		            }
-			    }
-			};
-			chrome.runtime.sendMessage(data, function(response) {
-			    console.log('responeMessage', response);
-			});
-      	}
-    });
+function singkron_pembiayaan_lokal(type, url_lru2, id_unit, cb){
+	if(typeof cb == 'function' || confirm('Apakah anda yakin untuk mengsingkronkan data pembiayaan '+type+' ke database lokal?')){
+		if(typeof cb != 'function'){
+			jQuery('#wrap-loading').show();
+			id_unit = idune;
+			url_lru2 = lru2;
+		}
+		relayAjax({
+	      	url: url_lru2,
+	      	type: "POST",
+			data: formData,
+			processData: false,
+			contentType: false,
+	      	success: function(data){
+	      		var data_pembiayaan = [];
+	      		data.data.map(function(b, i){
+	      			data_pembiayaan[i] = {};
+	      			data_pembiayaan[i].created_user = b.created_user;
+					data_pembiayaan[i].createddate = b.createddate;
+					data_pembiayaan[i].createdtime = b.createdtime;
+					data_pembiayaan[i].id_pembiayaan = b.id_pembiayaan;
+					data_pembiayaan[i].keterangan = b.keterangan;
+					data_pembiayaan[i].kode_akun = b.kode_akun;
+					data_pembiayaan[i].nama_akun = b.nama_akun;
+					data_pembiayaan[i].nilaimurni = b.nilaimurni;
+					data_pembiayaan[i].program_koordinator = b.program_koordinator;
+					data_pembiayaan[i].rekening = b.rekening;
+					data_pembiayaan[i].skpd_koordinator = b.skpd_koordinator;
+					data_pembiayaan[i].total = b.total;
+					data_pembiayaan[i].updated_user = b.updated_user;
+					data_pembiayaan[i].updateddate = b.updateddate;
+					data_pembiayaan[i].updatedtime = b.updatedtime;
+					data_pembiayaan[i].uraian = b.uraian;
+					data_pembiayaan[i].urusan_koordinator = b.urusan_koordinator;
+					data_pembiayaan[i].type = type;
+					data_pembiayaan[i].user1 = b.user1;
+					data_pembiayaan[i].user2 = b.user2;
+				});
+				var data = {
+				    message:{
+				        type: "get-url",
+				        content: {
+			                url: config.url_server_lokal,
+			                type: 'post',
+			                data: { 
+			                    action: 'singkron_pembiayaan',
+			                    tahun_anggaran: config.tahun_anggaran,
+			                    api_key: config.api_key,
+			                    data: data_pembiayaan,
+			                    id_skpd: id_unit
+			                },
+			            	return: true
+			            }
+				    }
+				};
+				if(typeof cb == 'function'){
+					cb();
+					data.message.content.return = false;
+				}
+				chrome.runtime.sendMessage(data, function(response) {
+				    console.log('responeMessage', response);
+				});
+	      	}
+	    });
+	}
 }
 
 function get_type_jadwal(){

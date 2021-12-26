@@ -1810,18 +1810,21 @@ jQuery(document).ready(function(){
 				      		daftar.data.reduce(function(sequence, nextData){
 						        return sequence.then(function(current_data){
 						    		return new Promise(function(resolve_reduce, reject_reduce){
-						    			console.log('current_data.nama_skpd', current_data.nama_skpd);
-						    			relayAjax({
-								        	url: endog + '?' + current_data.nama_skpd.sParam,
-											success: function(html){
-												var kode_get = html.split('lru2="')[1].split('"')[0];
-												var id_unit = html.split('idune="')[1].split('"')[0];
-						            			singkron_pendapatan_lokal(kode_get, id_unit, function(){
-						            				resolve_reduce(nextData);
-						            			});
-						            		}
-						            	});
-
+						    			if(current_data.nilaitotal == 0){
+						    				resolve_reduce(nextData);
+						    			}else{
+						    				console.log('current_data.nama_skpd', current_data.nama_skpd);
+							    			relayAjax({
+									        	url: endog + '?' + current_data.nama_skpd.sParam,
+												success: function(html){
+													var kode_get = html.split('lru2="')[1].split('"')[0];
+													var id_unit = html.split('idune="')[1].split('"')[0];
+							            			singkron_pendapatan_lokal(kode_get, id_unit, function(){
+							            				resolve_reduce(nextData);
+							            			});
+							            		}
+							            	});
+							    		}
 									})
 						            .catch(function(e){
 						                console.log(e);
@@ -1835,7 +1838,7 @@ jQuery(document).ready(function(){
 						    }, Promise.resolve(daftar.data[last]))
 						    .then(function(data_last){
 						    	jQuery('#wrap-loading').hide();
-						    	alert('Sukses singkronisasi data Pendapatan!')
+						    	alert('Sukses singkronisasi data Pendapatan!');
 						    });
 				      	}
 			        });
@@ -1856,24 +1859,82 @@ jQuery(document).ready(function(){
 	){
 		console.log('halaman RKA pembiayaan');
 		var singkron_lokal = ''
-            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-pembiayaan-lokal" style="margin-left: 30px;">'
+            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-pembiayaan-lokal">'
                     +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
             +'</button>';
-        if(jQuery('.m-t-0 .button-box').length == 0){
-			jQuery('.m-t-0').append('<div class="button-box pull-right p-t-20">'+singkron_lokal+'</div>');
+        if(jQuery('a[title="Kembali ke daftar unit"]').length == 0){
+        	jQuery('.m-l-10').closest('.p-b-10').find('.col-md-2').append(singkron_lokal);
+        	jQuery('#singkron-pembiayaan-lokal').on('click', function(){
+		        var type = 'pengeluaran';
+		        if(
+		        	jQuery('h3.page-title').text().indexOf('Penerimaan') != -1
+		        ){
+		        	type = 'penerimaan';
+		        }
+        		if(confirm('Apakah anda yakin untuk mengsingkronkan data pembiayaan '+type+' ke database lokal?')){
+			        jQuery('#wrap-loading').show();
+			        relayAjax({
+			        	url: lru1,
+				      	type: "POST",
+						data: formData,
+						processData: false,
+						contentType: false,
+				      	success: function(daftar){
+				      		var last = daftar.data.length-1;
+				      		daftar.data.reduce(function(sequence, nextData){
+						        return sequence.then(function(current_data){
+						    		return new Promise(function(resolve_reduce, reject_reduce){
+						    			if(current_data.nilaitotal == 0){
+						    				resolve_reduce(nextData);
+						    			}else{
+						    				console.log('current_data.nama_skpd', current_data.nama_skpd);
+							    			relayAjax({
+									        	url: endog + '?' + current_data.nama_skpd.sParam,
+												success: function(html){
+													var kode_get = html.split('lru2="')[1].split('"')[0];
+													var id_unit = html.split('idune="')[1].split('"')[0];
+							            			singkron_pembiayaan_lokal(type, kode_get, id_unit, function(){
+							            				resolve_reduce(nextData);
+							            			});
+							            		}
+							            	});
+							    		}
+									})
+						            .catch(function(e){
+						                console.log(e);
+						                return Promise.resolve(nextData);
+						            });
+						        })
+						        .catch(function(e){
+						            console.log(e);
+						            return Promise.resolve(nextData);
+						        });
+						    }, Promise.resolve(daftar.data[last]))
+						    .then(function(data_last){
+						    	jQuery('#wrap-loading').hide();
+						    	alert('Sukses singkronisasi data pembiayaan '+type+'!');
+						    });
+				      	}
+			        });
+			    }
+			});
         }else{
-			jQuery('.m-t-0 .button-box').append(singkron_lokal);
-        }
-		jQuery('#singkron-pembiayaan-lokal').on('click', function(){
-	        jQuery('#wrap-loading').show();
-	        var type = 'pengeluaran';
-	        if(
-	        	jQuery('h3.page-title').text().indexOf('Penerimaan') != -1
-	        ){
-	        	type = 'penerimaan';
+	        if(jQuery('.m-t-0 .button-box').length == 0){
+				jQuery('.m-t-0').append('<div class="button-box pull-right p-t-20">'+singkron_lokal+'</div>');
+	        }else{
+				jQuery('.m-t-0 .button-box').append(singkron_lokal);
 	        }
-	        singkron_pembiayaan_lokal(type);
-		});
+			jQuery('#singkron-pembiayaan-lokal').on('click', function(){
+		        jQuery('#wrap-loading').show();
+		        var type = 'pengeluaran';
+		        if(
+		        	jQuery('h3.page-title').text().indexOf('Penerimaan') != -1
+		        ){
+		        	type = 'penerimaan';
+		        }
+		        singkron_pembiayaan_lokal(type);
+			});
+		}
 	}else if(
 	 	jQuery('h3.page-title').text().indexOf('Usulan Langsung (Masyarakat / Lembaga)') != -1
 	){
