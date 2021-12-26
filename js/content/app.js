@@ -655,17 +655,31 @@ jQuery(document).ready(function(){
 					}
 				}
 
+				var title_talbe = jQuery('td[colspan="'+colspan_length1+'"]').eq(1).text().trim();
 				if(
-					page_title.indexOf('Lampiran 3 APBD') == -1
-					&& page_title.indexOf('Lampiran 4 APBD') == -1
-					&& page_title.indexOf('Lampiran 5 APBD') == -1
-					&& page_title.indexOf('Lampiran 6 APBD') == -1
+					(
+						page_title.indexOf('Lampiran 3 APBD') == -1
+						&& page_title.indexOf('Lampiran 4 APBD') == -1
+						&& page_title.indexOf('Lampiran 5 APBD') == -1
+						&& page_title.indexOf('Lampiran 6 APBD') == -1
+					) || (
+						title_talbe.indexOf('RINCIAN PERUBAHAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN') != -1
+						|| title_talbe.indexOf('RINCIAN APBD MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PENDAPATAN, BELANJA DAN PEMBIAYAAN') != -1
+						|| title_talbe.indexOf('REKAPITULASI PERUBAHAN BELANJA MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PROGRAM DAN KEGIATAN BESERTA HASIL DAN SUB KEGIATAN BESERTA KELUARAN') != -1
+						|| title_talbe.indexOf('REKAPITULASI BELANJA MENURUT URUSAN PEMERINTAHAN DAERAH, ORGANISASI, PROGRAM DAN KEGIATAN BESERTA HASIL DAN SUB KEGIATAN BESERTA KELUARAN') != -1
+						|| title_talbe.indexOf('REKAPITULASI PERUBAHAN BELANJA DAERAH UNTUK KESELARASAN DAN KETERPADUAN') != -1
+						|| title_talbe.indexOf('REKAPITULASI BELANJA DAERAH UNTUK KESELARASAN DAN KETERPADUAN') != -1
+						|| title_talbe.indexOf('REKAPITULASI PERUBAHAN BELANJA UNTUK PEMENUHAN SPM') != -1
+						|| title_talbe.indexOf('REKAPITULASI BELANJA UNTUK PEMENUHAN SPM') != -1
+					)
 				){
 					// buat table baru untuk memisahkan header dengan table utama
-					jQuery('td[colspan="'+colspan_length1+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
-					jQuery('td[colspan="'+colspan_length1+'"]').parent().appendTo('#custom tbody');
-					jQuery('td[colspan="'+colspan_length2+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
-					jQuery('td[colspan="'+colspan_length2+'"]').parent().appendTo('#custom tbody');
+					jQuery('thead > tr > td[colspan="'+colspan_length1+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+					jQuery('thead > tr > td[colspan="'+colspan_length1+'"]').parent().appendTo('#custom tbody');
+					if(colspan_length2 >= 1){
+						jQuery('thead > tr > td[colspan="'+colspan_length2+'"]').closest('table').before('<table id="custom" cellpadding="3" cellspacing="0" width="100%"><tbody></tbody></table>');
+						jQuery('thead > tr > td[colspan="'+colspan_length2+'"]').parent().appendTo('#custom tbody');
+					}
 				}
 
 				// fungsi untuk bind action hapus_header
@@ -2569,6 +2583,8 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							}
 
 							// cek jika rincian 0 maka langsung return.
+							// dimatikan karena rincian yang dinollkan pada apbd-p tidak ikut ketarik
+							/*
 							if(
 								subkeg.dataBl[0].pagu == 0
 								|| subkeg.dataBl[0].pagu == ''
@@ -2599,6 +2615,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							    console.log('Rincian kosong di SIPD!');
 								return true;
 							}
+							*/
 
 							go_halaman_detail_rincian(kode_go_hal_rinci).then(function(kode_get_rinci){
 								// subkeg = JSON.parse(subkeg);
