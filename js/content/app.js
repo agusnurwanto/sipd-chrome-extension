@@ -1777,18 +1777,66 @@ jQuery(document).ready(function(){
 	 ){
 		console.log('halaman RKA pendapatan');
 		var singkron_lokal = ''
-            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-pendapatan-lokal" style="margin-left: 30px;">'
+            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-pendapatan-lokal">'
                     +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
             +'</button>';
-        if(jQuery('.m-t-0 .button-box').length == 0){
-			jQuery('.m-t-0').append('<div class="button-box pull-right p-t-20">'+singkron_lokal+'</div>');
+        if(jQuery('a[title="Kembali ke daftar unit"]').length == 0){
+        	jQuery('.m-l-10').closest('.p-b-10').find('.col-md-2').append(singkron_lokal);
+        	jQuery('#singkron-pendapatan-lokal').on('click', function(){
+        		if(confirm('Apakah anda yakin untuk mengsingkronkan data pendapatan ke database lokal?')){
+			        jQuery('#wrap-loading').show();
+			        relayAjax({
+			        	url: lru1,
+				      	type: "POST",
+						data: formData,
+						processData: false,
+						contentType: false,
+				      	success: function(daftar){
+				      		var last = daftar.data.length-1;
+				      		daftar.data.reduce(function(sequence, nextData){
+						        return sequence.then(function(current_data){
+						    		return new Promise(function(resolve_reduce, reject_reduce){
+						    			console.log('current_data.nama_skpd', current_data.nama_skpd);
+						    			relayAjax({
+								        	url: endog + '?' + current_data.nama_skpd.sParam,
+											success: function(html){
+												var kode_get = html.split('lru2="')[1].split('"')[0];
+												var id_unit = html.split('idune="')[1].split('"')[0];
+						            			singkron_pendapatan_lokal(kode_get, id_unit, function(){
+						            				resolve_reduce(nextData);
+						            			});
+						            		}
+						            	});
+
+									})
+						            .catch(function(e){
+						                console.log(e);
+						                return Promise.resolve(nextData);
+						            });
+						        })
+						        .catch(function(e){
+						            console.log(e);
+						            return Promise.resolve(nextData);
+						        });
+						    }, Promise.resolve(daftar.data[last]))
+						    .then(function(data_last){
+						    	jQuery('#wrap-loading').hide();
+						    	alert('Sukses singkronisasi data Pendapatan!')
+						    });
+				      	}
+			        });
+			    }
+			});
         }else{
-			jQuery('.m-t-0 .button-box').append(singkron_lokal);
-        }
-		jQuery('#singkron-pendapatan-lokal').on('click', function(){
-	        jQuery('#wrap-loading').show();
-	        singkron_pendapatan_lokal();
-		});
+	        if(jQuery('.m-t-0 .button-box').length == 0){
+				jQuery('.m-t-0').append('<div class="button-box pull-right p-t-20">'+singkron_lokal+'</div>');
+	        }else{
+				jQuery('.m-t-0 .button-box').append(singkron_lokal);
+	        }
+			jQuery('#singkron-pendapatan-lokal').on('click', function(){
+		        singkron_pendapatan_lokal();
+			});
+		}
 	}else if(
 	 	jQuery('h3.page-title').text().indexOf('Pembiayaan') != -1
 	){

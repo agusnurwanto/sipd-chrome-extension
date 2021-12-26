@@ -91,3 +91,4 @@ Semoga bermanfaat
 - Release v1.9 perbaikan beberapa bug error dan menampilkan tanda tangan kepala daerah di lampiran APBD https://www.youtube.com/watch?v=UpQheTCkEN4
 - Ganti/update Rekening Multi Komponen di halaman rincian belanja https://www.youtube.com/watch?v=Wo6BdOCPb1g
 - Integrasi data SIPD ke SIMDA keuangan https://youtu.be/vFOsAlnxmTo
+- Integrasi data APBD SIPD ke SIMDA Pink 2022 https://smkasiyahhomeschooling.blogspot.com/2021/12/sipd-chrome-extension-untuk-migrasi.html

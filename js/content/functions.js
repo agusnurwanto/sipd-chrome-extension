@@ -2355,61 +2355,70 @@ function get_detail_pokir(idusulan){
     });
 }
 
-function singkron_pendapatan_lokal(){
-	jQuery('#wrap-loading').show();
-	var id_unit = idune;
-	relayAjax({
-      	url: lru2,
-      	type: "POST",
-		data: formData,
-		processData: false,
-		contentType: false,
-      	success: function(data){
-      		var data_pendapatan = [];
-      		data.data.map(function(b, i){
-      			data_pendapatan[i] = {};
-      			data_pendapatan[i].created_user = b.created_user;
-				data_pendapatan[i].createddate = b.createddate;
-				data_pendapatan[i].createdtime = b.createdtime;
-				data_pendapatan[i].id_pendapatan = b.id_pendapatan;
-				data_pendapatan[i].keterangan = b.keterangan;
-				data_pendapatan[i].kode_akun = b.kode_akun;
-				data_pendapatan[i].nama_akun = b.nama_akun;
-				data_pendapatan[i].nilaimurni = b.nilaimurni;
-				data_pendapatan[i].program_koordinator = b.program_koordinator;
-				data_pendapatan[i].rekening = b.rekening;
-				data_pendapatan[i].skpd_koordinator = b.skpd_koordinator;
-				data_pendapatan[i].total = b.total;
-				data_pendapatan[i].updated_user = b.updated_user;
-				data_pendapatan[i].updateddate = b.updateddate;
-				data_pendapatan[i].updatedtime = b.updatedtime;
-				data_pendapatan[i].uraian = b.uraian;
-				data_pendapatan[i].urusan_koordinator = b.urusan_koordinator;
-				data_pendapatan[i].user1 = b.user1;
-				data_pendapatan[i].user2 = b.user2;
-			});
-			var data = {
-			    message:{
-			        type: "get-url",
-			        content: {
-		                url: config.url_server_lokal,
-		                type: 'post',
-		                data: { 
-		                    action: 'singkron_pendapatan',
-		                    tahun_anggaran: config.tahun_anggaran,
-		                    api_key: config.api_key,
-		                    data: data_pendapatan,
-		                    id_skpd: id_unit
-		                },
-		            	return: true
-		            }
-			    }
-			};
-			chrome.runtime.sendMessage(data, function(response) {
-			    console.log('responeMessage', response);
-			});
-      	}
-    });
+function singkron_pendapatan_lokal(url_lru2, id_unit, cb){
+	if(typeof cb == 'function' || confirm('Apakah anda yakin untuk mengsingkronkan data pendapatan ke database lokal?')){
+		if(typeof cb != 'function'){
+			jQuery('#wrap-loading').show();
+			id_unit = idune;
+			url_lru2 = lru2;
+		}
+		relayAjax({
+	      	url: url_lru2,
+	      	type: "POST",
+			data: formData,
+			processData: false,
+			contentType: false,
+	      	success: function(data){
+	      		var data_pendapatan = [];
+	      		data.data.map(function(b, i){
+	      			data_pendapatan[i] = {};
+	      			data_pendapatan[i].created_user = b.created_user;
+					data_pendapatan[i].createddate = b.createddate;
+					data_pendapatan[i].createdtime = b.createdtime;
+					data_pendapatan[i].id_pendapatan = b.id_pendapatan;
+					data_pendapatan[i].keterangan = b.keterangan;
+					data_pendapatan[i].kode_akun = b.kode_akun;
+					data_pendapatan[i].nama_akun = b.nama_akun;
+					data_pendapatan[i].nilaimurni = b.nilaimurni;
+					data_pendapatan[i].program_koordinator = b.program_koordinator;
+					data_pendapatan[i].rekening = b.rekening;
+					data_pendapatan[i].skpd_koordinator = b.skpd_koordinator;
+					data_pendapatan[i].total = b.total;
+					data_pendapatan[i].updated_user = b.updated_user;
+					data_pendapatan[i].updateddate = b.updateddate;
+					data_pendapatan[i].updatedtime = b.updatedtime;
+					data_pendapatan[i].uraian = b.uraian;
+					data_pendapatan[i].urusan_koordinator = b.urusan_koordinator;
+					data_pendapatan[i].user1 = b.user1;
+					data_pendapatan[i].user2 = b.user2;
+				});
+				var data = {
+				    message:{
+				        type: "get-url",
+				        content: {
+			                url: config.url_server_lokal,
+			                type: 'post',
+			                data: { 
+			                    action: 'singkron_pendapatan',
+			                    tahun_anggaran: config.tahun_anggaran,
+			                    api_key: config.api_key,
+			                    data: data_pendapatan,
+			                    id_skpd: id_unit
+			                },
+			            	return: true
+			            }
+				    }
+				};
+				if(typeof cb == 'function'){
+					cb();
+					data.message.content.return = false;
+				}
+				chrome.runtime.sendMessage(data, function(response) {
+				    console.log('responeMessage', response);
+				});
+	      	}
+	    });
+	}
 }
 
 function singkron_pembiayaan_lokal(type){
