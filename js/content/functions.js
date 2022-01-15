@@ -1881,63 +1881,78 @@ function singkron_renstra_lokal(){
 	                api_key: config.api_key,
 	                program: []
 	            };
+	            var _length = 250;
+	            var data_all = [];
+	            var data_temp = [];
 	      		data.data.map(function(program, i){
-	      			data_renstra.program[i] = {};
-	      			data_renstra.program[i].bidur_lock = program.bidur_lock;
-					data_renstra.program[i].id_bidang_urusan = program.id_bidang_urusan;
-					data_renstra.program[i].id_misi = program.id_misi;
-					data_renstra.program[i].id_program = program.id_program;
-					data_renstra.program[i].id_unik = program.id_unik;
-					data_renstra.program[i].id_unik_indikator = program.id_unik_indikator;
-					data_renstra.program[i].id_unit = program.id_unit;
-					data_renstra.program[i].id_visi = program.id_visi;
-					data_renstra.program[i].indikator = program.indikator;
-					data_renstra.program[i].is_locked = program.is_locked;
-					data_renstra.program[i].is_locked_indikator = program.is_locked_indikator;
-					data_renstra.program[i].kode_bidang_urusan = program.kode_bidang_urusan;
-					data_renstra.program[i].kode_program = program.kode_program;
-					data_renstra.program[i].kode_sasaran = program.kode_sasaran;
-					data_renstra.program[i].kode_skpd = program.kode_skpd;
-					data_renstra.program[i].kode_tujuan = program.kode_tujuan;
-					data_renstra.program[i].nama_bidang_urusan = program.nama_bidang_urusan;
-					data_renstra.program[i].nama_program = program.nama_program;
-					data_renstra.program[i].nama_skpd = program.nama_skpd;
-					data_renstra.program[i].pagu_1 = program.pagu_1;
-					data_renstra.program[i].pagu_2 = program.pagu_2;
-					data_renstra.program[i].pagu_3 = program.pagu_3;
-					data_renstra.program[i].pagu_4 = program.pagu_4;
-					data_renstra.program[i].pagu_5 = program.pagu_5;
-					data_renstra.program[i].program_lock = program.program_lock;
-					data_renstra.program[i].sasaran_lock = program.sasaran_lock;
-					data_renstra.program[i].sasaran_teks = program.sasaran_teks;
-					data_renstra.program[i].satuan = program.satuan;
-					data_renstra.program[i].status = program.status;
-					data_renstra.program[i].target_1 = program.target_1;
-					data_renstra.program[i].target_2 = program.target_2;
-					data_renstra.program[i].target_3 = program.target_3;
-					data_renstra.program[i].target_4 = program.target_4;
-					data_renstra.program[i].target_5 = program.target_5;
-					data_renstra.program[i].target_akhir = program.target_akhir;
-					data_renstra.program[i].target_awal = program.target_awal;
-					data_renstra.program[i].tujuan_lock = program.tujuan_lock;
-					data_renstra.program[i].tujuan_teks = program.tujuan_teks;
-					data_renstra.program[i].urut_sasaran = program.urut_sasaran;
-					data_renstra.program[i].urut_tujuan = program.urut_tujuan;
+	      			var data_program = {};
+	      			data_program.bidur_lock = program.bidur_lock;
+					data_program.id_bidang_urusan = program.id_bidang_urusan;
+					data_program.id_misi = program.id_misi;
+					data_program.id_program = program.id_program;
+					data_program.id_unik = program.id_unik;
+					data_program.id_unik_indikator = program.id_unik_indikator;
+					data_program.id_unit = program.id_unit;
+					data_program.id_visi = program.id_visi;
+					data_program.indikator = program.indikator;
+					data_program.is_locked = program.is_locked;
+					data_program.is_locked_indikator = program.is_locked_indikator;
+					data_program.kode_bidang_urusan = program.kode_bidang_urusan;
+					data_program.kode_program = program.kode_program;
+					data_program.kode_sasaran = program.kode_sasaran;
+					data_program.kode_skpd = program.kode_skpd;
+					data_program.kode_tujuan = program.kode_tujuan;
+					data_program.nama_bidang_urusan = program.nama_bidang_urusan;
+					data_program.nama_program = program.nama_program;
+					data_program.nama_skpd = program.nama_skpd;
+					data_program.pagu_1 = program.pagu_1;
+					data_program.pagu_2 = program.pagu_2;
+					data_program.pagu_3 = program.pagu_3;
+					data_program.pagu_4 = program.pagu_4;
+					data_program.pagu_5 = program.pagu_5;
+					data_program.program_lock = program.program_lock;
+					data_program.sasaran_lock = program.sasaran_lock;
+					data_program.sasaran_teks = program.sasaran_teks;
+					data_program.satuan = program.satuan;
+					data_program.status = program.status;
+					data_program.target_1 = program.target_1;
+					data_program.target_2 = program.target_2;
+					data_program.target_3 = program.target_3;
+					data_program.target_4 = program.target_4;
+					data_program.target_5 = program.target_5;
+					data_program.target_akhir = program.target_akhir;
+					data_program.target_awal = program.target_awal;
+					data_program.tujuan_lock = program.tujuan_lock;
+					data_program.tujuan_teks = program.tujuan_teks;
+					data_program.urut_sasaran = program.urut_sasaran;
+					data_program.urut_tujuan = program.urut_tujuan;
+					data_temp.push(data_program);
+					if((i+1)%_length == 0){
+						data_all.push(data_temp);
+						data_temp = [];
+					}
 				});
-				var data = {
-				    message:{
-				        type: "get-url",
-				        content: {
-			                url: config.url_server_lokal,
-			                type: 'post',
-			                data: data_renstra,
-			            	return: false
-			            }
-				    }
-				};
-				chrome.runtime.sendMessage(data, function(response) {
-				    console.log('responeMessage', response);
-				});
+	      		if(data_temp.length >= 1){
+	      			data_all.push(data_temp);
+	      		}
+	      		data_all.map(function(b, i){
+	      			data_renstra.page = i+1;
+	      			data_renstra.program = b;
+					var data = {
+					    message:{
+					        type: "get-url",
+					        content: {
+				                url: config.url_server_lokal,
+				                type: 'post',
+				                data: data_renstra,
+				            	return: false
+				            }
+					    }
+					};
+					chrome.runtime.sendMessage(data, function(response) {
+					    console.log('responeMessage', response);
+					});
+	      		})
 				resolve(true);
 	      	}
 	    });
@@ -1956,68 +1971,83 @@ function singkron_renstra_lokal(){
 	                api_key: config.api_key,
 	                kegiatan: []
 	            };
+	            var _length = 250;
+	            var data_all = [];
+	            var data_temp = [];
 	      		data.data.map(function(kegiatan, i){
-	      			data_renstra.kegiatan[i] = {};
-	      			data_renstra.kegiatan[i].bidur_lock = kegiatan.bidur_lock;
-					data_renstra.kegiatan[i].giat_lock = kegiatan.giat_lock;
-					data_renstra.kegiatan[i].id_bidang_urusan = kegiatan.id_bidang_urusan;
-					data_renstra.kegiatan[i].id_giat = kegiatan.id_giat;
-					data_renstra.kegiatan[i].id_misi = kegiatan.id_misi;
-					data_renstra.kegiatan[i].id_program = kegiatan.id_program;
-					data_renstra.kegiatan[i].id_unik = kegiatan.id_unik;
-					data_renstra.kegiatan[i].id_unik_indikator = kegiatan.id_unik_indikator;
-					data_renstra.kegiatan[i].id_unit = kegiatan.id_unit;
-					data_renstra.kegiatan[i].id_visi = kegiatan.id_visi;
-					data_renstra.kegiatan[i].indikator = kegiatan.indikator;
-					data_renstra.kegiatan[i].is_locked = kegiatan.is_locked;
-					data_renstra.kegiatan[i].is_locked_indikator = kegiatan.is_locked_indikator;
-					data_renstra.kegiatan[i].kode_bidang_urusan = kegiatan.kode_bidang_urusan;
-					data_renstra.kegiatan[i].kode_giat = kegiatan.kode_giat;
-					data_renstra.kegiatan[i].kode_program = kegiatan.kode_program;
-					data_renstra.kegiatan[i].kode_sasaran = kegiatan.kode_sasaran;
-					data_renstra.kegiatan[i].kode_skpd = kegiatan.kode_skpd;
-					data_renstra.kegiatan[i].kode_tujuan = kegiatan.kode_tujuan;
-					data_renstra.kegiatan[i].kode_unik_program = kegiatan.kode_unik_program;
-					data_renstra.kegiatan[i].nama_bidang_urusan = kegiatan.nama_bidang_urusan;
-					data_renstra.kegiatan[i].nama_giat = kegiatan.nama_giat;
-					data_renstra.kegiatan[i].nama_program = kegiatan.nama_program;
-					data_renstra.kegiatan[i].nama_skpd = kegiatan.nama_skpd;
-					data_renstra.kegiatan[i].pagu_1 = kegiatan.pagu_1;
-					data_renstra.kegiatan[i].pagu_2 = kegiatan.pagu_2;
-					data_renstra.kegiatan[i].pagu_3 = kegiatan.pagu_3;
-					data_renstra.kegiatan[i].pagu_4 = kegiatan.pagu_4;
-					data_renstra.kegiatan[i].pagu_5 = kegiatan.pagu_5;
-					data_renstra.kegiatan[i].program_lock = kegiatan.program_lock;
-					data_renstra.kegiatan[i].renstra_prog_lock = kegiatan.renstra_prog_lock;
-					data_renstra.kegiatan[i].sasaran_lock = kegiatan.sasaran_lock;
-					data_renstra.kegiatan[i].sasaran_teks = kegiatan.sasaran_teks;
-					data_renstra.kegiatan[i].satuan = kegiatan.satuan;
-					data_renstra.kegiatan[i].status = kegiatan.status;
-					data_renstra.kegiatan[i].target_1 = kegiatan.target_1;
-					data_renstra.kegiatan[i].target_2 = kegiatan.target_2;
-					data_renstra.kegiatan[i].target_3 = kegiatan.target_3;
-					data_renstra.kegiatan[i].target_4 = kegiatan.target_4;
-					data_renstra.kegiatan[i].target_5 = kegiatan.target_5;
-					data_renstra.kegiatan[i].target_akhir = kegiatan.target_akhir;
-					data_renstra.kegiatan[i].target_awal = kegiatan.target_awal;
-					data_renstra.kegiatan[i].tujuan_lock = kegiatan.tujuan_lock;
-					data_renstra.kegiatan[i].tujuan_teks = kegiatan.tujuan_teks;
-					data_renstra.kegiatan[i].urut_sasaran = kegiatan.urut_sasaran;
-					data_renstra.kegiatan[i].urut_tujuan = kegiatan.urut_tujuan;
+	      			var data_keg = {};
+	      			data_keg.bidur_lock = kegiatan.bidur_lock;
+					data_keg.giat_lock = kegiatan.giat_lock;
+					data_keg.id_bidang_urusan = kegiatan.id_bidang_urusan;
+					data_keg.id_giat = kegiatan.id_giat;
+					data_keg.id_misi = kegiatan.id_misi;
+					data_keg.id_program = kegiatan.id_program;
+					data_keg.id_unik = kegiatan.id_unik;
+					data_keg.id_unik_indikator = kegiatan.id_unik_indikator;
+					data_keg.id_unit = kegiatan.id_unit;
+					data_keg.id_visi = kegiatan.id_visi;
+					data_keg.indikator = kegiatan.indikator;
+					data_keg.is_locked = kegiatan.is_locked;
+					data_keg.is_locked_indikator = kegiatan.is_locked_indikator;
+					data_keg.kode_bidang_urusan = kegiatan.kode_bidang_urusan;
+					data_keg.kode_giat = kegiatan.kode_giat;
+					data_keg.kode_program = kegiatan.kode_program;
+					data_keg.kode_sasaran = kegiatan.kode_sasaran;
+					data_keg.kode_skpd = kegiatan.kode_skpd;
+					data_keg.kode_tujuan = kegiatan.kode_tujuan;
+					data_keg.kode_unik_program = kegiatan.kode_unik_program;
+					data_keg.nama_bidang_urusan = kegiatan.nama_bidang_urusan;
+					data_keg.nama_giat = kegiatan.nama_giat;
+					data_keg.nama_program = kegiatan.nama_program;
+					data_keg.nama_skpd = kegiatan.nama_skpd;
+					data_keg.pagu_1 = kegiatan.pagu_1;
+					data_keg.pagu_2 = kegiatan.pagu_2;
+					data_keg.pagu_3 = kegiatan.pagu_3;
+					data_keg.pagu_4 = kegiatan.pagu_4;
+					data_keg.pagu_5 = kegiatan.pagu_5;
+					data_keg.program_lock = kegiatan.program_lock;
+					data_keg.renstra_prog_lock = kegiatan.renstra_prog_lock;
+					data_keg.sasaran_lock = kegiatan.sasaran_lock;
+					data_keg.sasaran_teks = kegiatan.sasaran_teks;
+					data_keg.satuan = kegiatan.satuan;
+					data_keg.status = kegiatan.status;
+					data_keg.target_1 = kegiatan.target_1;
+					data_keg.target_2 = kegiatan.target_2;
+					data_keg.target_3 = kegiatan.target_3;
+					data_keg.target_4 = kegiatan.target_4;
+					data_keg.target_5 = kegiatan.target_5;
+					data_keg.target_akhir = kegiatan.target_akhir;
+					data_keg.target_awal = kegiatan.target_awal;
+					data_keg.tujuan_lock = kegiatan.tujuan_lock;
+					data_keg.tujuan_teks = kegiatan.tujuan_teks;
+					data_keg.urut_sasaran = kegiatan.urut_sasaran;
+					data_keg.urut_tujuan = kegiatan.urut_tujuan;
+					data_temp.push(data_keg);
+					if((i+1)%_length == 0){
+						data_all.push(data_temp);
+						data_temp = [];
+					}
 				});
-				var data = {
-				    message:{
-				        type: "get-url",
-				        content: {
-			                url: config.url_server_lokal,
-			                type: 'post',
-			                data: data_renstra,
-			            	return: false
-			            }
-				    }
-				};
-				chrome.runtime.sendMessage(data, function(response) {
-				    console.log('responeMessage', response);
+	      		if(data_temp.length >= 1){
+	      			data_all.push(data_temp);
+	      		}
+	      		data_all.map(function(b, i){
+	      			data_renstra.page = i+1;
+	      			data_renstra.kegiatan = b;
+					var data = {
+					    message:{
+					        type: "get-url",
+					        content: {
+				                url: config.url_server_lokal,
+				                type: 'post',
+				                data: data_renstra,
+				            	return: false
+				            }
+					    }
+					};
+					chrome.runtime.sendMessage(data, function(response) {
+					    console.log('responeMessage', response);
+					});
 				});
 				resolve(true);
 	      	}
@@ -2900,49 +2930,64 @@ function singkron_akun_ke_lokal(){
 					api_key: config.api_key,
 					akun : {}
 				};
+				var _length = 250;
+				var data_all = [];
+				var data_temp = [];
 				data.data.map(function(akun, i){
-					// if(i<5){
-						data_akun.akun[i] = {};
-						data_akun.akun[i].belanja = akun.belanja;
-						data_akun.akun[i].id_akun = akun.id_akun;
-						data_akun.akun[i].is_bagi_hasil = akun.is_bagi_hasil;
-						data_akun.akun[i].is_bankeu_khusus = akun.is_bankeu_khusus;
-						data_akun.akun[i].is_bankeu_umum = akun.is_bankeu_umum;
-						data_akun.akun[i].is_barjas = akun.is_barjas;
-						data_akun.akun[i].is_bl = akun.is_bl;
-						data_akun.akun[i].is_bos = akun.is_bos;
-						data_akun.akun[i].is_btt = akun.is_btt;
-						data_akun.akun[i].is_bunga = akun.is_bunga;
-						data_akun.akun[i].is_gaji_asn = akun.is_gaji_asn;
-						data_akun.akun[i].is_hibah_brg = akun.is_hibah_brg;
-						data_akun.akun[i].is_hibah_uang = akun.is_hibah_uang;
-						data_akun.akun[i].is_locked = akun.is_locked;
-						data_akun.akun[i].is_modal_tanah = akun.is_modal_tanah;
-						data_akun.akun[i].is_pembiayaan = akun.is_pembiayaan;
-						data_akun.akun[i].is_pendapatan = akun.is_pendapatan;
-						data_akun.akun[i].is_sosial_brg = akun.is_sosial_brg;
-						data_akun.akun[i].is_sosial_uang = akun.is_sosial_uang;
-						data_akun.akun[i].is_subsidi = akun.is_subsidi;
-						data_akun.akun[i].kode_akun = akun.kode_akun;
-						data_akun.akun[i].nama_akun = akun.nama_akun;
-						data_akun.akun[i].set_input = akun.set_input;
-						data_akun.akun[i].set_lokus = akun.set_lokus;
-						data_akun.akun[i].status = akun.status;
-					// }
+					var data_akun_temp = {};
+					data_akun_temp.belanja = akun.belanja;
+					data_akun_temp.id_akun = akun.id_akun;
+					data_akun_temp.is_bagi_hasil = akun.is_bagi_hasil;
+					data_akun_temp.is_bankeu_khusus = akun.is_bankeu_khusus;
+					data_akun_temp.is_bankeu_umum = akun.is_bankeu_umum;
+					data_akun_temp.is_barjas = akun.is_barjas;
+					data_akun_temp.is_bl = akun.is_bl;
+					data_akun_temp.is_bos = akun.is_bos;
+					data_akun_temp.is_btt = akun.is_btt;
+					data_akun_temp.is_bunga = akun.is_bunga;
+					data_akun_temp.is_gaji_asn = akun.is_gaji_asn;
+					data_akun_temp.is_hibah_brg = akun.is_hibah_brg;
+					data_akun_temp.is_hibah_uang = akun.is_hibah_uang;
+					data_akun_temp.is_locked = akun.is_locked;
+					data_akun_temp.is_modal_tanah = akun.is_modal_tanah;
+					data_akun_temp.is_pembiayaan = akun.is_pembiayaan;
+					data_akun_temp.is_pendapatan = akun.is_pendapatan;
+					data_akun_temp.is_sosial_brg = akun.is_sosial_brg;
+					data_akun_temp.is_sosial_uang = akun.is_sosial_uang;
+					data_akun_temp.is_subsidi = akun.is_subsidi;
+					data_akun_temp.kode_akun = akun.kode_akun;
+					data_akun_temp.nama_akun = akun.nama_akun;
+					data_akun_temp.set_input = akun.set_input;
+					data_akun_temp.set_lokus = akun.set_lokus;
+					data_akun_temp.status = akun.status;
+					data_temp.push(data_akun_temp);
+					if((i+1)%_length == 0){
+						data_all.push(data_temp);
+						data_temp = [];
+					}
 				});
-				var data = {
-				    message:{
-				        type: "get-url",
-				        content: {
-						    url: config.url_server_lokal,
-						    type: 'post',
-						    data: data_akun,
-			    			return: true
-						}
-				    }
-				};
-				chrome.runtime.sendMessage(data, function(response) {
-				    console.log('responeMessage', response);
+				if(data_temp.length >= 1){
+					data_all.push(data_temp);
+				}
+				data_all.map(function(b, i){
+					data_akun.akun = b;
+					var data = {
+					    message:{
+					        type: "get-url",
+					        content: {
+							    url: config.url_server_lokal,
+							    type: 'post',
+							    data: data_akun,
+				    			return: false
+							}
+					    }
+					};
+					if(i == data_all.length-1){
+						data.message.content.return = true;
+					}
+					chrome.runtime.sendMessage(data, function(response) {
+					    console.log('responeMessage', response);
+					});
 				});
 			}
 		});
