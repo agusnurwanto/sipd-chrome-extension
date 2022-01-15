@@ -2757,7 +2757,7 @@ function go_halaman_detail_rincian(options){
 
 function get_detail_skpd(id_unit){
 	return new Promise(function(resolve, reject){
-		if(typeof detail_skpd == 'undefined'){
+		if(typeof data_all_skpd == 'undefined'){
 			var url_profile = jQuery('span.hide-menu:contains("Perangkat Daerah")').closest('a').attr('href');
 			console.log('url_profile', url_profile);
 			if(typeof url_profile == 'undefined'){
@@ -2773,6 +2773,7 @@ function get_detail_skpd(id_unit){
 						type: 'post',
 						data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
 						success: function(data_all_skpd){
+							window.data_all_skpd = data_all_skpd;
 							data_all_skpd.data.map(function(b, i){
 								if(id_unit == b.id_skpd){
 									if(b.action.indexOf("ubahSkpd(") != -1){
@@ -2796,7 +2797,28 @@ function get_detail_skpd(id_unit){
 				}
 			});
 		}else{
-			return resolve(detail_skpd);
+			data_all_skpd.data.map(function(b, i){
+				if(id_unit == b.id_skpd){
+					if(!data_all_skpd.data[i].detail_skpd){
+						if(b.action.indexOf("ubahSkpd(") != -1){
+							var url_detail_skpd = b.action.split("ubahSkpd('")[1].split("'")[0];
+							relayAjax({
+								url: config.sipd_url+'daerah/main?'+url_detail_skpd,
+								type: 'post',
+								data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
+								success: function(data){
+									data_all_skpd.data[i].detail_skpd = data;
+									return resolve(data);
+								}
+							});
+						}else{
+							return resolve(false);
+						}
+					}else{
+						return resolve(data_all_skpd.data[i].detail_skpd);
+					}
+				}
+			});
 		}
 	});
 }
