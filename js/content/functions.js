@@ -501,7 +501,8 @@ function getKel(id_unit, id_prov, id_kab, id_kec, url){
 			getToken().then(function(_token){
 				var formDataCustom = new FormData();
 				formDataCustom.append('_token', tokek);
-				formDataCustom.append('skrim', Curut('idprop='+id_prov+'&idkokab='+id_kab+'&idcamat='+id_kec));
+				formDataCustom.append('DsK121m', Curut('idprop='+id_prov+'&idkokab='+id_kab+'&idcamat='+id_kec));
+				formDataCustom.append('v1bnA1m', v1bnA1m);
 				relayAjax({
 					// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-lurah/'+config.id_daerah+'/'+id_unit,
 					url: url,
@@ -538,7 +539,8 @@ function getKec(id_unit, id_prov, id_kab, url){
 		if(typeof(alamat.kab[id_prov].kec[id_kab]) == 'undefined'){
 			var formDataCustom = new FormData();
 			formDataCustom.append('_token', tokek);
-			formDataCustom.append('skrim', Curut('idprop='+id_prov+'&idkokab='+id_kab));
+			formDataCustom.append('DsK121m', Curut('idprop='+id_prov+'&idkokab='+id_kab));
+			formDataCustom.append('v1bnA1m', v1bnA1m);
 			getToken().then(function(_token){
 				relayAjax({
 					// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-camat/'+config.id_daerah+'/'+id_unit,
@@ -578,7 +580,8 @@ function getKab(id_unit, id_prov, url){
 		if(typeof(alamat.kab[id_prov]) == 'undefined'){
 			var formDataCustom = new FormData();
 			formDataCustom.append('_token', tokek);
-			formDataCustom.append('skrim', Curut('idprop='+id_prov));
+			formDataCustom.append('DsK121m', Curut('idprop='+id_prov));
+			formDataCustom.append('v1bnA1m', v1bnA1m);
 			getToken().then(function(_token){
 				relayAjax({
 					// url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-kab-kota/'+config.id_daerah+'/'+id_unit,
