@@ -1056,6 +1056,195 @@ function relayAjax(options, retries=20, delay=30000, timeout=1090000){
     });
 }
 
+function getKel(id_unit, id_prov, id_kab, id_kec, url){
+    return new Promise(function(resolve, reject){
+        if(typeof(alamat.kab[id_prov].kec[id_kab].kel[id_kec]) == 'undefined'){
+            getToken().then(function(_token){
+                var formDataCustom = new FormData();
+                formDataCustom.append('_token', tokek);
+                formDataCustom.append('DsK121m', Curut('idprop='+id_prov+'&idkokab='+id_kab+'&idcamat='+id_kec));
+                formDataCustom.append('v1bnA1m', v1bnA1m);
+                relayAjax({
+                    // url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-lurah/'+config.id_daerah+'/'+id_unit,
+                    url: url,
+                    type: 'post',
+                    data: formDataCustom,
+                    processData: false,
+                    contentType: false,
+                    success: function(ret){
+                        if(!alamat.kab[id_prov].kec[id_kab].kel[id_kec]){
+                            alamat.kab[id_prov].kec[id_kab].kel[id_kec] = {};
+                        };
+                        jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
+                            var id_kel = jQuery(b).attr('value');
+                            var nama = jQuery(b).text();
+                            if(id_kel != 0){
+                                alamat.kab[id_prov].kec[id_kab].kel[id_kec][id_kel] = { 
+                                    nama: nama,
+                                    id_kel: id_kel
+                                };
+                            }
+                        });
+                        return resolve(alamat.kab[id_prov].kec[id_kab].kel[id_kec]);
+                    }
+                });
+            });
+        }else{
+            return resolve(alamat.kab[id_prov].kec[id_kab].kel[id_kec]);
+        }
+    });
+}
+
+function getKec(id_unit, id_prov, id_kab, url){
+    return new Promise(function(resolve, reject){
+        if(typeof(alamat.kab[id_prov].kec[id_kab]) == 'undefined'){
+            var formDataCustom = new FormData();
+            formDataCustom.append('_token', tokek);
+            formDataCustom.append('DsK121m', Curut('idprop='+id_prov+'&idkokab='+id_kab));
+            formDataCustom.append('v1bnA1m', v1bnA1m);
+            getToken().then(function(_token){
+                relayAjax({
+                    // url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-camat/'+config.id_daerah+'/'+id_unit,
+                    url: url,
+                    type: 'post',
+                    data: formDataCustom,
+                    processData: false,
+                    contentType: false,
+                    success: function(ret){
+                        if(!alamat.kab[id_prov].kec[id_kab]){
+                            alamat.kab[id_prov].kec[id_kab] = {
+                                kel: {}
+                            };
+                        };
+                        jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
+                            var id_kec = jQuery(b).attr('value');
+                            var nama = jQuery(b).text();
+                            if(id_kec != 0){
+                                alamat.kab[id_prov].kec[id_kab][id_kec] = { 
+                                    nama: nama,
+                                    id_kec: id_kec
+                                };
+                            }
+                        });
+                        return resolve(alamat.kab[id_prov].kec[id_kab]);
+                    }
+                });
+            });
+        }else{
+            return resolve(alamat.kab[id_prov].kec[id_kab]);
+        }
+    });
+}
+
+function getKab(id_unit, id_prov, url){
+    return new Promise(function(resolve, reject){
+        if(typeof(alamat.kab[id_prov]) == 'undefined'){
+            var formDataCustom = new FormData();
+            formDataCustom.append('_token', tokek);
+            formDataCustom.append('DsK121m', Curut('idprop='+id_prov));
+            formDataCustom.append('v1bnA1m', v1bnA1m);
+            getToken().then(function(_token){
+                relayAjax({
+                    // url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-kab-kota/'+config.id_daerah+'/'+id_unit,
+                    url: url,
+                    type: 'post',
+                    data: formDataCustom,
+                    processData: false,
+                    contentType: false,
+                    success: function(ret){
+                        if(!alamat.kab[id_prov]){
+                            alamat.kab[id_prov] = {
+                                kec: {}
+                            };
+                        };
+                        jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
+                            var id_kab = jQuery(b).attr('value');
+                            var nama = jQuery(b).text();
+                            if(id_kab!=0){
+                                alamat.kab[id_prov][id_kab] = { 
+                                    nama: nama,
+                                    id_kab: id_kab
+                                };
+                            }
+                        });
+                        return resolve(alamat.kab[id_prov]);
+                    }
+                });
+            });
+        }else{
+            return resolve(alamat.kab[id_prov]);
+        }
+    });
+}
+
+function getProv(id_unit, url, full=false){
+    return new Promise(function(resolve, reject){
+        if(typeof(alamat) == 'undefined'){
+            getToken().then(function(_token){
+                relayAjax({
+                    // url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/belanja/'+config.tahun_anggaran+'/rinci/tampil-provinsi/'+config.id_daerah+'/'+id_unit,
+                    url: url,
+                    type: 'post',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(ret){
+                        if(full){
+                            return resolve(ret);
+                        }else{
+                            window.alamat = {
+                                kab: {}
+                            };
+                            jQuery('<select>'+ret+'</select>').find('option').map(function(i, b){
+                                var val = jQuery(b).attr('value');
+                                var nama = jQuery(b).text();
+                                if(val!=0){
+                                    alamat[val] = { 
+                                        nama: nama,
+                                        val: val
+                                    };
+                                }
+                            });
+                            return resolve(alamat);
+                        }
+                    }
+                });
+            });
+        }else{
+            return resolve(alamat);
+        }
+    });
+}
+
+function getToken(){
+    return new Promise(function(resolve, reject){
+        if(typeof(tokenSCE) == 'undefined'){
+            var token = tokek;
+            if(!token){
+                relayAjax({
+                    url: config.sipd_url+'daerah/main/'+get_type_jadwal()+'/dashboard/'+config.tahun_anggaran+'/unit/'+config.id_daerah+'/0',
+                    type: 'get',
+                    success: function(html){
+                        html = html.split('tokek="');
+                        html = html[1].split('"');
+                        window.tokenSCE = html[0];
+                        return resolve(tokenSCE);
+                    }
+                });
+            }else{
+                window.tokenSCE = token;
+                return resolve(tokenSCE);
+            }
+        }else{
+            return resolve(tokenSCE);
+        }
+    })
+    .catch(function(e){
+        console.log(e);
+        return Promise.resolve('');
+    });
+}
+
 function tampil_profil(){
 	jQuery('#wrap-loading').show();
 	var data = [];
@@ -1080,6 +1269,22 @@ function tampil_profil(){
 						!rinci.id_penerima
 						&& rinci.id_prop_penerima
 					){
+                        var html = jQuery('body').html();
+                        var kode_get_rinci = html.split('lru1="')[1].split('"')[0];
+
+                        if(typeof rincsub == 'undefined'){
+                            window.rincsub = {};
+                        }
+                        var kode_sbl = 1;
+                        rincsub[kode_sbl] = {
+                            lru1: kode_get_rinci,
+                            lru3: html.split('lru3="')[1].split('"')[0],
+                            lru4: html.split('lru4="')[1].split('"')[0],
+                            lru5: html.split('lru5="')[1].split('"')[0],
+                            lru6: html.split('lru6="')[1].split('"')[0],
+                            lru7: html.split('lru7="')[1].split('"')[0],
+                            lru13: html.split('lru13="')[1].split('"')[0]
+                        };
 						getProv(id_unit, rincsub[kode_sbl].lru4).then(function(prov){
 							if(prov[rinci.id_prop_penerima]){
 								rinci.nama_prop = prov[rinci.id_prop_penerima].nama;
@@ -1133,7 +1338,7 @@ function tampil_profil(){
 					}
 					var info = 'id_profile='+rinci.id_penerima+'<br>idblrinci='+rinci.idblrinci+'<br>idakun='+rinci.idakun+'<br>';
 					if(rinci.nama_prop){
-						info += rinci.rka.lokus_akun_teks+', '+rinci.nama_kel+', '+rinci.nama_kec+', '+rinci.nama_kab+', '+rinci.nama_prop
+						info += rinci.lokus_akun_teks+', '+rinci.nama_kel+', '+rinci.nama_kec+', '+rinci.nama_kab+', '+rinci.nama_prop
 						resolve(info);
 					}else if(rinci.id_penerima){
 	                    var customFormData = new FormData();
@@ -1177,4 +1382,103 @@ function tampil_profil(){
 		})
 		jQuery('#wrap-loading').hide();
 	});
+}
+
+var Base64 = {
+    _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+    encode: function(e) {
+        var t = "";
+        var n, r, i, s, o, u, a;
+        var f = 0;
+        e = Base64._utf8_encode(e);
+        while (f < e.length) {
+            n = e.charCodeAt(f++);
+            r = e.charCodeAt(f++);
+            i = e.charCodeAt(f++);
+            s = n >> 2;
+            o = (n & 3) << 4 | r >> 4;
+            u = (r & 15) << 2 | i >> 6;
+            a = i & 63;
+            if (isNaN(r)) {
+                u = a = 64
+            } else if (isNaN(i)) {
+                a = 64
+            }
+            t = t + this._keyStr.charAt(s) + this._keyStr.charAt(o) + this._keyStr.charAt(u) + this._keyStr.charAt(a)
+        }
+        return t.replace(/=/g, '@');
+    },
+    decode: function(e) {
+        var t = "";
+        var n, r, i;
+        var s, o, u, a;
+        var f = 0;
+        e = e.replace(/%([0-9A-F]{2})/g, "");
+        while (f < e.length) {
+            s = this._keyStr.indexOf(e.charAt(f++));
+            o = this._keyStr.indexOf(e.charAt(f++));
+            u = this._keyStr.indexOf(e.charAt(f++));
+            a = this._keyStr.indexOf(e.charAt(f++));
+            n = s << 2 | o >> 4;
+            r = (o & 15) << 4 | u >> 2;
+            i = (u & 3) << 6 | a;
+            t = t + String.fromCharCode(n);
+            if (u != 64) {
+                t = t + String.fromCharCode(r)
+            }
+            if (a != 64) {
+                t = t + String.fromCharCode(i)
+            }
+        }
+        t = Base64._utf8_decode(t);
+        return t
+    },
+    _utf8_encode: function(e) {
+        e = e.replace(/\r\n/g, "n");
+        var t = "";
+        for (var n = 0; n < e.length; n++) {
+            var r = e.charCodeAt(n);
+            if (r < 128) {
+                t += String.fromCharCode(r)
+            } else if (r > 127 && r < 2048) {
+                t += String.fromCharCode(r >> 6 | 192);
+                t += String.fromCharCode(r & 63 | 128)
+            } else {
+                t += String.fromCharCode(r >> 12 | 224);
+                t += String.fromCharCode(r >> 6 & 63 | 128);
+                t += String.fromCharCode(r & 63 | 128)
+            }
+        }
+        return t
+    },
+    _utf8_decode: function(e) {
+        var t = "";
+        var n = 0;
+        var r = c1 = c2 = 0;
+        while (n < e.length) {
+            r = e.charCodeAt(n);
+            if (r < 128) {
+                t += String.fromCharCode(r);
+                n++
+            } else if (r > 191 && r < 224) {
+                c2 = e.charCodeAt(n + 1);
+                t += String.fromCharCode((r & 31) << 6 | c2 & 63);
+                n += 2
+            } else {
+                c2 = e.charCodeAt(n + 1);
+                c3 = e.charCodeAt(n + 2);
+                t += String.fromCharCode((r & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+                n += 3
+            }
+        }
+        return t
+    }
+}
+
+function Curut(text) {
+    return (Base64.encode(text));
+}
+
+function Dengkul(text) {
+    return (Base64.decode(text));
 }
