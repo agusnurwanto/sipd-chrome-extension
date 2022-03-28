@@ -115,12 +115,16 @@ jQuery(document).ready(function(){
 			+'</button>';
 		jQuery('button.arsip-komponen').parent().prepend(singkron_ssh);
 		var _show_id_ssh = ''
+			+'<button onclick="return false;" class="fcbtn btn btn-warning btn-outline btn-1b" id="show_akun_ssh">'
+				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan Link Akun</span>'
+			+'</button>'
 			+'<button onclick="return false;" class="fcbtn btn btn-warning btn-outline btn-1b" id="show_id_ssh">'
-				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan Link Akun Standar Harga</span>'
+				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan ID Standar Harga</span>'
 			+'</button>';
 		jQuery('#table_komponen').closest('form').prepend(_show_id_ssh);
 		if(document.getElementsByClassName('tambah-komponen').length){ 
 	 		jQuery('#show_id_ssh').attr('style', 'margin-left: 10px;');
+	 		jQuery('#show_akun_ssh').attr('style', 'margin-left: 10px;');
 			var acion_all = ''
 				+'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="set_mulit_rek">'
 					+'<span>Set Multi Kode SH dan Rek. Belanja</span>'
@@ -141,6 +145,10 @@ jQuery(document).ready(function(){
 		jQuery('#show_id_ssh').on('click', function(){
 			jQuery('#wrap-loading').show();
 			show_id_ssh();
+		});
+		jQuery('#show_akun_ssh').on('click', function(){
+			jQuery('#wrap-loading').show();
+			show_akun_ssh();
 		});
 		jQuery('#set_mulit_rek').on('click', function(){
 			set_mulit_rek();
@@ -370,13 +378,26 @@ jQuery(document).ready(function(){
 
 		function show_id_ssh(){
 			jQuery('#table_komponen tbody tr').map(function(i, b){
+		 		var id = jQuery(b).find('input[type="checkbox"].set_lockKomponen').attr('value');
+			 	if(id){
+				 	var nama = jQuery(b).find('td').eq(2);
+				 	if(nama.find('.link-detail-ssh').length == 0){
+				 		nama.html('( <span class="link-detail-ssh">'+id+'</span> ) '+nama.html());
+				 	}
+				}
+			});
+			jQuery('#wrap-loading').hide();
+		}
+
+		function show_akun_ssh(){
+			jQuery('#table_komponen tbody tr').map(function(i, b){
 				if(document.getElementsByClassName('tambah-komponen').length){ 
 			 		var id = jQuery(b).find('td').eq(7).find('a').attr('onclick');
 				 	if(id){
 					 	id = id.split("'")[1];
 					 	var nama = jQuery(b).find('td').eq(2);
-					 	if(nama.find('.link-detail-ssh').length == 0){
-					 		nama.html('( <span class="link-detail-ssh"><textarea>'+id+'</textarea></span> ) '+nama.html());
+					 	if(nama.find('.link-detail-akun-ssh').length == 0){
+					 		nama.html('( <span class="link-detail-akun-ssh"><textarea>'+id+'</textarea></span> ) '+nama.html());
 					 	}
 					 }
 				}else{
@@ -384,8 +405,8 @@ jQuery(document).ready(function(){
 				 	if(id){
 					 	id = id.split("'")[1];
 					 	var nama = jQuery(b).find('td').eq(1);
-					 	if(nama.find('.link-detail-ssh').length == 0){
-					 		nama.html('( <span class="link-detail-ssh"><textarea>'+id+'</textarea></span> ) '+nama.html());
+					 	if(nama.find('.link-detail-akun-ssh').length == 0){
+					 		nama.html('( <span class="link-detail-akun-ssh"><textarea>'+id+'</textarea></span> ) '+nama.html());
 					 	}
 					 }
 				}
