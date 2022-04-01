@@ -115,16 +115,17 @@ jQuery(document).ready(function(){
 			+'</button>';
 		jQuery('button.arsip-komponen').parent().prepend(singkron_ssh);
 		var _show_id_ssh = ''
-			+'<button onclick="return false;" class="fcbtn btn btn-warning btn-outline btn-1b" id="show_akun_ssh">'
+			+'<button onclick="return false;" style="margin-left: 10px;" class="fcbtn btn btn-warning btn-outline btn-1b" id="show_akun_ssh">'
 				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan Link Akun</span>'
 			+'</button>'
-			+'<button onclick="return false;" class="fcbtn btn btn-warning btn-outline btn-1b" id="show_id_ssh">'
+			+'<button onclick="return false;" style="margin-left: 10px;" class="fcbtn btn btn-warning btn-outline btn-1b" id="show_id_ssh">'
 				+'<i class="fa fa-eye m-r-5"></i> <span>Tampilkan ID Standar Harga</span>'
 			+'</button>';
 		jQuery('#table_komponen').closest('form').prepend(_show_id_ssh);
-		if(document.getElementsByClassName('tambah-komponen').length){ 
-	 		jQuery('#show_id_ssh').attr('style', 'margin-left: 10px;');
-	 		jQuery('#show_akun_ssh').attr('style', 'margin-left: 10px;');
+		if(
+			document.getElementsByClassName('tambah-komponen').length
+			|| jQuery('.hide-menu:contains("Unggah Excel Standar Harga")').length >= 1
+		){ 
 			var acion_all = ''
 				+'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="set_mulit_rek">'
 					+'<span>Set Multi Kode SH dan Rek. Belanja</span>'
@@ -233,7 +234,7 @@ jQuery(document).ready(function(){
 
 		var modal = ''
 			+'<div class="modal fade" id="duplikat-komponen-akun" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
-		        +'<div class="modal-dialog modal-lg" role="document">'
+		        +'<div class="modal-dialog" style="width: 90%; min-width: 1100px;" role="document">'
 		            +'<div class="modal-content">'
 		                +'<div class="modal-header bgpanel-theme">'
 		                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
@@ -244,7 +245,8 @@ jQuery(document).ready(function(){
 		                      	+'<thead>'
 		                        	+'<tr class="bg-grey-600">'
 		                          		+'<th class="text-white">No</th>'
-		                          		+'<th class="text-white"><input type="checkbox" id="select-all-hapus-ssh" checked> ID Akun</th>'
+		                          		+'<th class="text-white"><input type="checkbox" id="select-all-hapus-ssh" checked> ID</th>'
+		                          		+'<th class="text-white">Kode Standar Harga</th>'
 		                          		+'<th class="text-white">Nama</th>'
 		                          		+'<th class="text-white">Spesifikasi</th>'
 		                          		+'<th class="text-white">Satuan</th>'

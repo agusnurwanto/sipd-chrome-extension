@@ -3140,7 +3140,7 @@ function cek_duplikat_ssh(){
 			var l2=0;
 			var html_duplikat = '';
 			data_ssh.data.map(function(b, i){
-				var id_duplikat = b.nama_standar_harga+''+b.spek+''+b.satuan+''+b.harga;
+				var id_duplikat = b.kode_kel_standar_harga+''+b.nama_standar_harga+''+b.spek+''+b.satuan+''+b.harga;
 				if(typeof data_all_ssh[id_duplikat] == 'undefined'){
 					data_all_ssh[id_duplikat] = {
 						detail: []
@@ -3163,7 +3163,7 @@ function cek_duplikat_ssh(){
 				var url_hapus = [];
 				var ssh = duplikat_ssh[i].detail;
 				ssh.map(function(b, n){
-					id.push(b.id_standar_harga);
+					id.push(b.id_standar_harga+' ( '+b.kode_standar_harga+' )');
 					var url = b.action.split("hapusKomp('")[1].split("'")[0];
 					url_hapus.push(url);
 				});
@@ -3171,7 +3171,8 @@ function cek_duplikat_ssh(){
 				html_duplikat += ''
 					+'<tr>'
 						+'<td>'+no+'</td>'
-						+'<td><input type="checkbox" class="list-ssh-duplikat" checked data-nama="'+ssh[0].nama_standar_harga +'('+id.join(', ')+')'+'" data-url="'+url_hapus.join(';')+'"> '+id.join(', ')+'</td>'
+						+'<td><input type="checkbox" class="list-ssh-duplikat" checked data-nama="'+ssh[0].nama_standar_harga +'('+id.join(', ')+')'+'" data-url="'+url_hapus.join(';')+'"><br>'+id.join('<br>')+'</td>'
+						+'<td>'+ssh[0].kode_kel_standar_harga+'</td>'
 						+'<td>'+ssh[0].nama_standar_harga+'</td>'
 						+'<td>'+ssh[0].spek+'</td>'
 						+'<td>'+ssh[0].satuan+'</td>'
