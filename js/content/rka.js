@@ -373,13 +373,13 @@ jQuery('#hapus_multi_komponen').on('click', function(){
 		}
 		var rekening = '';
 		var kelompok = '';
-    var keterangan = '';
-    var table_rinci = 'table_rinci';
-    var td_action = 7;
-    if(jQuery('#table_rinci').length == 0){
-      table_rinci = 'table_rinci_perubahan';
-      var td_action = 11;
-    }
+        var keterangan = '';
+        var table_rinci = 'table_rinci';
+        var td_action = 7;
+        if(jQuery('#table_rinci').length == 0){
+          table_rinci = 'table_rinci_perubahan';
+          var td_action = 11;
+        }
 		jQuery('#'+table_rinci+' tbody tr').map(function(i, b){
 			var td = jQuery(b).find('td');
 			var val = td.eq(td_action).find('.btn-danger').attr('onclick');
@@ -510,6 +510,7 @@ jQuery('#jenis_data').on('change', function(){
         || jenis == 'HIBAH'
         || jenis == 'BANSOS-BRG'
         || jenis == 'BANSOS'
+        || jenis == 'BOP-PUSAT-PAUD'
     ){
         jQuery('#label-excel').attr('href', ext_url+'excel/BOS-HIBAH.xlsx');
         jQuery('.group-dana-desa').show();

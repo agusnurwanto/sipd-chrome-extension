@@ -101,6 +101,39 @@ function tampilAkun(id, jenis_ssh){
     });
 }
 
+function cek_rincian_exist(excel, bankeu=false){
+    return new Promise(function(resolve, reduce){
+        relayAjax({
+            url: lru1,
+            type: 'post',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data){
+                var data_exist = {};
+                data.data.map(function(b, i){
+                    var nama = b.nama_standar_harga.nama_komponen.split(' [').shift();
+                    var keyword = nama.trim()+b.rincian.trim();
+                    data_exist[keyword] = b;
+                });
+                var data_import = [];
+                excel.map(function(b, i){
+                    if(bankeu){
+                        b.nama = b.desa;
+                    }
+                    var keyword = b.nama.trim()+b.total.replace(/,/g, '').trim();
+                    if(!data_exist[keyword]){
+                        data_import.push(b);
+                    }else{
+                        console.log('Sudah ada! nama='+b.nama+' total='+b.total, b);
+                    }
+                });
+                resolve(data_import);
+            }
+        });
+    });
+}
+
 function insertRKA(){
 	var type_data = jQuery('#jenis_data').val();
     if(type_data == ''){
@@ -118,6 +151,7 @@ function insertRKA(){
 	var vol = jQuery('#volum-excel').val();
 	var satuantext = jQuery('#satuan-excel option:selected').text();
 	var satuan = jQuery('#satuan-excel').val();
+    var all_status = [];
 	jQuery('.tambah-detil').click();
     if(
     	type_data == 'BOS'
@@ -125,252 +159,356 @@ function insertRKA(){
         || type_data == 'HIBAH'
         || type_data == 'BANSOS-BRG'
         || type_data == 'BANSOS'
+        || type_data == 'BOP-PUSAT-PAUD'
     ){
-        var sendData = excel.map(function(raw, i){
-            return new Promise(function(resolve, reject){
-                new Promise(function(resolve2, reject2){
-                    var customFormData = new FormData();
-                    customFormData.append('_token', tokek);
-                    customFormData.append('v1bnA1m', v1bnA1m);
-                    customFormData.append('DsK121m', C3rYDq('rekening='+id_rek_akun));
-                    customFormData.append('columns[0][data]', 'id_profil');
-                    customFormData.append('columns[0][name]', 'pr.id_profil');
-                    customFormData.append('columns[0][searchable]', 'true');
-                    customFormData.append('columns[0][orderable]', 'true');
-                    customFormData.append('columns[0][search][value]', raw.id_profil);
-                    customFormData.append('columns[0][search][regex]', 'false');
-                    // cari nama penerima bantuan
-                    relayAjax({
-                        url: lru13,
-                        type: "post",
-                        data: customFormData,
-                        processData: false,
-                        contentType: false,
-                        success: function(cari_penerima){
-                            raw.resolve2 = resolve2;
-                            console.log('cari_penerima', cari_penerima);
-                            // jika data penerima tidak ditemukan maka lakukan input data penerima bantuan
-                            if(cari_penerima.data.length==0){
-                                input_penerima(raw);
-                            // jika data ditemukan maka langsung lankukan input/update rincian
-                            }else{
-                                raw.nama = cari_penerima.data[0].nama_teks;
-                                raw.id_profile = cari_penerima.data[0].id_profil;
-                                resolve2(raw);
-                            }
-                        }
-                    });
-                })
-                .then(function(raw2){
-                    // console.log('raw2.id_profile', raw2.id_profile);
-                    if(!raw2.id_profile){
-                        raw2.error = "Penerima tidak ditemukan atau tidak bisa disimpan!";
-                        resolve(raw2);
-                    }else{
-                        raw2.kodesbl = jQuery('input[name="kodesbl"]').val();
-                        // get id keterangan (tambah data keterangan jika belum ada)
-                        setKeterangan(raw2).then(function(id_ket){
-                            raw2.detil_rincian = {
-                                jenis_belanja: jenis_belanja,
-                                id_rek_akun: id_rek_akun,
-                                id_pengelompokan: id_pengelompokan,
-                                id_keterangan: id_ket
-                            };
-                            var skrim = ''
-                                +'kodesbl='+raw2.kodesbl
-                                +'&idbelanjarinci='+raw2.idbelanjarinci
-                                +'&idakunrinci='+raw2.idakunrinci
-                                +'&jenisbl='+jenis_belanja
-                                +'&akun='+encodeURIComponent(id_rek_akun)
-                                +'&subtitle='+id_pengelompokan
-                                +'&uraian_penerima='+raw2.nama
-                                +'&id_penerima='+raw2.id_profile
-                                +'&prop='+raw2.id_prov
-                                +'&komponenkel='
-                                +'&komponen='
-                                +'&idkomponen='
-                                +'&spek='
-                                +'&satuan='+encodeURIComponent(satuantext)
-                                +'&hargasatuan='+(+raw2.total.replace(/,/g, ''))
-                                +'&keterangan='+id_ket
-                                +'&volum1='+vol
-                                +'&satuan1='+satuan
-                                +'&volum2='
-                                +'&satuan2='
-                                +'&volum3='
-                                +'&satuan3='
-                                +'&volum4='
-                                +'&satuan4=';
-                            raw2.skrim = skrim;
-                            var customFormData = new FormData();
-                            customFormData.append('_token', tokek);
-                            customFormData.append('v1bnA1m', v1bnA1m);
-                            customFormData.append('DsK121m', C3rYDq(skrim));
-                            // resolve(raw2); console.log(raw2);
-                            relayAjax({
-                                url: lru9,
-                                type: "post",
-                                data: customFormData,
-                                processData: false,
-                                contentType: false,
-                                success: function(data_kel){
-                                    resolve(raw2);
-                                },
-                                error: function(jqXHR, textStatus, error){
-                                    raw2.error = 'Error ajax simpan rincian';
-                                    resolve(raw2);
-                                }
+        cek_rincian_exist(excel)
+        .then(function(new_excel){
+            console.log('new_excel', new_excel);
+            var data_all = [];
+            var data_sementara = [];
+            new_excel.map(function(b, i){
+                data_sementara.push(b);
+                var n = i+1;
+                if(n%1 == 0){
+                    data_all.push(data_sementara);
+                    data_sementara = [];
+                }
+            });
+            if(data_sementara.length > 0){
+                data_all.push(data_sementara);
+            }
+            data_all.unshift(data_all.pop());
+
+            var last = data_all.length-1;
+            data_all.reduce(function(sequence, nextData){
+                return sequence.then(function(current_data){
+                    return new Promise(function(resolve_reduce, reject_reduce){
+                        var sendData = current_data.map(function(raw, i){
+                            return new Promise(function(resolve, reject){
+                                new Promise(function(resolve2, reject2){
+                                    var customFormData = new FormData();
+                                    customFormData.append('_token', tokek);
+                                    customFormData.append('v1bnA1m', v1bnA1m);
+                                    customFormData.append('DsK121m', C3rYDq('rekening='+id_rek_akun));
+                                    customFormData.append('columns[0][data]', 'id_profil');
+                                    customFormData.append('columns[0][name]', 'pr.id_profil');
+                                    customFormData.append('columns[0][searchable]', 'true');
+                                    customFormData.append('columns[0][orderable]', 'true');
+                                    if(raw.id_profil){
+                                        customFormData.append('columns[0][search][value]', raw.id_profil);
+                                        customFormData.append('columns[0][search][regex]', 'false');
+                                    }else{
+                                        customFormData.append('columns[0][search][value]', '');
+                                        customFormData.append('columns[0][search][regex]', 'false');
+                                        customFormData.append('columns[1][data]', 'nama_teks');
+                                        customFormData.append('columns[1][name]', 'pr.nama_teks');
+                                        customFormData.append('columns[1][searchable]', 'true');
+                                        customFormData.append('columns[1][orderable]', 'true');
+                                        customFormData.append('columns[1][search][value]', raw.nama);
+                                        customFormData.append('columns[1][search][regex]', 'false');
+                                    }
+                                    // cari nama penerima bantuan
+                                    relayAjax({
+                                        url: lru13,
+                                        type: "post",
+                                        data: customFormData,
+                                        processData: false,
+                                        contentType: false,
+                                        success: function(cari_penerima){
+                                            raw.resolve2 = resolve2;
+                                            console.log('cari_penerima', cari_penerima);
+                                            // jika data penerima tidak ditemukan maka lakukan input data penerima bantuan
+                                            if(cari_penerima.data.length==0){
+                                                input_penerima(raw);
+                                            // jika data ditemukan maka langsung lankukan input/update rincian
+                                            }else{
+                                                raw.nama = cari_penerima.data[0].nama_teks;
+                                                raw.id_profile = cari_penerima.data[0].id_profil;
+                                                resolve2(raw);
+                                            }
+                                        }
+                                    });
+                                })
+                                .then(function(raw2){
+                                    // console.log('raw2.id_profile', raw2.id_profile);
+                                    if(!raw2.id_profile){
+                                        raw2.error = "Penerima tidak ditemukan atau tidak bisa disimpan!";
+                                        resolve(raw2);
+                                    }else{
+                                        raw2.kodesbl = jQuery('input[name="kodesbl"]').val();
+                                        // get id keterangan (tambah data keterangan jika belum ada)
+                                        setKeterangan(raw2).then(function(id_ket){
+                                            raw2.detil_rincian = {
+                                                jenis_belanja: jenis_belanja,
+                                                id_rek_akun: id_rek_akun,
+                                                id_pengelompokan: id_pengelompokan,
+                                                id_keterangan: id_ket
+                                            };
+                                            var skrim = ''
+                                                +'kodesbl='+raw2.kodesbl
+                                                +'&idbelanjarinci='+raw2.idbelanjarinci
+                                                +'&idakunrinci='+raw2.idakunrinci
+                                                +'&jenisbl='+jenis_belanja
+                                                +'&akun='+encodeURIComponent(id_rek_akun)
+                                                +'&subtitle='+id_pengelompokan
+                                                +'&uraian_penerima='+raw2.nama
+                                                +'&id_penerima='+raw2.id_profile
+                                                +'&prop='+raw2.id_prov
+                                                +'&komponenkel='
+                                                +'&komponen='
+                                                +'&idkomponen='
+                                                +'&spek='
+                                                +'&satuan='+encodeURIComponent(satuantext)
+                                                +'&keterangan='+id_ket
+                                                +'&satuan1='+satuan
+                                                +'&volum2='
+                                                +'&satuan2='
+                                                +'&volum3='
+                                                +'&satuan3='
+                                                +'&volum4='
+                                                +'&satuan4=';
+                                            if(
+                                                raw2.vol
+                                                && raw2.harga
+                                            ){
+                                                skrim += ''
+                                                    +'&hargasatuan='+(+raw2.harga.replace(/,/g, ''))
+                                                    +'&volum1='+raw2.vol;
+                                            }else{
+                                                skrim += ''
+                                                    +'&hargasatuan='+(+raw2.total.replace(/,/g, ''))
+                                                    +'&volum1='+vol;
+                                            }
+                                            raw2.skrim = skrim;
+                                            var customFormData = new FormData();
+                                            customFormData.append('_token', tokek);
+                                            customFormData.append('v1bnA1m', v1bnA1m);
+                                            customFormData.append('DsK121m', C3rYDq(skrim));
+                                            var debug = false;
+                                            // debug = true;
+                                            if(debug){
+                                                console.log('raw2', raw2); resolve(raw2);
+                                            }else{
+                                                relayAjax({
+                                                    url: lru9,
+                                                    type: "post",
+                                                    data: customFormData,
+                                                    processData: false,
+                                                    contentType: false,
+                                                    success: function(data_kel){
+                                                        resolve(raw2);
+                                                    },
+                                                    error: function(jqXHR, textStatus, error){
+                                                        raw2.error = 'Error ajax simpan rincian';
+                                                        resolve(raw2);
+                                                    }
+                                                });
+                                            }
+                                        })
+                                    }
+                                })
+                                .catch(function(e){
+                                    console.log(e);
+                                    return Promise.resolve({});
+                                });
+                            })
+                            .catch(function(e){
+                                console.log(e);
+                                return Promise.resolve({});
                             });
-                        })
-                    }
+                        });
+                        Promise.all(sendData)
+                        .then(function(res){
+                            all_status = all_status.concat(res);
+                            resolve_reduce(nextData);
+                        });
+                    })
+                    .catch(function(e){
+                        console.log(e);
+                        return Promise.resolve(nextData);
+                    });
                 })
                 .catch(function(e){
                     console.log(e);
-                    return Promise.resolve({});
+                    return Promise.resolve(nextData);
                 });
+            }, Promise.resolve(data_all[last]))
+            .then(function(data_last){
+                console.log('all_status', all_status);
+                after_insert(all_status, type_data);
             })
-            .catch(function(e){
-                console.log(e);
-                return Promise.resolve({});
+            .catch(function(err){
+                console.log('err', err);
+                alert('Ada kesalahan sistem!');
+                jQuery('#wrap-loading').hide();
             });
-        });
-        Promise.all(sendData)
-        .then(function(all_status){
-            console.log('all_status', all_status);
-            after_insert(all_status, type_data);
-        })
-        .catch(function(err){
-            console.log('err', err);
-            alert('Ada kesalahan sistem!');
-            jQuery('#wrap-loading').hide();
         });
     }else if(
         type_data == 'BANKEU'
         || type_data == 'BAGI-HASIL'
     ){
-    	getIdProv().then(function(data_prov){
-    		var sendData = excel.map(function(raw, i){
-    			return new Promise(function(resolve, reject){
-    	      		var id_prov = jQuery('<select>'+data_prov+'</select>').find('option').filter(function(){
-    	      			return jQuery(this).val() == raw.prov;
-    	      		}).val();
-    				// console.log('id_prov', id_prov, data_prov, raw.prov);
-    	      		if(typeof id_prov == 'undefined'){
-    	      			raw.error = 'Provinsi tidak ditemukan';
-    	      			resolve(raw);
-    	      		}else{
-    					raw.id_prov = raw.prov;
-    					getIdKab(raw).then(function(id_kab){
-    			      		if(typeof id_kab == 'undefined'){
-    			      			raw.error = 'Kabupaten / Kota tidak ditemukan';
-    			      			resolve(raw);
-    			      		}else{
-    							raw.id_kab = id_kab;
-    							getIdKec(raw).then(function(id_kec){
-    					      		if(typeof id_kec == 'undefined'){
-    					      			raw.error = 'Kecamatan tidak ditemukan';
-    					      			resolve(raw);
-    					      		}else{
-    							      	raw.id_kec = id_kec;
-    					      			getIdKel(raw).then(function(id_kel){
-    							      		if(typeof id_kel == 'undefined'){
-    							      			raw.error = 'Desa / Kelurahan tidak ditemukan';
-    							      			resolve(raw);
-    							      		}else{
-    							      			raw.id_kel = id_kel;
-    							      			raw.kodesbl = jQuery('input[name="kodesbl"]').val();
-    							      			setKeterangan(raw).then(function(id_ket){
-    								      			raw.detil_rincian = {
-    								      				jenis_belanja: jenis_belanja,
-    								      				id_rek_akun: id_rek_akun,
-    								      				id_pengelompokan: id_pengelompokan,
-    								      				id_keterangan: id_ket
-    								      			};
-    								      			var skrim = ''
-    								      				+'kodesbl='+raw.kodesbl
-    								      				+'&idbelanjarinci='+raw.idbelanjarinci
-    								      				+'&idakunrinci='+raw.idakunrinci
-    								      				+'&jenisbl='+jenis_belanja
-    									      			+'&akun='+encodeURIComponent(id_rek_akun)
-    									      			+'&subtitle='+id_pengelompokan
-    									      			+'&uraian_penerima='
-    									      			+'&id_penerima='
-    									      			+'&prop='+raw.id_prov
-    									      			+'&kab_kota='+raw.id_kab
-    									      			+'&kecamatan='+raw.id_kec
-    									      			+'&kelurahan='+raw.id_kel
-    									      			+'&komponenkel='
-    									      			+'&komponen='
-    									      			+'&idkomponen='
-    									      			+'&spek='
-    									      			+'&satuan='+encodeURIComponent(satuantext)
-    									      			+'&hargasatuan='+(+raw.total.replace(/,/g, ''))
-    									      			+'&keterangan='+id_ket
-    									      			+'&volum1='+vol
-    									      			+'&satuan1='+satuan
-    									      			+'&volum2='
-    									      			+'&satuan2='
-    									      			+'&volum3='
-    									      			+'&satuan3='
-    									      			+'&volum4='
-    									      			+'&satuan4=';
-    										        raw.skrim = skrim;
-    										        // resolve(raw); console.log(raw);
-                                                    var customFormData = new FormData();
-                                                    customFormData.append('_token', tokek);
-                                                    customFormData.append('v1bnA1m', v1bnA1m);
-                                                    customFormData.append('DsK121m', C3rYDq(skrim));
-                                                    // resolve(raw2); console.log(raw2);
-                                                    relayAjax({
-                                                        url: lru9,
-                                                        type: "post",
-                                                        data: customFormData,
-                                                        processData: false,
-                                                        contentType: false,
-    										          	success: function(data_kel){
-    								      					resolve(raw);
-    										          	},
-    										          	error: function(jqXHR, textStatus, error){
-    										      			raw.error = 'Error ajax simpan rincian';
-    										      			resolve(raw);
-    										          	}
-    										       	});
-    							      			})
-    							      		}
-    								    })
-    								    .catch(function(e){
-    										raw.error = 'Error ajax kelurahan';
-    				      					resolve(raw);
-    								    });
-    						      	}
-    					        })
-    						    .catch(function(e){
-    								raw.error = 'Error ajax kecamatan';
-    		      					resolve(raw);
-    						    });
-    				      	}
-    			        })
-    				    .catch(function(e){
-    						raw.error = 'Error ajax kabupaten';
-          					resolve(raw);
-    				    });
-    		      	}
-    			})
-    		    .catch(function(e){
-    		        console.log(e);
-    		        return Promise.resolve({});
-    		    });
-    		});
-    		Promise.all(sendData)
-    		.then(function(all_status){
-    			console.log('all_status', all_status);
-    			after_insert(all_status, type_data);
-    		})
-    	    .catch(function(err){
-    	        console.log('err', err);
-    			alert('Ada kesalahan sistem!');
-    			jQuery('#wrap-loading').hide();
-    	    });
+    	getIdProv()
+        .then(function(data_prov){
+            cek_rincian_exist(excel, true)
+            .then(function(new_excel){
+                console.log('new_excel', new_excel);
+                var data_all = [];
+                var data_sementara = [];
+                new_excel.map(function(b, i){
+                    data_sementara.push(b);
+                    var n = i+1;
+                    if(n%1 == 0){
+                        data_all.push(data_sementara);
+                        data_sementara = [];
+                    }
+                });
+                if(data_sementara.length > 0){
+                    data_all.push(data_sementara);
+                }
+                data_all.unshift(data_all.pop());
+
+                var last = data_all.length-1;
+                data_all.reduce(function(sequence, nextData){
+                    return sequence.then(function(current_data){
+                        return new Promise(function(resolve_reduce, reject_reduce){
+                    		var sendData = current_data.map(function(raw, i){
+                    			return new Promise(function(resolve, reject){
+                    	      		var id_prov = jQuery('<select>'+data_prov+'</select>').find('option').filter(function(){
+                    	      			return jQuery(this).val() == raw.prov;
+                    	      		}).val();
+                    				// console.log('id_prov', id_prov, data_prov, raw.prov);
+                    	      		if(typeof id_prov == 'undefined'){
+                    	      			raw.error = 'Provinsi tidak ditemukan';
+                    	      			resolve(raw);
+                    	      		}else{
+                    					raw.id_prov = raw.prov;
+                    					getIdKab(raw).then(function(id_kab){
+                    			      		if(typeof id_kab == 'undefined'){
+                    			      			raw.error = 'Kabupaten / Kota tidak ditemukan';
+                    			      			resolve(raw);
+                    			      		}else{
+                    							raw.id_kab = id_kab;
+                    							getIdKec(raw).then(function(id_kec){
+                    					      		if(typeof id_kec == 'undefined'){
+                    					      			raw.error = 'Kecamatan tidak ditemukan';
+                    					      			resolve(raw);
+                    					      		}else{
+                    							      	raw.id_kec = id_kec;
+                    					      			getIdKel(raw).then(function(id_kel){
+                    							      		if(typeof id_kel == 'undefined'){
+                    							      			raw.error = 'Desa / Kelurahan tidak ditemukan';
+                    							      			resolve(raw);
+                    							      		}else{
+                    							      			raw.id_kel = id_kel;
+                    							      			raw.kodesbl = jQuery('input[name="kodesbl"]').val();
+                    							      			setKeterangan(raw).then(function(id_ket){
+                    								      			raw.detil_rincian = {
+                    								      				jenis_belanja: jenis_belanja,
+                    								      				id_rek_akun: id_rek_akun,
+                    								      				id_pengelompokan: id_pengelompokan,
+                    								      				id_keterangan: id_ket
+                    								      			};
+                    								      			var skrim = ''
+                    								      				+'kodesbl='+raw.kodesbl
+                    								      				+'&idbelanjarinci='+raw.idbelanjarinci
+                    								      				+'&idakunrinci='+raw.idakunrinci
+                    								      				+'&jenisbl='+jenis_belanja
+                    									      			+'&akun='+encodeURIComponent(id_rek_akun)
+                    									      			+'&subtitle='+id_pengelompokan
+                    									      			+'&uraian_penerima='
+                    									      			+'&id_penerima='
+                    									      			+'&prop='+raw.id_prov
+                    									      			+'&kab_kota='+raw.id_kab
+                    									      			+'&kecamatan='+raw.id_kec
+                    									      			+'&kelurahan='+raw.id_kel
+                    									      			+'&komponenkel='
+                    									      			+'&komponen='
+                    									      			+'&idkomponen='
+                    									      			+'&spek='
+                    									      			+'&satuan='+encodeURIComponent(satuantext)
+                    									      			+'&hargasatuan='+(+raw.total.replace(/,/g, ''))
+                    									      			+'&keterangan='+id_ket
+                    									      			+'&volum1='+vol
+                    									      			+'&satuan1='+satuan
+                    									      			+'&volum2='
+                    									      			+'&satuan2='
+                    									      			+'&volum3='
+                    									      			+'&satuan3='
+                    									      			+'&volum4='
+                    									      			+'&satuan4=';
+                    										        raw.skrim = skrim;
+                    										        // resolve(raw); console.log(raw);
+                                                                    var customFormData = new FormData();
+                                                                    customFormData.append('_token', tokek);
+                                                                    customFormData.append('v1bnA1m', v1bnA1m);
+                                                                    customFormData.append('DsK121m', C3rYDq(skrim));
+                                                                    // resolve(raw2); console.log(raw2);
+                                                                    relayAjax({
+                                                                        url: lru9,
+                                                                        type: "post",
+                                                                        data: customFormData,
+                                                                        processData: false,
+                                                                        contentType: false,
+                    										          	success: function(data_kel){
+                    								      					resolve(raw);
+                    										          	},
+                    										          	error: function(jqXHR, textStatus, error){
+                    										      			raw.error = 'Error ajax simpan rincian';
+                    										      			resolve(raw);
+                    										          	}
+                    										       	});
+                    							      			})
+                    							      		}
+                    								    })
+                    								    .catch(function(e){
+                    										raw.error = 'Error ajax kelurahan';
+                    				      					resolve(raw);
+                    								    });
+                    						      	}
+                    					        })
+                    						    .catch(function(e){
+                    								raw.error = 'Error ajax kecamatan';
+                    		      					resolve(raw);
+                    						    });
+                    				      	}
+                    			        })
+                    				    .catch(function(e){
+                    						raw.error = 'Error ajax kabupaten';
+                          					resolve(raw);
+                    				    });
+                    		      	}
+                    			})
+                    		    .catch(function(e){
+                    		        console.log(e);
+                    		        return Promise.resolve({});
+                    		    });
+                    		});
+                    		Promise.all(sendData)
+                    		.then(function(res){
+                                all_status = all_status.concat(res);
+                                resolve_reduce(nextData);
+                    		});
+                        })
+                        .catch(function(e){
+                            console.log(e);
+                            return Promise.resolve(nextData);
+                        });
+                    })
+                    .catch(function(e){
+                        console.log(e);
+                        return Promise.resolve(nextData);
+                    });
+                }, Promise.resolve(data_all[last]))
+                .then(function(data_last){
+                    console.log('all_status', all_status);
+                    after_insert(all_status, type_data);
+                })
+                .catch(function(err){
+                    console.log('err', err);
+                    alert('Ada kesalahan sistem!');
+                    jQuery('#wrap-loading').hide();
+                });
+            });
         })
         .catch(function(err){
     		alert('Error ajax provinsi');
@@ -620,6 +758,7 @@ function filePicked(oEvent) {
                         no: '',
                         idbelanjarinci: '',
                         idakunrinci: '',
+                        alamat: '',
                         desa: '',
                         total: '',
                         keterangan: '',
@@ -636,7 +775,7 @@ function filePicked(oEvent) {
                     if(row['idakunrinci']){
                         data_pasti.idakunrinci = row['idakunrinci'];
                     }
-		        	if(row['DESA']){
+                    if(row['DESA']){
                         data_pasti.desa = row['DESA'];
                     }
 	        		if(row['PAGU']){
@@ -662,6 +801,7 @@ function filePicked(oEvent) {
 		        || type_data == 'HIBAH'
 		        || type_data == 'BANSOS-BRG'
 		        || type_data == 'BANSOS'
+                || type_data == 'BOP-PUSAT-PAUD'
 	        ){
 	        	XL_row_object.map(function(row, i){
                     data_pasti = {
@@ -670,6 +810,8 @@ function filePicked(oEvent) {
                         idakunrinci: '',
                         id_profile: '',
                         nama: '',
+                        vol: '',
+                        harga: '',
                         total: '',
                         keterangan: '',
                         jenis: '',
@@ -695,6 +837,12 @@ function filePicked(oEvent) {
                     }
                     if(row['PENERIMA']){
                         data_pasti.nama = row['PENERIMA'];
+                    }
+                    if(row['VOLUME']){
+                        data_pasti.vol = row['VOLUME'];
+                    }
+                    if(row['HARGA']){
+                        data_pasti.harga = row['HARGA'];
                     }
                     if(row['PAGU']){
                         data_pasti.total = row['PAGU'];
@@ -747,6 +895,7 @@ function filePicked(oEvent) {
 }
 
 function select_all(opsi){
+    console.log('select_all', opsi);
 	var tr_id = opsi.start;
 	var type = opsi.type;
 	var checked = opsi.checked;
@@ -754,7 +903,11 @@ function select_all(opsi){
 		jQuery('.hapus-multi-komponen').prop('checked', checked);
 	}else{
 		var cek = false;
-		jQuery('#table_rinci tbody tr').map(function(i, b){
+        var table_rinci = 'table_rinci';
+        if(jQuery('#table_rinci').length == 0){
+            table_rinci = 'table_rinci_perubahan';
+        }
+		jQuery('#'+table_rinci+' tbody tr').map(function(i, b){
 			if(i > tr_id && !cek){
 				var td = jQuery(b).find('td');
 				if(td.length == 1){

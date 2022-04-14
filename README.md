@@ -3,7 +3,8 @@ Optimasi aplikasi SIPD dengan chrome extension
 Semoga bermanfaat
 
 ### DONASI
-- Donasi untuk pengembang aplikasi, klik di link ini https://smkasiyahhomeschooling.blogspot.com/p/donasi-pengembangan-smk-asiyah.html
+- Donasi untuk pengembang aplikasi, klik di link ini https://smkasiyahhomeschooling.blogspot.com/p/donasi-pengembangan-smk-asiyah.html atau https://donasi.qodr.or.id/
+- Untuk pemda yang kesulitan dalam penerapan wp-sipd atau belum memiliki tenaga IT, kami menawarkan jasa setting dan penerapan wp-sipd. Informasi lebih detail di https://wpsipd.qodrbee.com/
 
 ### GRUP telegram https://t.me/sipd_chrome_extension
 
