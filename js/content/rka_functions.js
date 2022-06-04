@@ -217,14 +217,27 @@ function insertRKA(){
                                         success: function(cari_penerima){
                                             raw.resolve2 = resolve2;
                                             console.log('cari_penerima', cari_penerima);
-                                            // jika data penerima tidak ditemukan maka lakukan input data penerima bantuan
-                                            if(cari_penerima.data.length==0){
-                                                input_penerima(raw);
-                                            // jika data ditemukan maka langsung lankukan input/update rincian
-                                            }else{
+                                            if(
+                                                raw.id_profil 
+                                                && cari_penerima.data.length >= 1
+                                            ){
                                                 raw.nama = cari_penerima.data[0].nama_teks;
                                                 raw.id_profile = cari_penerima.data[0].id_profil;
                                                 resolve2(raw);
+                                            }else{
+                                                var cek_exist = false;
+                                                cari_penerima.data.map(function(b, i){
+                                                    if(b.nama_teks.toLowerCase().trim() == raw.nama.toLowerCase().trim()){
+                                                        cek_exist = b;
+                                                    }
+                                                });
+                                                if(!cek_exist){
+                                                    input_penerima(raw);
+                                                }else{
+                                                    raw.nama = cek_exist.nama_teks;
+                                                    raw.id_profile = cek_exist.id_profil;
+                                                    resolve2(raw);
+                                                }
                                             }
                                         }
                                     });

@@ -1,3 +1,25 @@
+var data = {
+    message:{
+        type: "get-url",
+        content: {
+		    url: config.url_server_lokal,
+		    type: 'post',
+		    data: { 
+				action: 'cek_api_key',
+				api_key: config.api_key
+			},
+			return: true
+		}
+    }
+};
+
+// dimatikan dulu sebelum server siap
+/*
+chrome.runtime.sendMessage(data, function(response) {
+    console.log('responeMessage', response);
+});
+*/
+
 var __script = '';
 var _s = document.getElementsByTagName('script');
 for(var i=0, l=_s.length; i<l; i++){
@@ -162,7 +184,7 @@ jQuery(document).ready(function(){
 			var data_ssh = [];
 			jQuery('#table_komponen tbody tr').map(function(i, b){
 				if(jQuery(b).find('td input.set_lockKomponen:checked').length > 0){
-					var id = jQuery(b).find('td').eq(7).find('a').attr('onclick');
+					var id = jQuery(b).find('td').eq(8).find('a').attr('onclick');
 					id = id.split("'")[1];
 					var kode = jQuery(b).find('td').eq(1).text();
 					var nama = jQuery(b).find('td').eq(2).text();

@@ -27,7 +27,15 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		var res = request.data;
 		var _alert = true;
 		var hide_loading = true;
-		if(res.action == 'non_active_user'){
+		if(res.action == 'cek_api_key'){
+			_alert = false;
+			hide_loading = false;
+			if(config.api_key != res.api_key){
+				run_script("config.api_key = "+res.api_key);
+				config.api_key = res.api_key;
+				alert('Lisensi atau API KEY tidak valid! Harap diperbarui di plugin WP-SIPD!');
+			}
+		}else if(res.action == 'non_active_user'){
 			_alert = false;
 			hide_loading = false;
 			resolve_non_active_user();
