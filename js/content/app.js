@@ -128,12 +128,16 @@ jQuery(document).ready(function(){
 		jQuery('h3.page-title').text().indexOf('Komponen') != -1
 	){
 		console.log('halaman referensi SSH');
+		window.tipe_ssh_global = jQuery('h3.page-title').text().split('-')[1].trim();
 		var singkron_ssh = ''
 			+'<button class="fcbtn btn btn-warning btn-outline btn-1b" id="singkron_ssh_ke_lokal">'
-				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron SSH ke DB lokal</span>'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron '+tipe_ssh_global+' ke DB lokal</span>'
+			+'</button>'
+			+'<button class="fcbtn btn btn-warning btn-outline btn-1b" id="singkron_kategori_ke_lokal">'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron Kategori dan Satuan '+tipe_ssh_global+' ke DB lokal</span>'
 			+'</button>'
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_ssh_dari_lokal" style="display: none;">'
-				+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Singkron SSH dari DB lokal</span>'
+				+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Singkron '+tipe_ssh_global+' dari DB lokal</span>'
 			+'</button>';
 		jQuery('button.arsip-komponen').parent().prepend(singkron_ssh);
 		var _show_id_ssh = ''
@@ -165,6 +169,10 @@ jQuery(document).ready(function(){
 			  	+"jQuery('select[name=kompakun]').val('').trigger('change');"
 			+"});");
 		}
+		jQuery('#singkron_kategori_ke_lokal').on('click', function(){
+			jQuery('#wrap-loading').show();
+			singkron_kategori_ke_lokal();
+		});
 		jQuery('#show_id_ssh').on('click', function(){
 			jQuery('#wrap-loading').show();
 			show_id_ssh();

@@ -3484,3 +3484,71 @@ function intervalSession(no){
 		});
 	}
 }
+
+function singkron_kategori_ke_lokal(){
+	new Promise(function(resolve, reject){
+		window.continue_kategori_ssh = resolve;
+		var data_ssh = { 
+			action: 'singkron_kategori_ssh',
+			tahun_anggaran: config.tahun_anggaran,
+			api_key: config.api_key,
+			kategori : {}
+		};
+		jQuery('select[name="kategori_komponen"] option').map(function(i, b){
+			var option = jQuery(b);
+			if(option.attr('value') == ''){
+				return;
+			}
+			var ket = option.text().split(' ');
+			data_ssh.kategori[i] = {};
+			data_ssh.kategori[i].id_kategori = option.attr('value');
+			data_ssh.kategori[i].kode_kategori = ket.shift();
+			data_ssh.kategori[i].uraian_kategori = ket.join(' ');
+			data_ssh.kategori[i].kelompok = tipe_ssh_global;
+		});
+		var data = {
+		    message:{
+		        type: "get-url",
+		        content: {
+				    url: config.url_server_lokal,
+				    type: 'post',
+				    data: data_ssh,
+				    return: true
+				}
+		    }
+		};
+		chrome.runtime.sendMessage(data, function(response) {
+		    console.log('responeMessage', response);
+		});
+	})
+	.then(function(){
+		var data_ssh = { 
+			action: 'singkron_satuan',
+			tahun_anggaran: config.tahun_anggaran,
+			api_key: config.api_key,
+			satuan : {}
+		};
+		jQuery('select[name="satuan_komponen"] option').map(function(i, b){
+			var option = jQuery(b);
+			if(option.attr('value') == ''){
+				return;
+			}
+			data_ssh.satuan[i] = {};
+			data_ssh.satuan[i].satuan = option.attr('value');
+		});
+		var data = {
+		    message:{
+		        type: "get-url",
+		        content: {
+				    url: config.url_server_lokal,
+				    type: 'post',
+				    data: data_ssh,
+				    return: true
+				}
+		    }
+		};
+		chrome.runtime.sendMessage(data, function(response) {
+		    console.log('responeMessage', response);
+		});
+	});
+}

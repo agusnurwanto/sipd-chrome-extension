@@ -39,6 +39,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			_alert = false;
 			hide_loading = false;
 			resolve_non_active_user();
+		}else if(res.action == 'singkron_kategori_ssh'){
+			_alert = false;
+			hide_loading = false;
+			continue_kategori_ssh();
 		}else if(res.action == 'update_nonactive_sub_bl'){
 			_alert = false;
 			hide_loading = false;
