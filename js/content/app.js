@@ -2742,7 +2742,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 									contentType: false,
 									success: function(data){
 
-										var _leng = 25000;
+										var _leng = 250;
 										var _data_all = [];
 										var _data = [];
 										data.data.map(function(rka, i){
@@ -2823,6 +2823,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 
 										var no_excel = 0;
 										var no_page = 0;
+										var total_page = _data_all.length;
 										var last = _data_all.length-1;
 										_data_all.reduce(function(sequence, nextData){
 							                return sequence.then(function(current_data){
@@ -2896,6 +2897,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										        		// console.log('sendMessage tes');
 										        		no_page++;
 										        		data_rka.no_page = no_page;
+										        		data_rka.total_page = total_page;
 														var data = {
 														    message:{
 														        type: "get-url",
@@ -2903,17 +2905,30 @@ function singkron_rka_ke_lokal(opsi, callback) {
 																    url: config.url_server_lokal,
 																    type: 'post',
 																    data: data_rka,
-													    			return: false
+													    			return: true
 																}
 														    }
 														};
-														if(!opsi || !opsi.no_return){
-															data.message.content.return = true;
+														if(typeof continue_singkron_rka == 'undefined'){
+															window.continue_singkron_rka = {};
 														}
-														chrome.runtime.sendMessage(data, function(response) {
-														    // console.log('responeMessage', response);
-														    return resolve_reduce(nextData);
-														});
+														continue_singkron_rka[kode_sbl] = {
+															no_resolve: false,
+															resolve: resolve_reduce,
+															next: nextData,
+															alert: false
+														};
+														if(!opsi || !opsi.no_return){
+															continue_singkron_rka[kode_sbl].alert = true;
+														}
+														if(
+															total_page == 1
+															|| total_page == no_page
+														){
+															continue_singkron_rka[kode_sbl].no_resolve = true;
+															resolve_reduce(nextData);
+														}
+														chrome.runtime.sendMessage(data, function(response) {});
 										            })
 										            .catch(function(err){
 										                console.log('err', err);
@@ -2931,16 +2946,13 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							                });
 							            }, Promise.resolve(_data_all[last]))
 							            .then(function(data_last){
-							            	console.log('opsi', opsi);
-											// if(!opsi || !opsi.no_return){
-											// 	alert('Berhasil Singkron RKA ke DB lokal!');
-											// 	jQuery('#wrap-loading').hide();
-											// 	jQuery('#download_data_excel').show();
-											// }
-							            	if(callback){
-										    	callback();
-										    }
+							            	console.log('selesai kirim data ke lokal!', opsi);
 							            });
+
+							            // langsung jalankan callback untuk proses ke sub keg selanjutnya
+						            	if(callback){
+									    	callback();
+									    }
 									}
 								});
 							});

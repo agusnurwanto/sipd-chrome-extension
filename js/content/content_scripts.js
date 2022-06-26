@@ -35,6 +35,14 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 				config.api_key = res.api_key;
 				alert('Lisensi atau API KEY tidak valid! Harap diperbarui di plugin WP-SIPD!');
 			}
+		}else if(res.action == 'singkron_rka'){
+			if(!continue_singkron_rka[res.kode_sbl].alert){
+				_alert = false;
+				hide_loading = false;
+			}
+			if(!continue_singkron_rka[res.kode_sbl].no_resolve){
+				continue_singkron_rka[res.kode_sbl].resolve(continue_singkron_rka[res.kode_sbl].next);
+			}
 		}else if(res.action == 'non_active_user'){
 			_alert = false;
 			hide_loading = false;
