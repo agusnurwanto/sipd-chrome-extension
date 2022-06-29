@@ -3492,6 +3492,7 @@ function singkron_kategori_ke_lokal(){
 			action: 'singkron_kategori_ssh',
 			tahun_anggaran: config.tahun_anggaran,
 			api_key: config.api_key,
+			tipe_ssh: tipe_ssh_global,
 			kategori : {}
 		};
 		jQuery('select[name="kategori_komponen"] option').map(function(i, b){
@@ -3499,11 +3500,11 @@ function singkron_kategori_ke_lokal(){
 			if(option.attr('value') == ''){
 				return;
 			}
-			var ket = option.text().split(' ');
+			var ket = option.html().trim().split('&nbsp;');
 			data_ssh.kategori[i] = {};
 			data_ssh.kategori[i].id_kategori = option.attr('value');
 			data_ssh.kategori[i].kode_kategori = ket.shift();
-			data_ssh.kategori[i].uraian_kategori = ket.join(' ');
+			data_ssh.kategori[i].uraian_kategori = ket.join('');
 			data_ssh.kategori[i].kelompok = tipe_ssh_global;
 		});
 		var data = {
@@ -3551,4 +3552,32 @@ function singkron_kategori_ke_lokal(){
 		    console.log('responeMessage', response);
 		});
 	});
+}
+
+function singkron_ssh_dari_lokal(usulan){
+	var body = '';
+	window.data_usulan_ssh = {};
+	usulan.data.map(function(b, i){
+		data_usulan_ssh[b.id] = b;
+		var akun_all = [];
+		b.akun.map(function(bb, ii){
+			akun_all.push(bb.nama_akun);
+		});
+		body += ''
+			+'<tr>'
+				+'<td><input type="checkbox" value="'+b.id+'"></td>'
+				+'<td>'+b.kode_standar_harga+'</td>'
+				+'<td>'+b.nama_standar_harga+'</td>'
+				+'<td>'+b.spek+'</td>'
+				+'<td>'+b.satuan+'</td>'
+				+'<td>'+formatRupiah(b.harga)+'</td>'
+				+'<td>'+akun_all.join('<br>')+'</td>'
+			+'</tr>';
+	});
+	run_script("jQuery('#usulan-ssh-table').DataTable().clear();");
+	run_script("jQuery('#usulan-ssh-table').DataTable().destroy();");
+	jQuery('#usulan-ssh tbody').html(body);
+	run_script("jQuery('#usulan-ssh-table').DataTable({'columnDefs': [{ 'width': '300px', 'targets': 6 }, { orderable: false, targets: 1 }], lengthMenu: [ [10, 250, 500, -1], [10, 250, 500, 'All'] ]});");
+	run_script('jQuery("#usulan-ssh").modal("show");');
+	jQuery('#wrap-loading').hide();
 }

@@ -136,7 +136,7 @@ jQuery(document).ready(function(){
 			+'<button class="fcbtn btn btn-warning btn-outline btn-1b" id="singkron_kategori_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron Kategori dan Satuan '+tipe_ssh_global+' ke DB lokal</span>'
 			+'</button>'
-			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_ssh_dari_lokal" style="display: none;">'
+			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_ssh_dari_lokal">'
 				+'<i class="fa fa-cloud-upload m-r-5"></i> <span>Singkron '+tipe_ssh_global+' dari DB lokal</span>'
 			+'</button>';
 		jQuery('button.arsip-komponen').parent().prepend(singkron_ssh);
@@ -170,8 +170,10 @@ jQuery(document).ready(function(){
 			+"});");
 		}
 		jQuery('#singkron_kategori_ke_lokal').on('click', function(){
-			jQuery('#wrap-loading').show();
-			singkron_kategori_ke_lokal();
+			if(confirm('Apakah anda yakin untuk mengsingkronkan data kategori dan satuan harga ke database lokal? Data lama akan diupdate')){
+				jQuery('#wrap-loading').show();
+				singkron_kategori_ke_lokal();
+			}
 		});
 		jQuery('#show_id_ssh').on('click', function(){
 			jQuery('#wrap-loading').show();
@@ -259,10 +261,59 @@ jQuery(document).ready(function(){
 			singkron_ssh_ke_lokal();
 		});
 		jQuery('#singkron_ssh_dari_lokal').on('click', function(){
-			singkron_ssh_dari_lokal();
+			jQuery('#wrap-loading').show();
+			var data_post = { 
+				action: 'get_usulan_ssh_sipd',
+				tahun_anggaran: config.tahun_anggaran,
+				api_key: config.api_key
+			};
+			var data = {
+			    message:{
+			        type: "get-url",
+			        content: {
+					    url: config.url_server_lokal,
+					    type: 'post',
+					    data: data_post,
+					    return: true
+					}
+			    }
+			};
+			chrome.runtime.sendMessage(data, function(response) {
+			    console.log('responeMessage', response);
+			});
 		});
 
 		var modal = ''
+			+'<div class="modal fade" id="usulan-ssh" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
+		        +'<div class="modal-dialog" style="width: 90%; min-width: 1100px;" role="document">'
+		            +'<div class="modal-content">'
+		                +'<div class="modal-header bgpanel-theme">'
+		                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
+		                    +'<h4 class="modal-title text-white" id="">Daftar Usulan Satuan Harga <span class="info-title"></span></h4>'
+		                +'</div>'
+		                +'<div class="modal-body">'
+		                  	+'<table class="table table-hover table-striped" id="usulan-ssh-table">'
+		                      	+'<thead>'
+		                        	+'<tr class="bg-grey-600">'
+		                          		+'<th class="text-white"><input type="checkbox" id="select-all-usulan-ssh"></th>'
+		                          		+'<th class="text-white">Kode Standar Harga</th>'
+		                          		+'<th class="text-white">Nama</th>'
+		                          		+'<th class="text-white">Spesifikasi</th>'
+		                          		+'<th class="text-white">Satuan</th>'
+		                          		+'<th class="text-white">Harga</th>'
+		                          		+'<th class="text-white">Akun</th>'
+		                        	+'</tr>'
+		                      	+'</thead>'
+		                      	+'<tbody></tbody>'
+		                  	+'</table>'
+		                +'</div>'
+		                +'<div class="modal-footer">'
+		                    +'<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>'
+		                    +'<button type="button" class="btn btn-danger" id="usulan-ssh-sipd">Simpan</button>'
+		                +'</div>'
+		            +'</div>'
+		        +'</div>'
+		    +'</div>'
 			+'<div class="modal fade" id="duplikat-komponen-akun" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
 		        +'<div class="modal-dialog" style="width: 90%; min-width: 1100px;" role="document">'
 		            +'<div class="modal-content">'
@@ -294,11 +345,39 @@ jQuery(document).ready(function(){
 		        +'</div>'
 		    +'</div>';
 		jQuery('body').append(modal);
+		jQuery('#select-all-usulan-ssh').on('click', function(){
+			if(jQuery(this).is(':checked')){
+				jQuery('#usulan-ssh tbody input[type="checkbox"]').prop('checked', true);
+			}else{
+				jQuery('#usulan-ssh tbody input[type="checkbox"]').prop('checked', false);
+			}
+		});
 		jQuery('#select-all-hapus-ssh').on('click', function(){
 			if(jQuery(this).is(':checked')){
 				jQuery('#table_duplikat tbody .list-ssh-duplikat').prop('checked', true);
 			}else{
 				jQuery('#table_duplikat tbody .list-ssh-duplikat').prop('checked', false);
+			}
+		});
+		jQuery('#usulan-ssh-sipd').on('click', function(){
+			var list_usulan_selected = [];
+			var nama_usulan = [];
+			jQuery('#usulan-ssh-table tbody input[type="checkbox"]').map(function(i, b){
+				if(jQuery(b).is(':checked')){
+					var data = data_usulan_ssh[jQuery(b).val()];
+					list_usulan_selected.push(data);
+					nama_usulan.push(data.nama_standar_harga);
+				}
+			});
+			if(list_usulan_selected.length == 0){
+				alert('Pilih dulu item SSH yang akan disimpan!');
+			}else{
+				console.log('list_usulan_selected', list_usulan_selected);
+				if (confirm('Apakah anda yakin menyimpan data ini? '+nama_usulan.join(','))) {
+					jQuery('#wrap-loading').show();
+					alert('masih dalam pengembangan!');
+					jQuery('#wrap-loading').hide();
+				}
 			}
 		});
 		jQuery('#hapus-ssh-sipd').on('click', function(){

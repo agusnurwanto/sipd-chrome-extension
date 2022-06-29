@@ -43,6 +43,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			if(!continue_singkron_rka[res.kode_sbl].no_resolve){
 				continue_singkron_rka[res.kode_sbl].resolve(continue_singkron_rka[res.kode_sbl].next);
 			}
+		}else if(res.action == 'get_usulan_ssh_sipd'){
+			_alert = false;
+			hide_loading = false;
+			singkron_ssh_dari_lokal(res);
 		}else if(res.action == 'non_active_user'){
 			_alert = false;
 			hide_loading = false;
