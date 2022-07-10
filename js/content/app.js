@@ -2810,9 +2810,11 @@ function singkron_rka_ke_lokal(opsi, callback) {
 							}
 							*/
 
-							go_halaman_detail_rincian(kode_go_hal_rinci).then(function(kode_get_rinci){
+							go_halaman_detail_rincian(kode_go_hal_rinci).then(function(kode_get_rinci_all){
 								// subkeg = JSON.parse(subkeg);
 								// get rincian belanja
+								var kode_get_rinci = kode_get_rinci_all.kode_get_rinci;
+								var kode_get_rinci_subtitle = kode_get_rinci_all.kode_get_rinci_subtitle;
 								relayAjax({
 									url: kode_get_rinci,
 									type: 'post',
@@ -2823,10 +2825,11 @@ function singkron_rka_ke_lokal(opsi, callback) {
 										var substeks_all = {};
 										data.data.map(function(rka, i){
 											if(!substeks_all[rka.subs_bl_teks.substeks]){
+												rka.subs_bl_teks.substeks = jQuery('<textarea>'+rka.subs_bl_teks.substeks+'</textarea>').val();
 												substeks_all[rka.subs_bl_teks.substeks] = rka.subs_bl_teks;
 											}
 										});
-										getSumberDanaBelanja(substeks_all)
+										getSumberDanaBelanja(substeks_all, kode_get_rinci_subtitle)
 										.then(function(substeks_all){
 											var _leng = 250;
 											var _data_all = [];

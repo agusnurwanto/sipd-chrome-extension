@@ -2741,13 +2741,20 @@ function Dengkul(text) {
 function go_halaman_detail_rincian(options){
 	return new Promise(function(resolve, reject){
 		if(!options.go_rinci){
-			return resolve(options.kode);
+			return resolve({
+				kode_get_rinci: options.kode,
+				kode_get_rinci_subtitle: lru19
+			});
 		}else{
 			relayAjax({
 				url: options.kode,
 				success: function(html){
 					var kode_get_rinci = html.split('lru1="')[1].split('"')[0];
-					return resolve(kode_get_rinci);
+					var kode_get_rinci_subtitle = html.split('lru19="')[1].split('"')[0];
+					return resolve({
+						kode_get_rinci: kode_get_rinci,
+						kode_get_rinci_subtitle: kode_get_rinci_subtitle
+					});
 				}
 			});
 		}
@@ -3582,28 +3589,40 @@ function singkron_ssh_dari_lokal(usulan){
 	jQuery('#wrap-loading').hide();
 }
 
-function getSumberDanaBelanja(substeks_all){
+function getSumberDanaBelanja(substeks_all, kode_get_rinci_subtitle){
 	return new Promise(function(resolve, reject){
 		var sendData = [];
 		for(var i in substeks_all){
 			var prom = new Promise(function(resolve2, reject2){
-				var formDataCustom = new FormData();
-				formDataCustom.append('_token', tokek);
-				formDataCustom.append('v1bnA1m', v1bnA1m);
-				formDataCustom.append('DsK121m', Curut("id_subtitle=0&subs_teks="+i));
-				relayAjax({
-					url: lru19+'&subs_teks='+i,
-					type: 'post',
-			        data: formDataCustom,
-			        processData: false,
-			        contentType: false,
-					success: function(data){
-						console.log(this.url);
-						var subs_teks = this.url.split('&subs_teks=')[1];
-						substeks_all[subs_teks].sumber_dana = data;
-						resolve2();
-					}
-				});
+				if(i == ''){
+					substeks_all[i].sumber_dana = {
+						"id_subtitle":null,
+						"subtitle_teks":"",
+						"is_paket":1,
+						"id_dana":null,
+						"kode_dana":null,
+						"nama_dana":null
+					};
+					resolve2();
+				}else{
+					var formDataCustom = new FormData();
+					formDataCustom.append('_token', tokek);
+					formDataCustom.append('v1bnA1m', v1bnA1m);
+					formDataCustom.append('DsK121m', Curut("id_subtitle=0&subs_teks="+i));
+					relayAjax({
+						url: kode_get_rinci_subtitle+'&subs_teks='+i,
+						type: 'post',
+				        data: formDataCustom,
+				        processData: false,
+				        contentType: false,
+						success: function(data){
+							console.log(this.url);
+							var subs_teks = this.url.split('&subs_teks=')[1];
+							substeks_all[subs_teks].sumber_dana = data;
+							resolve2();
+						}
+					});
+				}
 			});
 			sendData.push(prom);
 		}
