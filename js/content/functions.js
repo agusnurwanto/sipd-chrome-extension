@@ -3608,7 +3608,7 @@ function getSumberDanaBelanja(substeks_all, kode_get_rinci_subtitle){
 					var formDataCustom = new FormData();
 					formDataCustom.append('_token', tokek);
 					formDataCustom.append('v1bnA1m', v1bnA1m);
-					formDataCustom.append('DsK121m', Curut("id_subtitle=0&subs_teks="+i));
+					formDataCustom.append('DsK121m', Curut("id_subtitle=0&subs_teks="+encodeURIComponent(i)));
 					relayAjax({
 						url: kode_get_rinci_subtitle+'&subs_teks='+i,
 						type: 'post',
@@ -3616,7 +3616,6 @@ function getSumberDanaBelanja(substeks_all, kode_get_rinci_subtitle){
 				        processData: false,
 				        contentType: false,
 						success: function(data){
-							console.log(this.url);
 							var subs_teks = this.url.split('&subs_teks=')[1];
 							substeks_all[subs_teks].sumber_dana = data;
 							resolve2();

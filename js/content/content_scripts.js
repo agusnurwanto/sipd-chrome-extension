@@ -41,6 +41,8 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 				hide_loading = false;
 			}
 			if(!continue_singkron_rka[res.kode_sbl].no_resolve){
+				_alert = false;
+				hide_loading = false;
 				continue_singkron_rka[res.kode_sbl].resolve(continue_singkron_rka[res.kode_sbl].next);
 			}
 		}else if(res.action == 'get_usulan_ssh_sipd'){
