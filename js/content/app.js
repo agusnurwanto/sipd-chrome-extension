@@ -374,9 +374,7 @@ jQuery(document).ready(function(){
 			}else{
 				console.log('list_usulan_selected', list_usulan_selected);
 				if (confirm('Apakah anda yakin menyimpan data ini? '+nama_usulan.join(','))) {
-					jQuery('#wrap-loading').show();
-					alert('masih dalam pengembangan!');
-					jQuery('#wrap-loading').hide();
+					simpan_usulan_ssh(list_usulan_selected);
 				}
 			}
 		});

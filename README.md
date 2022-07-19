@@ -71,6 +71,7 @@ Semoga bermanfaat
 - Hapus duplikat item SSH & SBU
 - Upload data penerima HIBAH, BOS, BANSOS, BANKEU
 - Jaga session login agar tidak terlogout sendiri ketika user tidak aktif dalam 1 menit terakhir
+- Modul usulan SSH dan singkronisasi ke SIPD
 
 ### Pengembangan berikutnya:
 - Melengkapi dokumentasi penggunaan di halaman wiki

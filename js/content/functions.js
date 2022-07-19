@@ -3589,6 +3589,124 @@ function singkron_ssh_dari_lokal(usulan){
 	jQuery('#wrap-loading').hide();
 }
 
+function get_ssh_unik(){
+	return new Promise(function(resolve, reject){
+		console.log('Get data All SSH!');
+		relayAjax({
+			url: lru1,
+			type: 'POST',
+			data: formData,
+			processData: false,
+			contentType: false,
+			success: function(data_ssh){
+				var data_all_ssh = {};
+				data_ssh.data.map(function(b, i){
+					var id_duplikat = b.kode_kel_standar_harga+''+b.nama_standar_harga+''+b.spek+''+b.satuan+''+b.harga;
+					data_all_ssh[id_duplikat] = b;
+				});
+				resolve(data_all_ssh);
+			}
+		});
+	});
+}
+
+function simpan_usulan_ssh(list_usulan_selected){
+	jQuery('#wrap-loading').show();
+	get_ssh_unik()
+	.then(function(ssh_unik){
+		var kelompok_id = {};
+		jQuery('select[name="kategori_komponen"] option').map(function(i, b){
+			var opsi = jQuery(b);
+			var kode = opsi.html().trim().split('&nbsp;')[0];
+			var val = opsi.val();
+			kelompok_id[kode] = val;
+		});
+		var id_all = [];
+		var last = list_usulan_selected.length - 1;
+		list_usulan_selected.reduce(function(sequence, nextData){
+	        return sequence.then(function(current_data){
+	    		return new Promise(function(resolve_reduce, reject_reduce){
+	    			if(kelompok_id[current_data.kode_kel_standar_harga]){
+	    				var id_duplikat = current_data.kode_kel_standar_harga+''+current_data.nama_standar_harga+''+current_data.spek+''+current_data.satuan+''+current_data.harga;
+	    				if(!ssh_unik[id_duplikat]){
+			    			var param = 'kel_komponen='+current_data.kelompok
+				    			+'&id_komponen='
+				    			+'&kategori_komponen='+kelompok_id[current_data.kode_kel_standar_harga]
+				    			+'&nama_komponen='+current_data.nama_standar_harga
+				    			+'&spek_komponen='+current_data.spek
+				    			+'&satuan_komponen='+current_data.satuan
+				    			+'&harga_satuan='+current_data.harga
+				    			+'&jenis_perin=pdn'
+				    			+'&nilai_tkdn=';
+				    		if(current_data.akun.length >= 1){
+				    			current_data.akun.map(function(b, i){
+				    				param += '&komp_akun%5B%5D='+b.id_akun;
+				    			});
+				    		}
+							var formDataCustom = new FormData();
+							formDataCustom.append('_token', tokek);
+							formDataCustom.append('DsK121m', Curut(param));
+							formDataCustom.append('v1bnA1m', v1bnA1m);
+							console.log('SIMPAN SSH', current_data);
+				    		relayAjax({
+								url: lru3,
+								type: 'post',
+								data: formDataCustom,
+								processData: false,
+			  					contentType: false,
+								success: function(html){
+									id_all.push(current_data.id_standar_harga);
+									resolve_reduce(nextData);
+			            		}
+			            	});
+				    	}else{
+		    				console.log('Item SSH sudah ada!', current_data, ssh_unik[id_duplikat]);
+		    				resolve_reduce(nextData);
+				    	}
+	    			}else{
+	    				console.log('Kelompok SSH tidak ditemukan!', current_data);
+	    				resolve_reduce(nextData);
+	    			}
+	    		})
+	            .catch(function(e){
+	                console.log(e);
+	                return Promise.resolve(nextData);
+	            });
+	        })
+	        .catch(function(e){
+	            console.log(e);
+	            return Promise.resolve(nextData);
+	        });
+	    }, Promise.resolve(list_usulan_selected[last]))
+	    .then(function(data_last){
+			run_script('jQuery("#usulan-ssh").modal("hide");');
+	    	var opsi = { 
+				action: 'update_usulan_ssh_sipd',
+				api_key: config.api_key,
+				data_id : id_all,
+				tahun_anggaran : config.tahun_anggaran
+			};
+			var data = {
+			    message:{
+			        type: "get-url",
+			        content: {
+					    url: config.url_server_lokal,
+					    type: 'post',
+					    data: opsi,
+		    			return: true
+					}
+			    }
+			};
+			chrome.runtime.sendMessage(data, function(response) {
+			    console.log('responeMessage', response);
+			});
+	    })
+	    .catch(function(e){
+	        console.log(e);
+	    });
+	});
+}
+
 function getSumberDanaBelanja(substeks_all, kode_get_rinci_subtitle){
 	return new Promise(function(resolve, reject){
 		var sendData = [];
