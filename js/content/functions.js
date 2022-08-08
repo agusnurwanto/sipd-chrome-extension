@@ -3712,7 +3712,12 @@ function getSumberDanaBelanja(substeks_all, kode_get_rinci_subtitle){
 		var sendData = [];
 		for(var i in substeks_all){
 			var prom = new Promise(function(resolve2, reject2){
-				if(i == ''){
+				if(
+					i == ''
+					|| i == '_'
+					|| i == null
+					|| !i
+				){
 					substeks_all[i].sumber_dana = {
 						"id_subtitle":null,
 						"subtitle_teks":"",
