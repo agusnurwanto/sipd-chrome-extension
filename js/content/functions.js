@@ -3395,6 +3395,177 @@ function singkron_data_rpjmd_lokal() {
     }
 }
 
+function singkron_data_rpd_lokal() {
+    if (confirm('Apakah anda yakin melakukan ini? data lama akan diupdate dengan data terbaru.')) {
+        jQuery('#wrap-loading').show();
+        relayAjax({
+            url: lru4,
+            type: 'post',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                var data_rpd = {
+                    action: 'singkron_data_rpd',
+                    tahun_anggaran: config.tahun_anggaran,
+                    api_key: config.api_key,
+                    program: [],
+                    sasaran: [],
+                    tujuan: []
+                };
+                data.data.map(function (tujuan, i) {
+                    data_rpd.tujuan[i] = {};
+                    data_rpd.tujuan[i].head_teks = tujuan.head_teks;
+					data_rpd.tujuan[i].id_misi_old = tujuan.id_misi_old;
+					data_rpd.tujuan[i].id_tujuan = tujuan.id_tujuan;
+					data_rpd.tujuan[i].id_unik = tujuan.id_unik;
+					data_rpd.tujuan[i].id_unik_indikator = tujuan.id_unik_indikator;
+					data_rpd.tujuan[i].indikator_teks = tujuan.indikator_teks;
+					data_rpd.tujuan[i].is_locked = tujuan.is_locked;
+					data_rpd.tujuan[i].is_locked_indikator = tujuan.is_locked_indikator;
+					data_rpd.tujuan[i].isu_teks = tujuan.isu_teks;
+					data_rpd.tujuan[i].kebijakan_teks = tujuan.kebijakan_teks;
+					data_rpd.tujuan[i].misi_lock = tujuan.misi_lock;
+					data_rpd.tujuan[i].misi_teks = tujuan.misi_teks;
+					data_rpd.tujuan[i].saspok_teks = tujuan.saspok_teks;
+					data_rpd.tujuan[i].satuan = tujuan.satuan;
+					data_rpd.tujuan[i].status = tujuan.status;
+					data_rpd.tujuan[i].target_1 = tujuan.target_1;
+					data_rpd.tujuan[i].target_2 = tujuan.target_2;
+					data_rpd.tujuan[i].target_3 = tujuan.target_3;
+					data_rpd.tujuan[i].target_4 = tujuan.target_4;
+					data_rpd.tujuan[i].target_5 = tujuan.target_5;
+					data_rpd.tujuan[i].target_akhir = tujuan.target_akhir;
+					data_rpd.tujuan[i].target_awal = tujuan.target_awal;
+					data_rpd.tujuan[i].tujuan_teks = tujuan.tujuan_teks;
+					data_rpd.tujuan[i].urut_misi = tujuan.urut_misi;
+					data_rpd.tujuan[i].urut_saspok = tujuan.urut_saspok;
+					data_rpd.tujuan[i].urut_tujuan = tujuan.urut_tujuan;
+					data_rpd.tujuan[i].visi_teks = tujuan.visi_teks;
+                })
+                relayAjax({
+                    url: lru5,
+                    type: 'post',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        data.data.map(function (sasaran, i) {
+                            data_rpd.sasaran[i] = {};
+                            data_rpd.sasaran[i].head_teks = sasaran.head_teks;
+							data_rpd.sasaran[i].id_misi_old = sasaran.id_misi_old;
+							data_rpd.sasaran[i].id_sasaran = sasaran.id_sasaran;
+							data_rpd.sasaran[i].id_unik = sasaran.id_unik;
+							data_rpd.sasaran[i].id_unik_indikator = sasaran.id_unik_indikator;
+							data_rpd.sasaran[i].indikator_teks = sasaran.indikator_teks;
+							data_rpd.sasaran[i].is_locked = sasaran.is_locked;
+							data_rpd.sasaran[i].is_locked_indikator = sasaran.is_locked_indikator;
+							data_rpd.sasaran[i].isu_teks = sasaran.isu_teks;
+							data_rpd.sasaran[i].kebijakan_teks = sasaran.kebijakan_teks;
+							data_rpd.sasaran[i].kode_tujuan = sasaran.kode_tujuan;
+							data_rpd.sasaran[i].misi_lock = sasaran.misi_lock;
+							data_rpd.sasaran[i].misi_teks = sasaran.misi_teks;
+							data_rpd.sasaran[i].sasaran_teks = sasaran.sasaran_teks;
+							data_rpd.sasaran[i].saspok_teks = sasaran.saspok_teks;
+							data_rpd.sasaran[i].satuan = sasaran.satuan;
+							data_rpd.sasaran[i].status = sasaran.status;
+							data_rpd.sasaran[i].target_1 = sasaran.target_1;
+							data_rpd.sasaran[i].target_2 = sasaran.target_2;
+							data_rpd.sasaran[i].target_3 = sasaran.target_3;
+							data_rpd.sasaran[i].target_4 = sasaran.target_4;
+							data_rpd.sasaran[i].target_5 = sasaran.target_5;
+							data_rpd.sasaran[i].target_akhir = sasaran.target_akhir;
+							data_rpd.sasaran[i].target_awal = sasaran.target_awal;
+							data_rpd.sasaran[i].tujuan_lock = sasaran.tujuan_lock;
+							data_rpd.sasaran[i].tujuan_teks = sasaran.tujuan_teks;
+							data_rpd.sasaran[i].urut_misi = sasaran.urut_misi;
+							data_rpd.sasaran[i].urut_sasaran = sasaran.urut_sasaran;
+							data_rpd.sasaran[i].urut_saspok = sasaran.urut_saspok;
+							data_rpd.sasaran[i].urut_tujuan = sasaran.urut_tujuan;
+							data_rpd.sasaran[i].visi_teks = sasaran.visi_teks;
+                        });
+				        var formDataCustom = new FormData();
+				        formDataCustom.append('_token', tokek);
+				        formDataCustom.append('v1bnA1m', v1bnA1m);
+				        formDataCustom.append('DsK121m', Curut("filter_program=&filter_indi_prog=&filter_skpd="));
+                        relayAjax({
+                            url: lru1,
+                            type: 'post',
+                            data: formDataCustom,
+                            processData: false,
+                            contentType: false,
+                            success: function (data) {
+                                data.data.map(function (program, i) {
+                            		data_rpd.program[i] = {};
+                                    data_rpd.program[i].head_teks = program.head_teks;
+									data_rpd.program[i].id_bidur_mth = program.id_bidur_mth;
+									data_rpd.program[i].id_misi_old = program.id_misi_old;
+									data_rpd.program[i].id_program = program.id_program;
+									data_rpd.program[i].id_program_mth = program.id_program_mth;
+									data_rpd.program[i].id_unik = program.id_unik;
+									data_rpd.program[i].id_unik_indikator = program.id_unik_indikator;
+									data_rpd.program[i].id_unit = program.id_unit;
+									data_rpd.program[i].indikator = program.indikator;
+									data_rpd.program[i].is_locked = program.is_locked;
+									data_rpd.program[i].is_locked_indikator = program.is_locked_indikator;
+									data_rpd.program[i].isu_teks = program.isu_teks;
+									data_rpd.program[i].kebijakan_teks = program.kebijakan_teks;
+									data_rpd.program[i].kode_sasaran = program.kode_sasaran;
+									data_rpd.program[i].kode_skpd = program.kode_skpd;
+									data_rpd.program[i].kode_tujuan = program.kode_tujuan;
+									data_rpd.program[i].misi_lock = program.misi_lock;
+									data_rpd.program[i].misi_teks = program.misi_teks;
+									data_rpd.program[i].nama_program = program.nama_program;
+									data_rpd.program[i].nama_skpd = program.nama_skpd;
+									data_rpd.program[i].pagu_1 = program.pagu_1;
+									data_rpd.program[i].pagu_2 = program.pagu_2;
+									data_rpd.program[i].pagu_3 = program.pagu_3;
+									data_rpd.program[i].pagu_4 = program.pagu_4;
+									data_rpd.program[i].pagu_5 = program.pagu_5;
+									data_rpd.program[i].program_lock = program.program_lock;
+									data_rpd.program[i].sasaran_lock = program.sasaran_lock;
+									data_rpd.program[i].sasaran_teks = program.sasaran_teks;
+									data_rpd.program[i].saspok_teks = program.saspok_teks;
+									data_rpd.program[i].satuan = program.satuan;
+									data_rpd.program[i].status = program.status;
+									data_rpd.program[i].target_1 = program.target_1;
+									data_rpd.program[i].target_2 = program.target_2;
+									data_rpd.program[i].target_3 = program.target_3;
+									data_rpd.program[i].target_4 = program.target_4;
+									data_rpd.program[i].target_5 = program.target_5;
+									data_rpd.program[i].target_akhir = program.target_akhir;
+									data_rpd.program[i].target_awal = program.target_awal;
+									data_rpd.program[i].tujuan_lock = program.tujuan_lock;
+									data_rpd.program[i].tujuan_teks = program.tujuan_teks;
+									data_rpd.program[i].urut_misi = program.urut_misi;
+									data_rpd.program[i].urut_sasaran = program.urut_sasaran;
+									data_rpd.program[i].urut_saspok = program.urut_saspok;
+									data_rpd.program[i].urut_tujuan = program.urut_tujuan;
+									data_rpd.program[i].visi_teks = program.visi_teks;
+	                            });
+                                var data = {
+                                    message: {
+                                        type: "get-url",
+                                        content: {
+                                            url: config.url_server_lokal,
+                                            type: 'post',
+                                            data: data_rpd,
+                                            return: true
+                                        }
+                                    }
+                                };
+                                chrome.runtime.sendMessage(data, function (response) {
+                                    console.log('responeMessage', response);
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        })
+    }
+}
+
 function singkron_all_unit(units) {
 	jQuery('#persen-loading').attr('persen', 0);
 	jQuery('#persen-loading').html('0%');

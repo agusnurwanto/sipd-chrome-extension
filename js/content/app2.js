@@ -41,6 +41,21 @@ jQuery(document).ready(function () {
             singkron_data_rpjmd_lokal();
         });
     } else if (
+        jQuery('h3.page-title').text().indexOf('Penyusunan RPD') != -1
+    ) {
+        console.log('Halaman Penyusunan RPD');
+        var singkron_data_rpd = ''
+            +'<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">'
+                + '<button class="fcbtn btn btn-danger pull-right" id="singkron_data_rpd_lokal">'
+                    + '<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RPD ke DB lokal</span>'
+                + '</button>'
+            +'</div>';
+        jQuery('.bg-title').append(singkron_data_rpd);
+
+        jQuery('#singkron_data_rpd_lokal').on('click', function () {
+            singkron_data_rpd_lokal();
+        });
+    } else if (
         jQuery('h3.page-title').text().indexOf('Penyusunan RENSTRA') != -1
     ) {
         console.log('halaman RENSTRA');
