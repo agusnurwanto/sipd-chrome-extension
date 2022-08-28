@@ -3741,10 +3741,15 @@ function singkron_ssh_dari_lokal(usulan){
 		b.akun.map(function(bb, ii){
 			akun_all.push(bb.nama_akun);
 		});
+		var kode_standar_harga = b.kode_standar_harga;
+		if(b.kode_standar_harga_sipd){
+			kode_standar_harga += '<br>(Kode SIPD : '+b.kode_standar_harga_sipd+')';
+		}
 		body += ''
 			+'<tr>'
 				+'<td><input type="checkbox" value="'+b.id+'"></td>'
-				+'<td>'+b.kode_standar_harga+'</td>'
+				+'<td>'+kode_standar_harga+'</td>'
+				+'<td>'+b.status_jenis_usulan+'</td>'
 				+'<td>'+b.nama_standar_harga+'</td>'
 				+'<td>'+b.spek+'</td>'
 				+'<td>'+b.satuan+'</td>'
@@ -3797,9 +3802,9 @@ function simpan_usulan_ssh(list_usulan_selected){
 		list_usulan_selected.reduce(function(sequence, nextData){
 	        return sequence.then(function(current_data){
 	    		return new Promise(function(resolve_reduce, reject_reduce){
-	    			if(kelompok_id[current_data.kode_kel_standar_harga]){
-	    				var id_duplikat = current_data.kode_kel_standar_harga+''+current_data.nama_standar_harga+''+current_data.spek+''+current_data.satuan+''+current_data.harga;
-	    				if(!ssh_unik[id_duplikat]){
+    				var id_duplikat = current_data.kode_kel_standar_harga+''+current_data.nama_standar_harga+''+current_data.spek+''+current_data.satuan+''+current_data.harga;
+    				if(!ssh_unik[id_duplikat]){
+    					if(kelompok_id[current_data.kode_kel_standar_harga]){
 			    			var param = 'kel_komponen='+current_data.kelompok
 				    			+'&id_komponen='
 				    			+'&kategori_komponen='+kelompok_id[current_data.kode_kel_standar_harga]
@@ -3830,14 +3835,38 @@ function simpan_usulan_ssh(list_usulan_selected){
 									resolve_reduce(nextData);
 			            		}
 			            	});
-				    	}else{
-		    				console.log('Item SSH sudah ada!', current_data, ssh_unik[id_duplikat]);
+		    			}else{
+		    				console.log('Kelompok SSH tidak ditemukan!', current_data);
 		    				resolve_reduce(nextData);
-				    	}
-	    			}else{
-	    				console.log('Kelompok SSH tidak ditemukan!', current_data);
+		    			}
+    				}else if(current_data.status_jenis_usulan == 'tambah_akun'){
+    					var kode = ssh_unik[id_duplikat].action.split("tampilAkun('")[1].split("'")[0];
+		    			var param = 'idkomp='+kode;
+			    		if(current_data.akun.length >= 1){
+			    			current_data.akun.map(function(b, i){
+			    				param += '&kompakun%5B%5D='+b.id_akun;
+			    			});
+			    		}
+						var formDataCustom = new FormData();
+						formDataCustom.append('_token', tokek);
+						formDataCustom.append('DsK121m', Curut(param));
+						formDataCustom.append('v1bnA1m', v1bnA1m);
+						console.log('TAMBAH AKUN', current_data);
+			    		relayAjax({
+							url: lru2,
+							type: 'post',
+							data: formDataCustom,
+							processData: false,
+		  					contentType: false,
+							success: function(html){
+								id_all.push(current_data.id_standar_harga);
+								resolve_reduce(nextData);
+		            		}
+		            	});
+			    	}else{
+	    				console.log('Item SSH sudah ada!', current_data, ssh_unik[id_duplikat]);
 	    				resolve_reduce(nextData);
-	    			}
+			    	}
 	    		})
 	            .catch(function(e){
 	                console.log(e);
