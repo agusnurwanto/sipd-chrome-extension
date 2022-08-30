@@ -705,7 +705,10 @@ jQuery(document).ready(function(){
 		});
 	}else if(
 		(
-			jQuery('.cetak').closest('body').attr('onload') == 'window.print()'
+			(
+				jQuery('.cetak').closest('body').attr('onload') == 'window.print()'
+				|| document.querySelectorAll('.cetak').length >= 1
+			)
 			&& current_url.indexOf('/siap/') == -1
 			&& current_url.indexOf('/apbd/') == -1
 		)
