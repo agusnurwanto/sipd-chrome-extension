@@ -531,6 +531,7 @@ jQuery(document).ready(function(){
 				api_key: config.api_key,
 				ssh : {}
 			};
+			console.log('ssh', val);
 			val.map(function(b, i){
 				// if(i<5){
 					data_ssh.ssh[i] = {};
@@ -552,6 +553,8 @@ jQuery(document).ready(function(){
 					data_ssh.ssh[i].updated_at	= b.updated_at;
 					data_ssh.ssh[i].kelompok	= b.kelompok;
 					data_ssh.ssh[i].ket_teks	= b.ket_teks;
+					data_ssh.ssh[i].nilai_tkdn	= b.nilai_tkdn;
+					data_ssh.ssh[i].is_pdn	= b.is_pdn;
 					data_ssh.ssh[i].kd_belanja	= {};
 					b.rek_belanja.map(function(d, c){
 						data_ssh.ssh[i].kd_belanja[c]	= {};
@@ -698,8 +701,6 @@ jQuery(document).ready(function(){
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron Akun Belanja ke DB lokal</span>'
 			+'</button>';
 		jQuery('#table_akun').closest('.white-box').find('.pull-right').prepend(singkron_akun_belanja);
-
-
 		jQuery('#singkron_akun_ke_lokal').on('click', function(){
 			singkron_akun_ke_lokal();
 		});

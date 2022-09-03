@@ -3752,7 +3752,7 @@ function singkron_ssh_dari_lokal(usulan){
 				+'<td>'+b.status_jenis_usulan+'</td>'
 				+'<td>'+b.nama_standar_harga+'</td>'
 				+'<td>'+b.spek+'</td>'
-				+'<td>'+b.satuan+'</td>'
+				+'<td>'+b.satuan+' (Jenis Produk: '+b.jenis_produk+') (TKDN: '+b.tkdn+')</td>'
 				+'<td>'+formatRupiah(b.harga)+'</td>'
 				+'<td>'+akun_all.join('<br>')+'</td>'
 			+'</tr>';
@@ -3805,6 +3805,10 @@ function simpan_usulan_ssh(list_usulan_selected){
     				var id_duplikat = current_data.kode_kel_standar_harga+''+current_data.nama_standar_harga+''+current_data.spek+''+current_data.satuan+''+current_data.harga;
     				if(!ssh_unik[id_duplikat]){
     					if(kelompok_id[current_data.kode_kel_standar_harga]){
+    						var jenis_tkdn = 'pdn';
+    						if(current_data.jenis_produk == '0'){
+    							jenis_tkdn = 'pln';
+    						}
 			    			var param = 'kel_komponen='+current_data.kelompok
 				    			+'&id_komponen='
 				    			+'&kategori_komponen='+kelompok_id[current_data.kode_kel_standar_harga]
@@ -3812,8 +3816,8 @@ function simpan_usulan_ssh(list_usulan_selected){
 				    			+'&spek_komponen='+current_data.spek
 				    			+'&satuan_komponen='+current_data.satuan
 				    			+'&harga_satuan='+current_data.harga
-				    			+'&jenis_perin=pdn'
-				    			+'&nilai_tkdn=';
+				    			+'&jenis_perin='+jenis_tkdn
+				    			+'&nilai_tkdn='+current_data.tkdn;
 				    		if(current_data.akun.length >= 1){
 				    			current_data.akun.map(function(b, i){
 				    				param += '&komp_akun%5B%5D='+b.id_akun;
