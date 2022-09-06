@@ -2743,17 +2743,20 @@ function go_halaman_detail_rincian(options){
 		if(!options.go_rinci){
 			return resolve({
 				kode_get_rinci: options.kode,
-				kode_get_rinci_subtitle: lru19
+				kode_get_rinci_subtitle: lru19,
+				kode_get_rinci_realisasi: lru18
 			});
 		}else{
 			relayAjax({
 				url: options.kode,
 				success: function(html){
 					var kode_get_rinci = html.split('lru1="')[1].split('"')[0];
+					var kode_get_rinci_realisasi = html.split('lru18="')[1].split('"')[0];
 					var kode_get_rinci_subtitle = html.split('lru19="')[1].split('"')[0];
 					return resolve({
 						kode_get_rinci: kode_get_rinci,
-						kode_get_rinci_subtitle: kode_get_rinci_subtitle
+						kode_get_rinci_subtitle: kode_get_rinci_subtitle,
+						kode_get_rinci_realisasi: kode_get_rinci_realisasi
 					});
 				}
 			});
@@ -2763,6 +2766,19 @@ function go_halaman_detail_rincian(options){
         console.log(e);
         return Promise.resolve();
     });
+}
+
+function getRealisasiBelanja(kode_get_rinci_realisasi){
+	return new Promise(function(resolve, reject){
+		relayAjax({
+			url: kode_get_rinci_realisasi,
+			type: 'post',
+			data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
+			success: function(ret){
+				return resolve(ret.data);
+			}
+		});
+	})
 }
 
 function get_detail_skpd(id_unit){
