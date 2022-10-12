@@ -2838,7 +2838,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 											data_rka.realisasi = realisasi;
 											getSumberDanaBelanja(substeks_all, kode_get_rinci_subtitle)
 											.then(function(substeks_all){
-												var _leng = 250;
+												var _leng = config.jml_rincian;
 												var _data_all = [];
 												var _data = [];
 												data.data.map(function(rka, i){
