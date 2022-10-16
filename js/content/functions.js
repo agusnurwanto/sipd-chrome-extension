@@ -2770,17 +2770,21 @@ function go_halaman_detail_rincian(options){
 
 function getRealisasiBelanja(kode_get_rinci_realisasi){
 	return new Promise(function(resolve, reject){
-		jQuery.ajax({
-			url: kode_get_rinci_realisasi,
-			type: 'post',
-			data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
-			success: function(ret){
-				return resolve(ret.data);
-			},
-			error: function(ret){
-				return resolve(false);
-			}
-		});
+		if(config.realisasi){
+			jQuery.ajax({
+				url: kode_get_rinci_realisasi,
+				type: 'post',
+				data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
+				success: function(ret){
+					return resolve(ret.data);
+				},
+				error: function(ret){
+					return resolve(false);
+				}
+			});
+		}else{
+			return resolve(false);
+		}
 	})
 }
 

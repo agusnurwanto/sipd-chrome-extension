@@ -3,6 +3,7 @@ var config = {
 	id_daerah : "xx", // ID daerah bisa didapat dengan ketikan kode drakor di console log SIPD Merah atau cek value dari pilihan pemda di halaman login SIPD Biru
 	sipd_url : "https://xxx.sipd.kemendagri.go.id/", // alamat sipd sesuai kabupaten kota masing-masing
 	jml_rincian : 500, // maksimal jumlah rincian yang dikirim ke server lokal dalam satu request
+	realisasi : false, // get realisasi rekening
 	url_server_lokal : "https://xxxxxxxxxx.com/wp-admin/admin-ajax.php", // url server lokal
 	api_key : "xxxxxxxxxxxxxxxxxxx", // api key server lokal disesuaikan dengan api dari WP plugin
 	sipd_private : false, // koneksi ke plugin SIPD private
