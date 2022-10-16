@@ -2770,12 +2770,15 @@ function go_halaman_detail_rincian(options){
 
 function getRealisasiBelanja(kode_get_rinci_realisasi){
 	return new Promise(function(resolve, reject){
-		relayAjax({
+		jQuery.ajax({
 			url: kode_get_rinci_realisasi,
 			type: 'post',
 			data: "_token="+tokek+'&v1bnA1m='+v1bnA1m,
 			success: function(ret){
 				return resolve(ret.data);
+			},
+			error: function(ret){
+				return resolve(false);
 			}
 		});
 	})
