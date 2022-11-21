@@ -1184,7 +1184,7 @@ jQuery(document).ready(function(){
 			        +'</div>'
 			    +'</div>';
 			jQuery('body').append(modal);
-			run_script('jQuery("#table_skpd_modal").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]]});');
+			run_script('jQuery("#table_skpd_modal").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]], "columnDefs": [{ "orderable": false, "targets": 0 }], order: [[1, "asc"]]});');
 			jQuery('#modal_cek_skpd_all').on('click', function(){
 				if(jQuery(this).is(':checked') == true){
 					jQuery('.cek_skpd_modal').prop('checked', true);
@@ -1240,7 +1240,7 @@ jQuery(document).ready(function(){
 						});
 						run_script('jQuery("#table_skpd_modal").DataTable().destroy();');
 						jQuery('#table_skpd_modal tbody').html(html);
-						run_script('jQuery("#table_skpd_modal").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]]});');
+						run_script('jQuery("#table_skpd_modal").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]], "columnDefs": [{ "orderable": false, "targets": 0 }], order: [[1, "asc"]]});');
 						run_script('jQuery("#mod-konfirmasi-units").modal("show");');
 						jQuery('#wrap-loading').hide();
 					}
