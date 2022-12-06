@@ -1025,6 +1025,37 @@ jQuery(document).ready(function(){
 
 		// cek jika halaman ini adalah halaman sub keg ketika login sebagai PA/KPA dan operator 
 		if(jQuery('.icon-basket').closest('.m-t-0').length > 0){
+			console.log('cek jika halaman ini adalah halaman sub keg ketika login sebagai PA/KPA dan operator');
+			var modal_sub_keg = ''
+				+'<div class="modal fade" id="mod-rekap-sumber-dana-sub-keg" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
+			        +'<div class="modal-dialog" style="width: 1500px;" role="document">'
+			            +'<div class="modal-content">'
+			                +'<div class="modal-header bgpanel-theme">'
+			                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
+			                    +'<h4 class="modal-title text-white" id="">Sinkronisasi Sub Kegiatan</h4>'
+			                +'</div>'
+			                +'<div class="modal-body">'
+			                  	+'<table class="table table-hover table-striped" id="table_sub_keg_modal_sumber_dana">'
+			                      	+'<thead>'
+			                        	+'<tr class="bg-grey-600">'
+			                          		+'<th class="text-white">Sub Kegiatan</th>'
+			                          		+'<th class="text-white">Pagu Validasi</th>'
+			                          		+'<th class="text-white">Pagu Rincian</th>'
+			                          		+'<th class="text-white">Sumber Dana</th>'
+			                        	+'</tr>'
+			                      	+'</thead>'
+			                      	+'<tbody></tbody>'
+			                  	+'</table>'
+			                +'</div>'
+			                +'<div class="modal-footer">'
+			                    +'<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>'
+			                +'</div>'
+			            +'</div>'
+			        +'</div>'
+			    +'</div>';
+			jQuery('body').append(modal_sub_keg);
+			run_script('jQuery("#table_sub_keg_modal_sumber_dana").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]]});');
+
 			var modal_sub_keg = ''
 				+'<div class="modal fade" id="mod-konfirmasi-sub-keg" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
 			        +'<div class="modal-dialog modal-lg" role="document">'
@@ -1082,7 +1113,10 @@ jQuery(document).ready(function(){
 					data_sub_keg_selected.reduce(function(sequence, nextData){
 	                    return sequence.then(function(current_data){
 	                		return new Promise(function(resolve_reduce, reject_reduce){
-	                        	if(current_data.nama_sub_giat.mst_lock != 3 && current_data.kode_sub_skpd){
+	                        	if(
+	                        		current_data.nama_sub_giat.mst_lock == 0 
+	                        		&& current_data.kode_sub_skpd
+	                        	){
 	                        		cat_wp = current_data.kode_sub_skpd+' '+current_data.nama_sub_skpd;
 	                        		var nama_skpd = current_data.nama_skpd.split(' ');
 	                        		nama_skpd.shift();
@@ -1153,6 +1187,7 @@ jQuery(document).ready(function(){
 			+'</button>';
 		// halaman list SKPD oleh admin TAPD
 		if(jQuery('.icon-basket').closest('.m-t-0').length == 0){
+			console.log('halaman list SKPD oleh admin TAPD');
 			singkron_rka = '<label><input type="checkbox" id="only_pagu"> Hanya Pagu SKPD</label>'+singkron_rka;
 			jQuery('.m-l-10').closest('.p-b-20').find('.col-md-2').append('<div class="button-box pull-right p-t-20">'+singkron_rka+'</div>');
 			jQuery('#singkron_rka_ke_lokal').attr('id_unit', 'all');
@@ -1212,11 +1247,24 @@ jQuery(document).ready(function(){
 			});
 		// halaman list sub kegiatan oleh kepala PD
 		}else if(jQuery('#form_bl .pull-right.p-t-20').length >= 1){
+			console.log('halaman list sub kegiatan oleh kepala PD');
+			singkron_rka += ''
+				+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="rekap_sumber_dana">'
+					+'<i class="fa fa-eye m-r-5"></i> <span>Lihat Rekap Sumber Dana</span>'
+				+'</button>';
 			jQuery('#form_bl .pull-right.p-t-20').append(singkron_rka);
 		// halaman sub kegiatan oleh user operator
 		}else{
+			console.log('halaman sub kegiatan oleh user operator');
+			singkron_rka += ''
+				+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="rekap_sumber_dana">'
+					+'<i class="fa fa-eye m-r-5"></i> <span>Lihat Rekap Sumber Dana</span>'
+				+'</button>';
 			jQuery('.icon-basket').closest('.m-t-0').append('<div class="col-xs-12 col-md-6"><div class="button-box pull-right p-t-20">'+singkron_rka+'</div></div>');
 		}
+		jQuery('#rekap_sumber_dana').on('click', function(){
+        	rekap_sumber_dana_sub_kegiatan();
+		});
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
 			var cek_unit = jQuery('#singkron_rka_ke_lokal').attr('id_unit');
 			if(cek_unit == 'all'){
@@ -1276,6 +1324,36 @@ jQuery(document).ready(function(){
 		injectScript( chrome.extension.getURL('/js/content/rka_functions.js'), 'html');
 		injectScript( chrome.extension.getURL('/js/content/rka.js'), 'html');
 
+		var modal_sub_keg = ''
+			+'<div class="modal fade" id="mod-rekap-sumber-dana-sub-keg" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true" style="z-index: 99999">'
+		        +'<div class="modal-dialog" style="width: 1500px;" role="document">'
+		            +'<div class="modal-content">'
+		                +'<div class="modal-header bgpanel-theme">'
+		                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
+		                    +'<h4 class="modal-title text-white" id="">Sinkronisasi Sub Kegiatan</h4>'
+		                +'</div>'
+		                +'<div class="modal-body">'
+		                  	+'<table class="table table-hover table-striped" id="table_sub_keg_modal_sumber_dana">'
+		                      	+'<thead>'
+		                        	+'<tr class="bg-grey-600">'
+		                          		+'<th class="text-white">Sub Kegiatan</th>'
+		                          		+'<th class="text-white">Pagu Validasi</th>'
+		                          		+'<th class="text-white">Pagu Rincian</th>'
+		                          		+'<th class="text-white">Sumber Dana</th>'
+		                        	+'</tr>'
+		                      	+'</thead>'
+		                      	+'<tbody></tbody>'
+		                  	+'</table>'
+		                +'</div>'
+		                +'<div class="modal-footer">'
+		                    +'<button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>'
+		                +'</div>'
+		            +'</div>'
+		        +'</div>'
+		    +'</div>';
+		jQuery('body').append(modal_sub_keg);
+		run_script('jQuery("#table_sub_keg_modal_sumber_dana").DataTable({lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]]});');
+
 		var singkron_rka = ''
 			+'<button class="fcbtn btn btn-warning btn-outline btn-1b" id="tambah-penerima-ex">'
 				+'<i class="fa fa-plus m-r-5"></i> <span>Penerima Bantuan</span>'
@@ -1285,10 +1363,17 @@ jQuery(document).ready(function(){
 			+'</button>'
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_rka_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RKA ke DB lokal</span>'
+			+'</button>'
+			+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="rekap_sumber_dana">'
+				+'<i class="fa fa-eye m-r-5"></i> <span>Lihat Rekap Sumber Dana</span>'
 			+'</button>';
 		jQuery('.button-box').prepend(singkron_rka);
 		jQuery('#download_data_excel').on('click', function(){
 			tableHtmlToExcel('data_rin_excel', jQuery('table.m-b-0>tbody>tr').eq(4).find('td').eq(2).text().trim());
+		});
+
+		jQuery('#rekap_sumber_dana').on('click', function(){
+        	rekap_sumber_dana_sub_kegiatan_rinci();
 		});
 
 		jQuery('#singkron_rka_ke_lokal').on('click', function(){
@@ -2409,8 +2494,8 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 					var subkeg_aktif = [];
 					subkeg.data.map(function(b, i){
 						if(
-							b.nama_sub_giat.mst_lock 
-							!= 3 && b.kode_sub_skpd
+							b.nama_sub_giat.mst_lock == 0
+							&& b.kode_sub_skpd
 						){
 							subkeg_aktif.push({kode_sbl: b.kode_sbl});
 						}
@@ -2442,7 +2527,10 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 						subkeg.data.reduce(function(sequence, nextData){
 		                    return sequence.then(function(current_data){
 		                		return new Promise(function(resolve_reduce, reject_reduce){
-		                        	if(current_data.nama_sub_giat.mst_lock != 3 && current_data.kode_sub_skpd){
+		                        	if(
+		                        		current_data.nama_sub_giat.mst_lock == 0 
+		                        		&& current_data.kode_sub_skpd
+		                        	){
 		                        		cat_wp = current_data.kode_sub_skpd+' '+current_data.nama_sub_skpd;
 		                        		var nama_skpd = current_data.nama_skpd.split(' ');
 		                        		nama_skpd.shift();
@@ -2512,8 +2600,8 @@ function singkron_rka_ke_lokal_all(opsi_unit, callback) {
 						var html = '';
 						subkeg.data.map(function(b, i){
 							if(
-								b.nama_sub_giat.mst_lock 
-								!= 3 && b.kode_sub_skpd
+								b.nama_sub_giat.mst_lock == 0
+								&& b.kode_sub_skpd
 							){
 								html += ''
 									+'<tr>'
@@ -2828,9 +2916,9 @@ function singkron_rka_ke_lokal(opsi, callback) {
 									success: function(data){
 										var substeks_all = {};
 										data.data.map(function(rka, i){
-											if(!substeks_all[rka.subs_bl_teks.substeks]){
-												rka.subs_bl_teks.substeks = jQuery('<textarea>'+rka.subs_bl_teks.substeks+'</textarea>').val();
-												substeks_all[rka.subs_bl_teks.substeks] = rka.subs_bl_teks;
+											var substeks = jQuery('<textarea>'+rka.subs_bl_teks.substeks+'</textarea>').val();
+											if(!substeks_all[substeks]){
+												substeks_all[substeks] = rka.subs_bl_teks;
 											}
 										});
 										getRealisasiBelanja(kode_get_rinci_realisasi)
