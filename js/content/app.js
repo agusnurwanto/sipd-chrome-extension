@@ -1032,9 +1032,34 @@ jQuery(document).ready(function(){
 			            +'<div class="modal-content">'
 			                +'<div class="modal-header bgpanel-theme">'
 			                    +'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="mdi mdi-close-circle"></i></span></button>'
-			                    +'<h4 class="modal-title text-white" id="">Sinkronisasi Sub Kegiatan</h4>'
+			                    +'<h4 class="modal-title text-white" id="">Data Rekap Sumber Dana</h4>'
 			                +'</div>'
 			                +'<div class="modal-body">'
+			                  	+'<table class="table table-hover table-striped" id="table_sub_keg_modal_sumber_dana_rekap">'
+			                      	+'<thead>'
+			                        	+'<tr class="bg-grey-600">'
+			                          		+'<th class="text-white text-center" colspan="2">Total Pagu Validasi</th>'
+			                          		+'<th class="text-white text-right" id="rekap_total_pagu_validasi"></th>'
+			                        	+'</tr>'
+			                        	+'<tr class="bg-grey-600">'
+			                          		+'<th class="text-white text-center" colspan="2">Total Pagu Rincian</th>'
+			                          		+'<th class="text-white text-right" id="rekap_total_pagu_rincian"></th>'
+			                        	+'</tr>'
+			                        	+'<tr class="bg-grey-600">'
+			                          		+'<th class="text-white text-center">Sumber Dana</th>'
+			                          		+'<th class="text-white text-center">Pagu Sumber Dana Sub Kegiatan</th>'
+			                          		+'<th class="text-white text-center">Pagu Sumber Dana Rincian</th>'
+			                        	+'</tr>'
+			                      	+'</thead>'
+			                      	+'<tbody></tbody>'
+			                      	+'<tfoot class="bg-grey-600">'
+			                      		+'<tr>'
+		                      				+'<th class="text-white text-center">Total</th>'
+			                      			+'<th class="text-white text-right" id="rekap_total_sumber_dana_pagu"></th>'
+			                      			+'<th class="text-white text-right" id="rekap_total_sumber_dana_rinci"></th>'
+			                      		+'</tr>'
+			                      	+'</tfoot>'
+			                  	+'</table>'
 			                  	+'<table class="table table-hover table-striped" id="table_sub_keg_modal_sumber_dana">'
 			                      	+'<thead>'
 			                        	+'<tr class="bg-grey-600">'
@@ -1333,6 +1358,31 @@ jQuery(document).ready(function(){
 		                    +'<h4 class="modal-title text-white" id="">Sinkronisasi Sub Kegiatan</h4>'
 		                +'</div>'
 		                +'<div class="modal-body">'
+		                  	+'<table class="table table-hover table-striped" id="table_sub_keg_modal_sumber_dana_rekap">'
+		                      	+'<thead>'
+		                        	+'<tr class="bg-grey-600">'
+		                          		+'<th class="text-white text-center" colspan="2">Total Pagu Validasi</th>'
+		                          		+'<th class="text-white text-right" id="rekap_total_pagu_validasi"></th>'
+		                        	+'</tr>'
+		                        	+'<tr class="bg-grey-600">'
+		                          		+'<th class="text-white text-center" colspan="2">Total Pagu Rincian</th>'
+		                          		+'<th class="text-white text-right" id="rekap_total_pagu_rincian"></th>'
+		                        	+'</tr>'
+		                        	+'<tr class="bg-grey-600">'
+		                          		+'<th class="text-white text-center">Sumber Dana</th>'
+		                          		+'<th class="text-white text-center">Pagu Sumber Dana Sub Kegiatan</th>'
+		                          		+'<th class="text-white text-center">Pagu Sumber Dana Rincian</th>'
+		                        	+'</tr>'
+		                      	+'</thead>'
+		                      	+'<tbody></tbody>'
+		                      	+'<tfoot>'
+		                      		+'<tr class="bg-grey-600">'
+		                      			+'<th class="text-white text-center">Total</th>'
+		                      			+'<th class="text-white text-right" id="rekap_total_sumber_dana_pagu"></th>'
+		                      			+'<th class="text-white text-right" id="rekap_total_sumber_dana_rinci"></th>'
+		                      		+'</tr>'
+		                      	+'</tfoot>'
+		                  	+'</table>'
 		                  	+'<table class="table table-hover table-striped" id="table_sub_keg_modal_sumber_dana">'
 		                      	+'<thead>'
 		                        	+'<tr class="bg-grey-600">'
@@ -3004,6 +3054,7 @@ function singkron_rka_ke_lokal(opsi, callback) {
 												if(_data.length > 0){
 													_data_all.push(_data);
 												}
+												console.log('_data_all', _data_all);
 
 												var no_excel = 0;
 												var no_page = 0;
@@ -3130,6 +3181,33 @@ function singkron_rka_ke_lokal(opsi, callback) {
 									                });
 									            }, Promise.resolve(_data_all[last]))
 									            .then(function(data_last){
+									            	// jika sub kegiatan aktif tapi nilai rincian dikosongkan, maka tetap perlu disingkronkan ke lokal
+									            	if(_data_all.length == 0){
+									            		data_rka.no_page = no_page;
+										        		data_rka.total_page = total_page;
+														var data = {
+														    message:{
+														        type: "get-url",
+														        content: {
+																    url: config.url_server_lokal,
+																    type: 'post',
+																    data: data_rka,
+													    			return: true
+																}
+														    }
+														};
+														if(typeof continue_singkron_rka == 'undefined'){
+															window.continue_singkron_rka = {};
+														}
+														continue_singkron_rka[kode_sbl] = {
+															no_resolve: true,
+															alert: false
+														};
+														if(!opsi || !opsi.no_return){
+															continue_singkron_rka[kode_sbl].alert = true;
+														}
+														chrome.runtime.sendMessage(data, function(response) {});
+									            	}
 									            	console.log('selesai kirim data ke lokal!', opsi);
 									            });
 
