@@ -4369,59 +4369,41 @@ function rekap_sumber_dana_sub_kegiatan_rinci(){
 
 								new Promise(function(resolve, reject){
 									// jika posisi tombol tambah rincian aktif, otomatis edit text kelompok yang null menjadi tulisan kosong
-									if(
-										jQuery('button.tambah-detil').length >= 1 
-										// && false
-									){
-										var sumberdana = jQuery('select[name="sumberdana"] option').eq(1).attr('value');
-										if(!sumberdana){
-											alert('Kelompok kosong! dan Sumber dana belum diset di sub kegiatan!');
-											return resolve();
-										}
-										var sendData = [];
-									    for(var kelompok in substeks_all){
-									    	if(
-									    		kelompok == ''
-												|| kelompok == '_'
-												|| kelompok == null
-												|| !kelompok
-									    	){
-									    		sendData.push(new Promise(function(resolve3, reject3){
-										    		// get detail rincian
-										    		var url_detail_rinci = substeks_all[kelompok].action.split("ubahKomponen('")[1].split("'")[0];
-											    	relayAjax({
-														url: endog+'?'+url_detail_rinci,
-														type: 'post',
-														data: formData,
-														processData: false,
-														contentType: false,
-														success: function(rinci){
-												    		var formDataCustom = new FormData();
-															formDataCustom.append('_token', tokek);
-															formDataCustom.append('v1bnA1m', v1bnA1m);
-															formDataCustom.append('DsK121m', Curut("jenis_subtitle=2&sumberdana="+sumberdana+"&subtitle_add=kosong&subtitle_tmp=&aksi_subs=ubah&id_subs_sbl="+rinci.idsubtitle));
-												    		relayAjax({
-																url: lru11,
-																type: 'post',
-																data: formDataCustom,
-																processData: false,
-																contentType: false,
-																success: function(data){
-																	resolve3();
-																}
-															});
-														}
-													});
-												}));
-									    	}
-									    }
-									    Promise.all(sendData)
-									    .then(function(){
-									    	resolve();
-									    });
-									}else{
-										resolve();
+									var sumberdana = jQuery('select[name="sumberdana"] option').eq(1).attr('value');
+									if(!sumberdana){
+										alert('Kelompok kosong! dan Sumber dana belum diset di sub kegiatan!');
+										return resolve();
 									}
+									var subtitle_all = [];
+									jQuery('select[name="subtitle"] option').map(function(i, b){
+										var val = jQuery(b).attr('value');
+										var text = jQuery(b).text();
+										if(text == ''){
+											subtitle_all.push(val);
+										}
+									});
+									var sendData = subtitle_all.map(function(idsubtitle, i){
+							    		return new Promise(function(resolve3, reject3){
+								    		var formDataCustom = new FormData();
+											formDataCustom.append('_token', tokek);
+											formDataCustom.append('v1bnA1m', v1bnA1m);
+											formDataCustom.append('DsK121m', Curut("jenis_subtitle=2&sumberdana="+sumberdana+"&subtitle_add=kosong"+i+"&subtitle_tmp=&aksi_subs=ubah&id_subs_sbl="+idsubtitle));
+								    		relayAjax({
+												url: lru11,
+												type: 'post',
+												data: formDataCustom,
+												processData: false,
+												contentType: false,
+												success: function(data){
+													resolve3();
+												}
+											});
+										});
+							    	});
+								    Promise.all(sendData)
+								    .then(function(){
+								    	resolve();
+								    });
 								})
 								.then(function(){
 									getSumberDanaBelanja(substeks_all, kode_get_rinci_subtitle)
