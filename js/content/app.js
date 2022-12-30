@@ -1206,6 +1206,13 @@ jQuery(document).ready(function(){
 			});
 		}
 
+		var rekap_suber_dana = ''
+			+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="rekap_sumber_dana">'
+				+'<i class="fa fa-eye m-r-5"></i> <span>Lihat Rekap Sumber Dana</span>'
+			+'</button>'
+			+'<button class="fcbtn btn btn-warning btn-outline btn-1b" id="singkron_indikator_sub">'
+				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron Master Indikator ke DB Lokal</span>'
+			+'</button>';
 		var singkron_rka = ''
 			+'<button class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron_rka_ke_lokal">'
 				+'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron RKA ke DB lokal</span>'
@@ -1273,20 +1280,38 @@ jQuery(document).ready(function(){
 		// halaman list sub kegiatan oleh kepala PD
 		}else if(jQuery('#form_bl .pull-right.p-t-20').length >= 1){
 			console.log('halaman list sub kegiatan oleh kepala PD');
-			singkron_rka += ''
-				+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="rekap_sumber_dana">'
-					+'<i class="fa fa-eye m-r-5"></i> <span>Lihat Rekap Sumber Dana</span>'
-				+'</button>';
+			singkron_rka += rekap_suber_dana;
 			jQuery('#form_bl .pull-right.p-t-20').append(singkron_rka);
 		// halaman sub kegiatan oleh user operator
 		}else{
 			console.log('halaman sub kegiatan oleh user operator');
-			singkron_rka += ''
-				+'<button class="fcbtn btn btn-success btn-outline btn-1b" id="rekap_sumber_dana">'
-					+'<i class="fa fa-eye m-r-5"></i> <span>Lihat Rekap Sumber Dana</span>'
-				+'</button>';
+			singkron_rka += rekap_suber_dana;
 			jQuery('.icon-basket').closest('.m-t-0').append('<div class="col-xs-12 col-md-6"><div class="button-box pull-right p-t-20">'+singkron_rka+'</div></div>');
 		}
+		jQuery('#singkron_indikator_sub').on('click', function(){
+			if(confirm('Apakah anda yakin untuk melakukan ini! data lama akan diupdate dengan data terbaru.')){
+				jQuery('#wrap-loading').show();
+				// get data master id sub giat keseluruhan
+				var data = {
+                    message: {
+                        type: "get-url",
+                        content: {
+                            url: config.url_server_lokal,
+                            type: 'post',
+                            data: {
+			                    action: 'get_data_sub_giat',
+			                    tahun_anggaran: config.tahun_anggaran,
+			                    api_key: config.api_key
+			                },
+                            return: true
+                        }
+                    }
+                };
+                chrome.runtime.sendMessage(data, function (response) {
+                    console.log('responeMessage', response);
+                });
+            }
+		});
 		jQuery('#rekap_sumber_dana').on('click', function(){
         	rekap_sumber_dana_sub_kegiatan();
 		});

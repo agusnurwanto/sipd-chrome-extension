@@ -49,6 +49,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 			_alert = false;
 			hide_loading = false;
 			singkron_ssh_dari_lokal(res);
+		}else if(res.action == 'get_data_sub_giat'){
+			_alert = false;
+			hide_loading = false;
+			singkron_indikator_sub(res.data);
 		}else if(res.action == 'non_active_user'){
 			_alert = false;
 			hide_loading = false;

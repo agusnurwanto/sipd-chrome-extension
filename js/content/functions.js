@@ -4619,3 +4619,61 @@ function rekap_sumber_dana_sub_kegiatan_rinci(){
 		});
 	});
 }
+
+function singkron_indikator_sub(sub_keg_all) {
+	var data_sub = {};
+	var last = sub_keg_all.length - 1;
+	sub_keg_all.reduce(function(sequence, nextData){
+        return sequence.then(function(current_data){
+        	return new Promise(function(resolve_reduce, reject_reduce){
+        		var id_sub = current_data.id_sub_giat;
+        		var formDataCustom = new FormData();
+				formDataCustom.append('_token', jQuery('input[name="_tawon"]').val());
+				formDataCustom.append('v1bnA1m', jQuery('.logos input[type="hidden"]').val());
+				formDataCustom.append('DsK121m', Curut("idsubgiat="+id_sub));
+				jQuery.ajax({
+					url: lru46, 
+					type:'post', 
+					data: formDataCustom, 
+					processData: false, 
+					contentType: false,
+					success: function(data){
+						data_sub[id_sub] = data.dataSubOutput;
+						return resolve_reduce(nextData);
+					}
+
+				})
+    		})
+            .catch(function(e){
+                console.log(e);
+                return Promise.resolve(nextData);
+            });
+        })
+        .catch(function(e){
+            console.log(e);
+            return Promise.resolve(nextData);
+        });
+    }, Promise.resolve(sub_keg_all[last]))
+    .then(function(data_last){
+    	var data = {
+            message: {
+                type: "get-url",
+                content: {
+                    url: config.url_server_lokal,
+                    type: 'post',
+                    data: {
+	                    action: 'singkron_master_indikator_sub_keg',
+	                    tahun_anggaran: config.tahun_anggaran,
+	                    api_key: config.api_key,
+	                    data: data_sub
+	                },
+                    return: true
+                }
+            }
+        };
+        chrome.runtime.sendMessage(data, function (response) {
+            console.log('responeMessage', response);
+        });
+    });
+
+}
