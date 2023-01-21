@@ -34,8 +34,9 @@ for(var i=0, l=_s.length; i<l; i++){
 	}
 }
 __script = __script.replace(/let /g, '');
-eval(__script);
+__script = __script.replace(/,map,/g, ',');
 console.log('__script', __script);
+eval(__script);
 
 if(typeof tokek == 'undefined'){
 	tokek = jQuery('input[name="_tawon"]').val();

@@ -2263,10 +2263,11 @@ function get_detail_asmas(idusulan){
 function singkron_pokir_lokal(){
 	jQuery('#wrap-loading').show();
 	relayAjax({
-      	url: window.location.href.replace(config.tahun_anggaran+'/', config.tahun_anggaran+'/tampil-monitor/'),
-      	type: "GET",
+      	url: lru6,
+      	type: "post",
 		processData: false,
 		contentType: false,
+		data: formData,
       	success: function(data){
       		var last = data.data.length-1;
       		data.data.reduce(function(sequence, nextData){
@@ -2403,13 +2404,13 @@ function singkron_pokir_lokal(){
 
 function get_detail_pokir(idusulan){
     return new Promise(function(resolve, reject){
-    	var formDataCustom = new FormData();
-		formDataCustom.append('_token', tokek);
-		formDataCustom.append('idusulan', idusulan);
+    	// var formDataCustom = new FormData();
+		// formDataCustom.append('_token', tokek);
+		// formDataCustom.append('idusulan', idusulan);
 		relayAjax({
-	      	url: window.location.href.replace(config.tahun_anggaran+'/', config.tahun_anggaran+'/detil-usulan/'),
+	      	url: config.sipd_url+'daerah/main?'+idusulan,
 	      	type: "POST",
-			data: formDataCustom,
+			data: formData,
 			processData: false,
 			contentType: false,
 	      	success: function(data){
