@@ -862,6 +862,7 @@ function singkron_master_cse(val){
 				api_key: config.api_key,
 				alamat : {}
 			};
+			var check_id_daerah_is_prov = false;
 			var data_prov_map = [];
 			for(var i in prov){
 				if(i != 'kab'){
@@ -876,6 +877,9 @@ function singkron_master_cse(val){
 					data_alamat.alamat[i].is_kec = '';
 					data_alamat.alamat[i].is_kel = '';
 					data_prov_map.push(data_alamat.alamat[i]);
+					if(config.id_daerah == prov[i].val){
+						check_id_daerah_is_prov = config.id_daerah;
+					}
 				}
 			}
 			var data_prov = {
@@ -896,8 +900,15 @@ function singkron_master_cse(val){
 			data_prov_map.reduce(function(sequence, nextData){
                 return sequence.then(function(current_data){
                 	return new Promise(function(resolve_reduce, reject_reduce){
+                		if(
+                			check_id_daerah_is_prov
+                			&& check_id_daerah_is_prov != current_data.id_alamat
+                		){
+                			return resolve_reduce(nextData);
+                		}
                 		console.log('current_data', current_data);
 						getKab(id_unit, current_data.id_alamat, lru5).then(function(kab){
+							var check_id_daerah_is_kab = false;
 							var data_alamat_kab = { 
 								action: 'singkron_alamat',
 								tahun_anggaran: config.tahun_anggaran,
@@ -918,6 +929,12 @@ function singkron_master_cse(val){
 									data_alamat_kab.alamat[j].is_kec = '';
 									data_alamat_kab.alamat[j].is_kel = '';
 									data_kab_map.push(data_alamat_kab.alamat[j]);
+			                		if(
+			                			!check_id_daerah_is_prov
+			                			&& config.id_daerah == kab[j].id_kab
+			                		){
+			                			check_id_daerah_is_kab = kab[j].id_kab;
+			                		}
 								}
 							}
 							var data_kab = {
@@ -934,10 +951,20 @@ function singkron_master_cse(val){
 							chrome.runtime.sendMessage(data_kab, function(response) {
 							    console.log('responeMessage', response);
 							});
+							console.log('check_id_daerah_is_kab, check_id_daerah_is_prov', check_id_daerah_is_kab, check_id_daerah_is_prov);
 							var last2 = data_kab_map.length-1;
 							data_kab_map.reduce(function(sequence2, nextData2){
 	                			return sequence2.then(function(current_data2){
                 					return new Promise(function(resolve_reduce2, reject_reduce2){
+                						if(
+                							!check_id_daerah_is_prov
+                							&& (
+                								!check_id_daerah_is_kab
+                								|| check_id_daerah_is_kab != current_data2.id_alamat
+                							)
+                						){
+                							return resolve_reduce2(nextData2);
+                						}
                 						console.log('current_data2', current_data2);
 										getKec(id_unit, current_data2.id_prov, current_data2.id_alamat, lru6).then(function(kec){
 											var data_alamat_kec = { 
