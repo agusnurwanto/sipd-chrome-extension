@@ -2255,6 +2255,30 @@ jQuery(document).ready(function(){
 		jQuery('#singkron-pokir-lokal').on('click', function(){
 	        singkron_pokir_lokal();
 		});
+	}else if(
+	 	jQuery('h3.page-title').text().indexOf('Kamus Usulan Aspirasi Anggota Dewan (Pokir)') != -1
+	){
+		console.log('halaman Kamus Usulan Aspirasi Anggota Dewan (Pokir)');
+		var singkron_lokal = ''
+            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-kamus-usulan-pokir-lokal" style="margin-left: 30px;">'
+                +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
+            +'</button>';
+		jQuery('.panel-heading').append(singkron_lokal);
+		jQuery('#singkron-kamus-usulan-pokir-lokal').on('click', function(){
+	        singkron_kamus_usulan_pokir_lokal('pokir');
+		});
+	}else if(
+	 	jQuery('h3.page-title').text().indexOf('Kamus Usulan Aspirasi Masyarakat') != -1
+	){
+		console.log('halaman Kamus Usulan Aspirasi Masyarakat');
+		var singkron_lokal = ''
+            +'<button onclick="return false;" class="fcbtn btn btn-danger btn-outline btn-1b" id="singkron-kamus-usulan-lokal" style="margin-left: 30px;">'
+                +'<i class="fa fa-cloud-download m-r-5"></i> <span>Singkron ke DB Lokal</span>'
+            +'</button>';
+		jQuery('.panel-heading').append(singkron_lokal);
+		jQuery('#singkron-kamus-usulan-lokal').on('click', function(){
+	        singkron_kamus_usulan_pokir_lokal('asmas');
+		});
 	}else if(document.querySelectorAll('.cetak').length >= 1){
 		console.log('Halaman Print Laporan SIPD Merah');
 		injectScript( chrome.extension.getURL('/js/jquery.min.js'), 'head');
