@@ -3075,7 +3075,8 @@ function singkron_rka_ke_lokal(opsi, callback) {
 													_rka.volum4 = rka.vol_4;
 													_rka.volume = rka.volume;
 													_rka.volume_murni = rka.volume_murni;
-													_rka.subs_bl_teks = substeks_all[rka.subs_bl_teks.substeks];
+													var substeks = jQuery('<textarea>'+rka.subs_bl_teks.substeks+'</textarea>').val();
+													_rka.subs_bl_teks = substeks_all[substeks];
 													_rka.total_harga = rka.rincian;
 													_rka.rincian = rka.rincian;
 													_rka.rincian_murni = rka.rincian_murni;
