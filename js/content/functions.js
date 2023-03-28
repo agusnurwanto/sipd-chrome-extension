@@ -4493,42 +4493,48 @@ function rekap_sumber_dana_sub_kegiatan_rinci(){
 								});
 
 								new Promise(function(resolve, reject){
-									// jika posisi tombol tambah rincian aktif, otomatis edit text kelompok yang null menjadi tulisan kosong
-									var sumberdana = jQuery('select[name="sumberdana"] option').eq(1).attr('value');
-									if(!sumberdana){
-										alert('Kelompok kosong! dan Sumber dana belum diset di sub kegiatan!');
-										return resolve();
-									}
-									var subtitle_all = [];
-									jQuery('select[name="subtitle"] option').map(function(i, b){
-										var val = jQuery(b).attr('value');
-										var text = jQuery(b).text();
-										if(text == ''){
-											subtitle_all.push(val);
+									// cek jika user bisa edit data / ada form edit
+									if(jQuery('select[name="sumberdana"]').length >= 1){
+										var sumberdana = jQuery('select[name="sumberdana"] option').eq(1).attr('value');
+										if(!sumberdana){
+											alert('Kelompok kosong! dan Sumber dana belum diset di sub kegiatan!');
+											return resolve();
 										}
-									});
-									var sendData = subtitle_all.map(function(idsubtitle, i){
-							    		return new Promise(function(resolve3, reject3){
-								    		var formDataCustom = new FormData();
-											formDataCustom.append('_token', tokek);
-											formDataCustom.append('v1bnA1m', v1bnA1m);
-											formDataCustom.append('DsK121m', Curut("jenis_subtitle=2&sumberdana="+sumberdana+"&subtitle_add=kosong"+i+"&subtitle_tmp=&aksi_subs=ubah&id_subs_sbl="+idsubtitle));
-								    		relayAjax({
-												url: lru11,
-												type: 'post',
-												data: formDataCustom,
-												processData: false,
-												contentType: false,
-												success: function(data){
-													resolve3();
-												}
-											});
+
+										// jika posisi tombol tambah rincian aktif, otomatis edit text kelompok yang null menjadi tulisan kosong
+										var subtitle_all = [];
+										jQuery('select[name="subtitle"] option').map(function(i, b){
+											var val = jQuery(b).attr('value');
+											var text = jQuery(b).text();
+											if(text == ''){
+												subtitle_all.push(val);
+											}
 										});
-							    	});
-								    Promise.all(sendData)
-								    .then(function(){
-								    	resolve();
-								    });
+										var sendData = subtitle_all.map(function(idsubtitle, i){
+								    		return new Promise(function(resolve3, reject3){
+									    		var formDataCustom = new FormData();
+												formDataCustom.append('_token', tokek);
+												formDataCustom.append('v1bnA1m', v1bnA1m);
+												formDataCustom.append('DsK121m', Curut("jenis_subtitle=2&sumberdana="+sumberdana+"&subtitle_add=kosong"+i+"&subtitle_tmp=&aksi_subs=ubah&id_subs_sbl="+idsubtitle));
+									    		relayAjax({
+													url: lru11,
+													type: 'post',
+													data: formDataCustom,
+													processData: false,
+													contentType: false,
+													success: function(data){
+														resolve3();
+													}
+												});
+											});
+								    	});
+									    Promise.all(sendData)
+									    .then(function(){
+									    	resolve();
+									    });
+									}else{
+									    resolve();
+									}
 								})
 								.then(function(){
 									getSumberDanaBelanja(substeks_all, kode_get_rinci_subtitle)
@@ -4616,7 +4622,7 @@ function rekap_sumber_dana_sub_kegiatan_rinci(){
 													}
 													check.push(''
 														+'<tr>'
-															+'<td>'+i+'</td>'
+															+'<td style="word-break: break-all;">'+i+'</td>'
 															+'<td class="text-right">'+formatRupiah(substeks_all_new[i].pagu)+'</td>'
 														+'</tr>');
 													sumber_dana_rinci = '['+d.kodedana+'] '+d.namadana+'';
@@ -4684,7 +4690,7 @@ function rekap_sumber_dana_sub_kegiatan_rinci(){
                       					+'<tr>'
                       						+'<th class="text-center">Sumber Dana Sub Kegiatan</th>'
                       						+'<th class="text-center">Pagu Sumber Dana Sub Kegiatan</th>'
-                      						+'<th class="text-center">Sumber Dana Rincian</th>'
+                      						+'<th class="text-center" style="width: 500px;">Sumber Dana Rincian</th>'
                       						+'<th class="text-center">Pagu Sumber Dana Rincian</th>'
                       					+'</tr>'
                       				+'</thead>'
