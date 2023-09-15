@@ -113,19 +113,34 @@ function cek_rincian_exist(excel, bankeu=false){
                 var data_exist = {};
                 data.data.map(function(b, i){
                     var nama = b.nama_standar_harga.nama_komponen.split(' [').shift();
-                    var keyword = nama.trim()+b.rincian.trim();
-                    data_exist[keyword] = b;
+                    var keyword = jQuery("<div/>").html(nama).text().toLowerCase().trim()+b.rincian.trim();
+                    if(!data_exist[keyword]){
+                        data_exist[keyword] = {
+                            'sipd': [],
+                            'excel': []
+                        };
+                    }
+                    data_exist[keyword].sipd.push(b);
                 });
                 var data_import = [];
                 excel.map(function(b, i){
                     if(bankeu){
                         b.nama = b.desa;
                     }
-                    var keyword = b.nama.trim()+b.total.replace(/,/g, '').trim();
+                    var keyword = b.nama.replace(/'/g, "''").toLowerCase().trim()+b.total.replace(/,/g, '').trim();
                     if(!data_exist[keyword]){
+                        console.log('Belum ada! nama='+b.nama+' total='+b.total, b);
+                        b.ket_cek_rincian_exist = 'Belum ada!';
                         data_import.push(b);
                     }else{
-                        console.log('Sudah ada! nama='+b.nama+' total='+b.total, b);
+                        data_exist[keyword].excel.push(b);
+                        if(data_exist[keyword].sipd.length < data_exist[keyword].excel.length){
+                            console.log('Data excel double! nama='+b.nama+' total='+b.total, b);
+                            b.ket_cek_rincian_exist = 'Data excel double!';
+                            data_import.push(b);
+                        }else{
+                            console.log('Sudah ada! nama='+b.nama+' total='+b.total, b);
+                        }
                     }
                 });
                 resolve(data_import);
@@ -164,6 +179,7 @@ function insertRKA(){
         cek_rincian_exist(excel)
         .then(function(new_excel){
             console.log('new_excel', new_excel);
+            // return;
             var data_all = [];
             var data_sementara = [];
             new_excel.map(function(b, i){
@@ -186,6 +202,7 @@ function insertRKA(){
                         var sendData = current_data.map(function(raw, i){
                             return new Promise(function(resolve, reject){
                                 new Promise(function(resolve2, reject2){
+                                    var nama_cek = raw.nama.replace(/'/g, "''");
                                     var customFormData = new FormData();
                                     customFormData.append('_token', tokek);
                                     customFormData.append('v1bnA1m', v1bnA1m);
@@ -204,7 +221,7 @@ function insertRKA(){
                                         customFormData.append('columns[1][name]', 'pr.nama_teks');
                                         customFormData.append('columns[1][searchable]', 'true');
                                         customFormData.append('columns[1][orderable]', 'true');
-                                        customFormData.append('columns[1][search][value]', raw.nama);
+                                        customFormData.append('columns[1][search][value]', nama_cek);
                                         customFormData.append('columns[1][search][regex]', 'false');
                                     }
                                     // cari nama penerima bantuan
@@ -227,7 +244,11 @@ function insertRKA(){
                                             }else{
                                                 var cek_exist = false;
                                                 cari_penerima.data.map(function(b, i){
-                                                    if(b.nama_teks.toLowerCase().trim() == raw.nama.toLowerCase().trim()){
+                                                    b.nama_teks = jQuery("<div/>").html(b.nama_teks).text();
+                                                    if(
+                                                        b.nama_teks.toLowerCase().trim() == nama_cek.toLowerCase().trim()
+                                                        && b.alamat_teks.toLowerCase().trim() == raw.alamat.toLowerCase().trim()
+                                                    ){
                                                         cek_exist = b;
                                                     }
                                                 });
