@@ -128,21 +128,39 @@ function cek_rincian_exist(excel, bankeu=false){
                         b.nama = b.desa;
                     }
                     var keyword = b.nama.replace(/'/g, "''").toLowerCase().trim()+b.total.replace(/,/g, '').trim();
-                    if(!data_exist[keyword]){
-                        console.log('Belum ada! nama='+b.nama+' total='+b.total, b);
-                        b.ket_cek_rincian_exist = 'Belum ada!';
+                    var keyword2 = (b.nama.replace(/'/g, "''").toLowerCase()+' '+b.alamat.replace(/'/g, "''").toLowerCase()).trim()+b.total.replace(/,/g, '').trim();
+                    if(
+                        !data_exist[keyword]
+                        && !data_exist[keyword2]
+                    ){
+                        console.log('Belum ada! nama='+b.nama+' total='+b.total, keyword, keyword2, b);
+                        b.ket_cek_rincian_exist = 'Belum ada! '+keyword;
                         data_import.push(b);
                     }else{
+                        if(data_exist[keyword2]){
+                            keyword = keyword2;
+                        }
                         data_exist[keyword].excel.push(b);
                         if(data_exist[keyword].sipd.length < data_exist[keyword].excel.length){
-                            console.log('Data excel double! nama='+b.nama+' total='+b.total, b);
-                            b.ket_cek_rincian_exist = 'Data excel double!';
+                            console.log('Data excel double! nama='+b.nama+' total='+b.total, keyword, b);
+                            b.ket_cek_rincian_exist = 'Data excel double! '+keyword;
                             data_import.push(b);
                         }else{
-                            console.log('Sudah ada! nama='+b.nama+' total='+b.total, b);
+                            // console.log('Sudah ada! nama='+b.nama+' total='+b.total, b);
                         }
                     }
                 });
+                var double = [];
+                var jenis_data = jQuery('#jenis_data').val().toLowerCase();
+                for(var i in data_exist){
+                    if(
+                        jenis_data == data_exist[i].sipd[0].jenis_bl
+                        && data_exist[i].sipd.length > data_exist[i].excel.length
+                    ){
+                        double.push(data_exist[i]);
+                    }
+                }
+                console.log('data sipd tapi tidak ada di excel', double);
                 resolve(data_import);
             }
         });
@@ -243,16 +261,28 @@ function insertRKA(){
                                                 resolve2(raw);
                                             }else{
                                                 var cek_exist = false;
+                                                var cek_exist_beda_alamat = false;
                                                 cari_penerima.data.map(function(b, i){
                                                     b.nama_teks = jQuery("<div/>").html(b.nama_teks).text();
+                                                    b.alamat_teks = jQuery("<div/>").html(b.alamat_teks).text();
                                                     if(
                                                         b.nama_teks.toLowerCase().trim() == nama_cek.toLowerCase().trim()
                                                         && b.alamat_teks.toLowerCase().trim() == raw.alamat.toLowerCase().trim()
                                                     ){
                                                         cek_exist = b;
+                                                    }else if(
+                                                        b.nama_teks.toLowerCase().trim() == nama_cek.toLowerCase().trim()+' '+raw.alamat.toLowerCase().trim()
+                                                    ){
+                                                        cek_exist = b;
+                                                    }else if(b.nama_teks.toLowerCase().trim() == nama_cek.toLowerCase().trim()){
+                                                        cek_exist_beda_alamat = b;
                                                     }
                                                 });
                                                 if(!cek_exist){
+                                                    // nama digabung dengan alamat agar data bisa diinput ke sipd
+                                                    if(cek_exist_beda_alamat){
+                                                        raw.nama += ' '+raw.alamat;
+                                                    }
                                                     input_penerima(raw);
                                                 }else{
                                                     raw.nama = cek_exist.nama_teks;
@@ -577,6 +607,7 @@ function input_penerima(raw){
         contentType: false,
         success: function(res_input_penerima){
             raw.res_input_penerima = res_input_penerima;
+            raw.nama = raw.nama.replace(/'/g, "''");
             if(res_input_penerima.id_profil){
                 raw.id_profile = res_input_penerima.id_profil;
                 raw.resolve2(raw);
