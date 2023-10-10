@@ -36,14 +36,16 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 				alert('Lisensi atau API KEY tidak valid! Harap diperbarui di plugin WP-SIPD!');
 			}
 		}else if(res.action == 'singkron_rka'){
-			if(!continue_singkron_rka[res.kode_sbl].alert){
-				_alert = false;
-				hide_loading = false;
-			}
-			if(!continue_singkron_rka[res.kode_sbl].no_resolve){
-				_alert = false;
-				hide_loading = false;
-				continue_singkron_rka[res.kode_sbl].resolve(continue_singkron_rka[res.kode_sbl].next);
+			if(continue_singkron_rka[res.kode_sbl]){
+				if(!continue_singkron_rka[res.kode_sbl].alert){
+					_alert = false;
+					hide_loading = false;
+				}
+				if(!continue_singkron_rka[res.kode_sbl].no_resolve){
+					_alert = false;
+					hide_loading = false;
+					continue_singkron_rka[res.kode_sbl].resolve(continue_singkron_rka[res.kode_sbl].next);
+				}
 			}
 		}else if(res.action == 'get_usulan_ssh_sipd'){
 			_alert = false;
