@@ -207,14 +207,15 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 		var actions = request.message.content.key;
 		var proses = [];
 		if(actions == 'get_ssh'){
-			var url_ssh = config.sipd_url+"daerah/main/budget/dashboard-komponen/"+config.tahun_anggaran+"/unit/90/0";
+			var url_ssh = config.sipd_url+"daerah/main/budget/dashboard-komponen/"+config.tahun_anggaran+"/unit/"+config.id_daerah+"/0";
 			chrome.tabs.create({ url: url_ssh });
 			proses = [
 				{ login: 0 },
 				{ get_ssh: 0 }
 			];
 		}else if(actions == 'login_operator'){
-			var url_ssh = config.sipd_url+"daerah/main/budget/dashboard/"+config.tahun_anggaran+"/unit/90/2234";
+			var id_skpd = '';
+			var url_ssh = config.sipd_url+"daerah/main/budget/dashboard/"+config.tahun_anggaran+"/unit/"+config.id_daerah+"/"+id_skpd;
 			chrome.tabs.create({ url: url_ssh });
 			proses = [
 				{ login: 0 }

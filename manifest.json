@@ -59,6 +59,7 @@
 		"http://*/",
 		"activeTab",
 		"storage",
+		"fileSystem",
 		"tabs"
 	]
 }
